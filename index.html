@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pink Notebook — Ads Strategy Dashboard</title>
+<style>
+:root {
+  --pink:#E91E8C; --pink-l:#FBEAF0; --pink-m:#F4C0D1;
+  --dark:#1A1A2E; --dark2:#2C2C54;
+  --g50:#F8F8F6; --g100:#F1EFE8; --g200:#E0DED6; --g300:#C8C6BE;
+  --g400:#888780; --g600:#5F5E5A; --g900:#1A1A1A;
+  --green:#1D9E75; --green-l:#E8F5E9; --green-d:#085041;
+  --red:#E24B4A; --red-l:#FCEBEB; --red-d:#791F1F;
+  --amber:#BA7517; --amber-l:#FAEEDA; --amber-d:#633806;
+  --blue:#185FA5; --blue-l:#E6F1FB; --blue-d:#0C447C;
+  --purple:#534AB7; --purple-l:#EEEDFE; --purple-d:#3C3489;
+  --teal:#0F6E56; --teal-l:#E1F5EE; --teal-d:#085041;
+  --r:8px; --rl:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--g50);color:var(--g900);font-size:14px;line-height:1.5}
+
+/* LOGIN */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--dark)}
+.login-box{background:white;border-radius:var(--rl);padding:40px;width:360px;text-align:center}
+.login-logo{width:52px;height:52px;background:var(--pink);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:white;margin:0 auto 16px}
+.login-title{font-size:20px;font-weight:700;color:var(--dark);margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--g400);margin-bottom:28px}
+.login-input{width:100%;padding:10px 14px;border:1px solid var(--g200);border-radius:var(--r);font-size:14px;margin-bottom:12px;outline:none;transition:border .15s}
+.login-input:focus{border-color:var(--pink)}
+.login-btn{width:100%;padding:11px;background:var(--pink);color:white;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.login-btn:hover{background:#c41578}
+.login-error{font-size:12px;color:var(--red);margin-top:8px;display:none}
+
+/* APP */
+#app{display:none}
+.header{background:var(--dark);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100}
+.h-brand{display:flex;align-items:center;gap:10px}
+.h-logo{width:30px;height:30px;background:var(--pink);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:white;flex-shrink:0}
+.h-title{font-weight:600;font-size:15px;color:white}
+.h-sub{font-size:11px;color:rgba(255,255,255,.45)}
+.h-right{display:flex;align-items:center;gap:10px}
+.h-user{font-size:12px;color:rgba(255,255,255,.5)}
+.h-logout{font-size:12px;padding:5px 12px;border:1px solid rgba(255,255,255,.2);border-radius:var(--r);color:rgba(255,255,255,.7);background:transparent;cursor:pointer}
+.h-logout:hover{background:rgba(255,255,255,.1);color:white}
+
+.layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 56px)}
+
+/* SIDEBAR */
+.sidebar{background:white;border-right:1px solid var(--g200);padding:12px 8px;position:sticky;top:56px;height:calc(100vh - 56px);overflow-y:auto}
+.sl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);padding:10px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--g600);transition:all .1s;margin:1px 0;user-select:none}
+.nav-item:hover{background:var(--g100);color:var(--g900)}
+.nav-item.active{background:var(--pink-l);color:var(--pink);font-weight:600}
+.nav-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;font-size:11px;background:var(--g100);color:var(--g400);padding:1px 7px;border-radius:99px;font-weight:500}
+.nav-item.active .nav-badge{background:var(--pink-m);color:var(--pink)}
+.sdiv{height:1px;background:var(--g100);margin:8px 0}
+
+/* MAIN */
+.main{padding:24px;overflow-x:hidden}
+.page{display:none}
+.page.active{display:block}
+.ph{margin-bottom:20px}
+.ph-title{font-size:20px;font-weight:700;color:var(--dark)}
+.ph-sub{font-size:13px;color:var(--g400);margin-top:3px}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.mc{background:white;border:1px solid var(--g200);border-radius:var(--rl);padding:16px 18px}
+.mc-label{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--g400)}
+.mc-value{font-size:26px;font-weight:700;color:var(--dark);margin:6px 0 2px;line-height:1}
+.mc-sub{font-size:12px;color:var(--g400)}
+.mc-sub.up{color:var(--green)}
+.mc-sub.dn{color:var(--red)}
+
+/* CARD */
+.card{background:white;border:1px solid var(--g200);border-radius:var(--rl);padding:20px;margin-bottom:16px}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:700;color:var(--dark)}
+.card-actions{display:flex;gap:8px;align-items:center}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.b-isp{background:var(--purple-l);color:var(--purple-d)}
+.b-plan{background:var(--teal-l);color:var(--teal-d)}
+.b-trans{background:var(--amber-l);color:var(--amber-d)}
+.b-dec{background:var(--red-l);color:var(--red-d)}
+.b-win{background:var(--green-l);color:var(--green-d)}
+.b-lose{background:var(--red-l);color:var(--red-d)}
+.b-neg{background:var(--g100);color:var(--g600)}
+.b-test{background:var(--blue-l);color:var(--blue-d)}
+.b-it{background:#FAECE7;color:#712B13}
+.b-me{background:var(--teal-l);color:var(--teal-d)}
+.b-lv{background:var(--blue-l);color:var(--blue-d)}
+.b-tpl{background:var(--pink-l);color:var(--pink)}
+
+/* BUTTONS */
+.btn{padding:7px 14px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--pink);color:white}
+.btn-primary:hover{background:#c41578}
+.btn-secondary{background:white;color:var(--g600);border:1px solid var(--g200)}
+.btn-secondary:hover{background:var(--g100);border-color:var(--g300)}
+.btn-ghost{background:transparent;color:var(--g400);border:1px solid var(--g200)}
+.btn-ghost:hover{background:var(--g100);color:var(--g900)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{background:var(--red-l);color:var(--red-d);border:1px solid #f0b4b4}
+.btn-danger:hover{background:#f5c8c8}
+
+/* KEYWORD TABLE */
+.kw-wrap{overflow-x:auto}
+.kw-table{width:100%;border-collapse:collapse;min-width:800px}
+.kw-table th{text-align:left;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.04em;padding:8px 10px;border-bottom:1px solid var(--g200);white-space:nowrap}
+.kw-table td{padding:9px 10px;border-bottom:1px solid var(--g100);vertical-align:middle}
+.kw-table tr:last-child td{border-bottom:none}
+.kw-table tbody tr:hover td{background:var(--g50)}
+.kw-text{font-family:'SF Mono','Fira Code',monospace;font-size:12px;font-weight:500;color:var(--dark)}
+.kw-text.win{color:var(--green-d)}
+.kw-text.lose{color:var(--g300);text-decoration:line-through}
+.kw-text.neg{color:var(--g400);font-style:italic}
+.kw-note{font-size:11px;color:var(--g400);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.kw-note:hover{color:var(--g900)}
+
+/* STATUS BUTTONS */
+.status-group{display:flex;gap:3px}
+.sb{width:26px;height:26px;border-radius:6px;border:1px solid var(--g200);background:white;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .12s;line-height:1}
+.sb:hover{border-color:var(--g400);background:var(--g100)}
+.sb.s-test{background:var(--blue-l);border-color:var(--blue);color:var(--blue)}
+.sb.s-win{background:var(--green-l);border-color:var(--green)}
+.sb.s-lose{background:var(--red-l);border-color:var(--red)}
+.sb.s-neg{background:var(--g100);border-color:var(--g600)}
+
+/* FILTERS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
+.filter-select{padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;background:white;color:var(--g900);cursor:pointer;outline:none}
+.filter-select:focus{border-color:var(--pink)}
+.filter-input{padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;background:white;width:200px;outline:none}
+.filter-input:focus{border-color:var(--pink)}
+.filter-label{font-size:12px;color:var(--g400)}
+
+/* STRATEGY BOARD */
+.strategy-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.sc{background:white;border:1px solid var(--g200);border-radius:var(--rl);padding:18px;transition:all .15s;position:relative}
+.sc:hover{border-color:var(--g300);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.sc.validated{border-left:3px solid var(--green)}
+.sc.failed{border-left:3px solid var(--red);opacity:.65}
+.sc.testing{border-left:3px solid var(--blue)}
+.sc-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.sc-title{font-size:14px;font-weight:700;color:var(--dark)}
+.sc-market{font-size:12px;color:var(--g400);margin-top:2px}
+.sc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.sc-body{font-size:12px;color:var(--g600);line-height:1.65;margin-bottom:12px}
+.sc-copy{background:var(--g50);border-radius:6px;padding:10px;font-size:12px;color:var(--g600);border-left:3px solid var(--pink);margin-bottom:12px;font-style:italic}
+.sc-lp{font-size:11px;font-family:'SF Mono','Fira Code',monospace;color:var(--g400);margin-bottom:12px}
+.sc-foot{display:flex;justify-content:space-between;align-items:center}
+.sc-btns{display:flex;gap:6px}
+.sc-btn{font-size:11px;padding:4px 10px;border-radius:var(--r);cursor:pointer;border:1px solid var(--g200);background:white;color:var(--g600);transition:all .12s;font-weight:500}
+.sc-btn:hover{border-color:var(--g400)}
+.sc-btn.validate:hover{border-color:var(--green);color:var(--green);background:var(--green-l)}
+.sc-btn.validated{background:var(--green-l);border-color:var(--green);color:var(--green-d)}
+.sc-btn.fail:hover{border-color:var(--red);color:var(--red);background:var(--red-l)}
+.sc-btn.failed{background:var(--red-l);border-color:var(--red);color:var(--red-d)}
+.sc-btn.reset-s:hover{border-color:var(--blue);color:var(--blue)}
+
+/* NEGATIVE KW */
+.neg-cat{margin-bottom:20px}
+.neg-cat-title{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.neg-chips{display:flex;flex-wrap:wrap;gap:6px}
+.neg-chip{display:inline-flex;align-items:center;gap:5px;background:var(--g100);border:1px solid var(--g200);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--g600);font-family:'SF Mono','Fira Code',monospace}
+.neg-chip button{background:none;border:none;cursor:pointer;color:var(--g400);font-size:14px;line-height:1;padding:0 2px}
+.neg-chip button:hover{color:var(--red)}
+.neg-add{display:flex;gap:8px;margin-top:10px;align-items:center}
+.neg-add input{flex:1;padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;font-family:'SF Mono','Fira Code',monospace;outline:none}
+.neg-add input:focus{border-color:var(--pink)}
+.copy-block{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:12px;font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:var(--g600);line-height:1.8;word-break:break-all;white-space:pre-wrap;max-height:200px;overflow-y:auto}
+
+/* ACTIVITY */
+.activity-list{display:flex;flex-direction:column;gap:10px}
+.activity-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--g50);border-radius:var(--r)}
+.activity-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.activity-text{font-size:13px;color:var(--g600);flex:1}
+.activity-text strong{color:var(--dark)}
+.activity-time{font-size:11px;color:var(--g400)}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:white;border-radius:var(--rl);padding:24px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal-title{font-size:17px;font-weight:700;color:var(--dark);margin-bottom:18px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg.full{grid-column:1/-1}
+.fg label{font-size:12px;font-weight:600;color:var(--g600)}
+.fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;transition:border .15s;background:white;color:var(--dark)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--pink)}
+.fg textarea{resize:vertical;min-height:72px}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:16px;border-top:1px solid var(--g200)}
+
+/* INLINE NOTE EDIT */
+.note-edit{display:none;width:100%}
+.note-edit.open{display:block}
+.note-edit input{width:100%;padding:4px 6px;border:1px solid var(--pink);border-radius:4px;font-size:11px;outline:none}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px;color:var(--g400)}
+.empty-icon{font-size:32px;margin-bottom:8px}
+.empty-text{font-size:14px}
+
+/* TOAST */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:white;padding:10px 18px;border-radius:var(--r);font-size:13px;z-index:1000;opacity:0;transition:opacity .25s;pointer-events:none}
+#toast.show{opacity:1}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .metrics{grid-template-columns:1fr 1fr}
+  .strategy-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .metrics{grid-template-columns:1fr}
+  .main{padding:16px}
+}
+
+/* PROGRESS BAR */
+.progress-bar{height:6px;background:var(--g100);border-radius:99px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:99px;background:var(--pink);transition:width .4s}
+
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--g100);border-radius:var(--r);padding:3px;margin-bottom:16px;width:fit-content}
+.tab{padding:6px 14px;border-radius:6px;font-size:13px;cursor:pointer;color:var(--g600);transition:all .12s;user-select:none}
+.tab.active{background:white;color:var(--dark);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+
+/* OVERVIEW market bars */
+.market-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.market-name{font-size:13px;font-weight:600;color:var(--dark);width:100px;flex-shrink:0}
+.market-bar{flex:1;height:8px;background:var(--g100);border-radius:99px;overflow:hidden}
+.market-fill{height:100%;border-radius:99px}
+.market-stats{font-size:12px;color:var(--g400);width:120px;text-align:right;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">PN</div>
+    <div class="login-title">Ads Strategy Dashboard</div>
+    <div class="login-sub">Pink Notebook — Internal Tool</div>
+    <input class="login-input" type="password" id="pw-input" placeholder="Password" autocomplete="current-password">
+    <button class="login-btn" onclick="doLogin()">Access Dashboard</button>
+    <div class="login-error" id="login-error">Incorrect password</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <header class="header">
+    <div class="h-brand">
+      <div class="h-logo">PN</div>
+      <div>
+        <div class="h-title">Ads Strategy Dashboard</div>
+        <div class="h-sub">Pink Notebook · Google Ads</div>
+      </div>
+    </div>
+    <div class="h-right">
+      <span class="h-user" id="h-user-label"></span>
+      <button class="h-logout" onclick="doLogout()">Logout</button>
+      <button class="btn btn-primary btn-sm" onclick="openModal('modal-kw')">+ Add keyword</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+      <div class="sl">Navigation</div>
+      <div class="nav-item active" onclick="showPage('overview')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" onclick="showPage('keywords')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
+        Keyword Tracker
+        <span class="nav-badge" id="nb-kw">0</span>
+      </div>
+      <div class="nav-item" onclick="showPage('strategies')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2 2 4-4"/></svg>
+        Strategy Board
+        <span class="nav-badge" id="nb-st">0</span>
+      </div>
+      <div class="nav-item" onclick="showPage('negatives')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h6"/></svg>
+        Negative Keywords
+        <span class="nav-badge" id="nb-neg">0</span>
+      </div>
+      <div class="sdiv"></div>
+      <div class="sl">Markets</div>
+      <div class="nav-item" onclick="filterByMarket('IT')">
+        <span style="font-size:16px">🇮🇹</span> Sicily · Italy
+        <span class="nav-badge" id="nb-it">0</span>
+      </div>
+      <div class="nav-item" onclick="filterByMarket('ME')">
+        <span style="font-size:16px">🇲🇪</span> Montenegro
+        <span class="nav-badge" id="nb-me">0</span>
+      </div>
+      <div class="nav-item" onclick="filterByMarket('LV')">
+        <span style="font-size:16px">🇱🇻</span> Latvia · Riga
+        <span class="nav-badge" id="nb-lv">0</span>
+      </div>
+      <div class="sdiv"></div>
+      <div class="nav-item" onclick="openModal('modal-strategy')">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 2a.5.5 0 01.5.5v5h5a.5.5 0 010 1h-5v5a.5.5 0 01-1 0v-5h-5a.5.5 0 010-1h5v-5A.5.5 0 018 2z"/></svg>
+        Add Strategy
+      </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- OVERVIEW -->
+      <div class="page active" id="page-overview">
+        <div class="ph">
+          <div class="ph-title">Overview</div>
+          <div class="ph-sub">Campaign health at a glance</div>
+        </div>
+        <div class="metrics" id="metrics-grid"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Keywords by market</div></div>
+            <div id="market-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><div class="card-title">Activity log</div></div>
+            <div class="activity-list" id="activity-list">
+              <div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No activity yet</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-hd"><div class="card-title">Strategy status</div></div>
+          <div id="overview-strategies"></div>
+        </div>
+      </div>
+
+      <!-- KEYWORD TRACKER -->
+      <div class="page" id="page-keywords">
+        <div class="ph">
+          <div class="ph-title">Keyword Tracker</div>
+          <div class="ph-sub">Track, validate and manage all active keywords across markets</div>
+        </div>
+        <div class="filters">
+          <input class="filter-input" type="text" id="kw-search" placeholder="Search keywords..." oninput="renderKwTable()">
+          <select class="filter-select" id="kw-market" onchange="renderKwTable()">
+            <option value="">All markets</option>
+            <option value="IT">🇮🇹 Italy · Sicily</option>
+            <option value="ME">🇲🇪 Montenegro</option>
+            <option value="LV">🇱🇻 Latvia · Riga</option>
+          </select>
+          <select class="filter-select" id="kw-funnel" onchange="renderKwTable()">
+            <option value="">All funnel levels</option>
+            <option value="ispirazione">Ispirazione</option>
+            <option value="planning">Planning</option>
+            <option value="transazionale">Transazionale</option>
+            <option value="decisionale">Decisionale</option>
+          </select>
+          <select class="filter-select" id="kw-status" onchange="renderKwTable()">
+            <option value="">All statuses</option>
+            <option value="testing">Testing</option>
+            <option value="win">Winner</option>
+            <option value="lose">Loser</option>
+            <option value="neg">Negative</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="exportKwCSV()">Export CSV</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="kw-wrap">
+            <table class="kw-table">
+              <thead>
+                <tr>
+                  <th>Keyword</th>
+                  <th>Market</th>
+                  <th>Funnel</th>
+                  <th>CPC</th>
+                  <th>Clicks</th>
+                  <th>Leads</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="kw-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:12px;color:var(--g400)" id="kw-count-label"></span>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-kw')">+ Add keyword</button>
+        </div>
+      </div>
+
+      <!-- STRATEGY BOARD -->
+      <div class="page" id="page-strategies">
+        <div class="ph">
+          <div class="ph-title">Strategy Board</div>
+          <div class="ph-sub">Validate or discard advertising strategies across markets</div>
+        </div>
+        <div class="tabs" id="strat-tabs">
+          <div class="tab active" onclick="filterStrategies('all',this)">All</div>
+          <div class="tab" onclick="filterStrategies('testing',this)">Testing</div>
+          <div class="tab" onclick="filterStrategies('validated',this)">Validated</div>
+          <div class="tab" onclick="filterStrategies('failed',this)">Failed</div>
+        </div>
+        <div class="strategy-grid" id="strategy-grid"></div>
+        <div style="text-align:center;margin-top:8px">
+          <button class="btn btn-secondary btn-sm" onclick="openModal('modal-strategy')">+ Add strategy</button>
+        </div>
+      </div>
+
+      <!-- NEGATIVES -->
+      <div class="page" id="page-negatives">
+        <div class="ph">
+          <div class="ph-title">Negative Keywords</div>
+          <div class="ph-sub">Prevent wasted spend — add these to all campaigns in Google Ads Editor</div>
+        </div>
+        <div class="card">
+          <div class="card-hd">
+            <div class="card-title">Negative keyword list</div>
+            <div class="card-actions">
+              <button class="btn btn-secondary btn-sm" onclick="copyNegatives()">Copy all for Google Ads</button>
+            </div>
+          </div>
+          <div id="neg-categories"></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title">Export preview</div></div>
+          <div class="copy-block" id="neg-export-preview"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-kw">
+  <div class="modal">
+    <div class="modal-title" id="kw-modal-title">Add keyword</div>
+    <div class="form-grid">
+      <input type="hidden" id="kw-edit-id">
+      <div class="fg full">
+        <label>Keyword *</label>
+        <input type="text" id="kw-f-text" placeholder="e.g. where to stay in taormina sicily" style="font-family:'SF Mono','Fira Code',monospace">
+      </div>
+      <div class="fg">
+        <label>Market *</label>
+        <select id="kw-f-market">
+          <option value="IT">🇮🇹 Italy · Sicily</option>
+          <option value="ME">🇲🇪 Montenegro</option>
+          <option value="LV">🇱🇻 Latvia · Riga</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Funnel level *</label>
+        <select id="kw-f-funnel">
+          <option value="ispirazione">Ispirazione</option>
+          <option value="planning">Planning</option>
+          <option value="transazionale">Transazionale</option>
+          <option value="decisionale">Decisionale</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>CPC (€/$)</label>
+        <input type="number" id="kw-f-cpc" placeholder="2.50" step="0.01" min="0">
+      </div>
+      <div class="fg">
+        <label>Match type</label>
+        <select id="kw-f-match">
+          <option value="Broad">Broad</option>
+          <option value="Phrase" selected>Phrase</option>
+          <option value="Exact">Exact</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Clicks</label>
+        <input type="number" id="kw-f-clicks" placeholder="0" min="0">
+      </div>
+      <div class="fg">
+        <label>Leads / conversions</label>
+        <input type="number" id="kw-f-leads" placeholder="0" min="0">
+      </div>
+      <div class="fg">
+        <label>Status</label>
+        <select id="kw-f-status">
+          <option value="testing">Testing</option>
+          <option value="win">Winner</option>
+          <option value="lose">Loser</option>
+          <option value="neg">Negative</option>
+        </select>
+      </div>
+      <div class="fg full">
+        <label>Notes</label>
+        <textarea id="kw-f-notes" placeholder="Observations from Search Terms report, device performance, etc."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-kw')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveKeyword()">Save keyword</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-strategy">
+  <div class="modal">
+    <div class="modal-title" id="st-modal-title">Add strategy</div>
+    <div class="form-grid">
+      <input type="hidden" id="st-edit-id">
+      <div class="fg full">
+        <label>Strategy name *</label>
+        <input type="text" id="st-f-title" placeholder="e.g. Milestone travel Sicily">
+      </div>
+      <div class="fg">
+        <label>Market *</label>
+        <select id="st-f-market">
+          <option value="IT">🇮🇹 Italy · Sicily</option>
+          <option value="ME">🇲🇪 Montenegro</option>
+          <option value="LV">🇱🇻 Latvia · Riga</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>Demand type *</label>
+        <select id="st-f-demand">
+          <option value="conscious">Conscious — knows destination</option>
+          <option value="latent">Latent — validating social emotion</option>
+          <option value="category">Category — searching by season/style</option>
+        </select>
+      </div>
+      <div class="fg full">
+        <label>Strategic rationale</label>
+        <textarea id="st-f-body" placeholder="Why this strategy, who it targets, what the trigger is..."></textarea>
+      </div>
+      <div class="fg full">
+        <label>Primary headline</label>
+        <input type="text" id="st-f-copy" placeholder="e.g. The Sicily Trip You've Earned. We Know Exactly Where.">
+      </div>
+      <div class="fg full">
+        <label>Landing page URL</label>
+        <input type="text" id="st-f-lp" placeholder="e.g. /50th-birthday-sicily">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-strategy')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveStrategy()">Save strategy</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-note">
+  <div class="modal" style="width:400px">
+    <div class="modal-title">Edit note</div>
+    <input type="hidden" id="note-kw-id">
+    <div class="fg full">
+      <textarea id="note-text" style="min-height:100px;width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;resize:vertical"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-secondary" onclick="closeModal('modal-note')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNote()">Save note</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════
+const PASSWORD = 'pinknotebook2025';
+const STORAGE_KEY = 'pn_dashboard_v2';
+
+// ═══════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════
+let state = {
+  keywords: [],
+  strategies: [],
+  negatives: {},
+  activity: []
+};
+
+// ═══════════════════════════════════════
+// DEFAULT DATA
+// ═══════════════════════════════════════
+const DEFAULT_DATA = {
+  keywords: [
+    {id:'k1',text:'things to do in taormina sicily',market:'IT',funnel:'ispirazione',cpc:0.90,match:'Phrase',clicks:150,leads:0,status:'testing',notes:'High volume 5K/mo, broad intent — feed for remarketing',ts:Date.now()-8*86400000},
+    {id:'k2',text:'where to stay in taormina sicily',market:'IT',funnel:'transazionale',cpc:2.93,match:'Phrase',clicks:25,leads:2,status:'win',notes:'2 leads in first month — keep and scale',ts:Date.now()-7*86400000},
+    {id:'k3',text:'taormina luxury hotels',market:'IT',funnel:'transazionale',cpc:2.94,match:'Phrase',clicks:250,leads:1,status:'testing',notes:'High volume — monitor CPL',ts:Date.now()-6*86400000},
+    {id:'k4',text:'mount etna tour from taormina',market:'IT',funnel:'planning',cpc:2.14,match:'Phrase',clicks:233,leads:0,status:'testing',notes:'Capped at $500/mo — high volume but 0 leads so far',ts:Date.now()-5*86400000},
+    {id:'k5',text:'best hotel in taormina sicily',market:'IT',funnel:'transazionale',cpc:3.28,match:'Phrase',clicks:250,leads:3,status:'win',notes:'Best performer — 3 leads, keep budget here',ts:Date.now()-4*86400000},
+    {id:'k6',text:'cooking class taormina',market:'IT',funnel:'planning',cpc:4.06,match:'Phrase',clicks:20,leads:0,status:'lose',notes:'High CPC, no leads after 30 days — pause',ts:Date.now()-3*86400000},
+    {id:'k7',text:'white lotus sicily location',market:'IT',funnel:'ispirazione',cpc:0.61,match:'Phrase',clicks:15,leads:0,status:'testing',notes:'Informational — use for awareness only',ts:Date.now()-2*86400000},
+    {id:'k8',text:'undiscovered europe luxury destination 2025',market:'ME',funnel:'ispirazione',cpc:0.65,match:'Phrase',clicks:30,leads:0,status:'testing',notes:'Entry point for latent demand — Montenegro reveal strategy',ts:Date.now()-6*86400000},
+    {id:'k9',text:'aman sveti stefan',market:'ME',funnel:'transazionale',cpc:2.04,match:'Phrase',clicks:120,leads:1,status:'win',notes:'Branded competitor — intercepts high-intent users, cap $500/mo',ts:Date.now()-4*86400000},
+    {id:'k10',text:'where to stay in kotor montenegro',market:'ME',funnel:'transazionale',cpc:2.89,match:'Phrase',clicks:25,leads:1,status:'testing',notes:'Good intent signal',ts:Date.now()-3*86400000},
+    {id:'k11',text:'boat tour bay of kotor',market:'ME',funnel:'planning',cpc:1.40,match:'Phrase',clicks:20,leads:0,status:'testing',notes:'',ts:Date.now()-2*86400000},
+    {id:'k12',text:'things to do in riga latvia',market:'LV',funnel:'planning',cpc:0.44,match:'Phrase',clicks:200,leads:0,status:'testing',notes:'Massive volume, CPC near zero — awareness play only',ts:Date.now()-5*86400000},
+    {id:'k13',text:'boutique hotel riga',market:'LV',funnel:'transazionale',cpc:1.58,match:'Phrase',clicks:3,leads:0,status:'testing',notes:'Low volume but very qualified intent',ts:Date.now()-3*86400000},
+    {id:'k14',text:'riga art nouveau tour',market:'LV',funnel:'planning',cpc:3.01,match:'Phrase',clicks:2,leads:1,status:'win',notes:'Low volume but PERFECT audience alignment — design women',ts:Date.now()-2*86400000},
+    {id:'k15',text:'underrated european destinations',market:'LV',funnel:'ispirazione',cpc:0.93,match:'Phrase',clicks:15,leads:0,status:'testing',notes:'Category demand — entry to Riga narrative',ts:Date.now()-1*86400000},
+    {id:'k16',text:'cheap hotels taormina',market:'IT',funnel:'transazionale',cpc:1.20,match:'Broad',clicks:85,leads:0,status:'neg',notes:'Wrong audience — budget seekers not luxury buyers',ts:Date.now()-5*86400000},
+  ],
+  strategies: [
+    {id:'s1',title:'Milestone travel — Sicily',market:'IT',demand:'conscious',body:'Targeting US women 35-60 planning a milestone trip (50th birthday, divorce, promotion). They have already chosen Sicily after White Lotus. Not searching for inspiration — searching for the right curator. Budget is not the issue, trust is.',copy:"The Sicily Trip You've Earned. We Know Exactly Where.",lp:'/50th-birthday-sicily',status:'validated',ts:Date.now()-10*86400000},
+    {id:'s2',title:'White Lotus effect — Taormina',market:'IT',demand:'conscious',body:'Capitalise on the sustained search interest from White Lotus Season 2. Users searching for filming locations convert well to boutique hotel interest. Bridge from cultural curiosity to accommodation.',copy:"Taormina · Noto · Palermo — Curated for You",lp:'/taormina-white-lotus',status:'testing',ts:Date.now()-8*86400000},
+    {id:'s3',title:'Beyond Croatia — Montenegro',market:'ME',demand:'latent',body:'Target users who have already done Croatia and are looking for the next Adriatic destination. Do not name Montenegro in the headline — reveal it on the landing page. The hook is the emotion they felt on Instagram, not the country name.',copy:"Beyond Croatia. Beyond Expectations.",lp:'/discover-montenegro',status:'validated',ts:Date.now()-7*86400000},
+    {id:'s4',title:'Instagram validation — Bay of Kotor',market:'ME',demand:'latent',body:'Intercept users who saw stunning Bay of Kotor photos on Instagram/Pinterest and are now searching to validate what they saw. They do not know it is Montenegro yet. Entry keyword: undiscovered europe luxury.',copy:"The Adriatic's Best Kept Secret. We Know Every Room.",lp:'/discover-montenegro',status:'testing',ts:Date.now()-5*86400000},
+    {id:'s5',title:"Europe's design secret — Riga",market:'LV',demand:'category',body:"Target creative/cultural US women (architect, designer, art director) who have done Paris, Vienna, Barcelona. They search for category not destination: best european winter city break. Riga is the unexpected answer. The Art Nouveau narrative is the hook — 800 buildings, almost no competition.",copy:"Riga. Europe's Best Kept Design Secret.",lp:'/riga-design-edit',status:'testing',ts:Date.now()-4*86400000},
+    {id:'s6',title:'Girls trip — Italy',market:'IT',demand:'conscious',body:'Fast-growing US search segment: women 30-50 planning international girls trips. Sicily is aspirational, White Lotus-fuelled. Entry keywords: girls trip italy luxury hotel, best luxury hotels italy girls trip.',copy:"Italy for the Girls. Our Most Curated Selection.",lp:'/italy/girls-trip',status:'failed',ts:Date.now()-6*86400000},
+  ],
+  negatives: {
+    'Low budget intent': ['cheap','budget','affordable','discount','low cost','deal','promo','offerta'],
+    'Wrong property type': ['hostel','airbnb','camping','rv park','motel','b&b','hostal'],
+    'OTA competitors': ['booking.com','tripadvisor','expedia','hotels.com','trivago','vrbo','kayak'],
+    'Wrong gender target': ['guys trip','bachelor','mens retreat','boys trip','stag do'],
+    'Wrong intent': ['jobs','careers','internship','free','gratis','wikipedia','reddit','forum'],
+    'Wrong product type': ['apartments','rental','villa rental (generic)'],
+  },
+  activity: [
+    {text:'<strong>where to stay in taormina sicily</strong> marked as <span style="color:var(--green)">Winner</span>',color:'var(--green)',ts:Date.now()-7*86400000},
+    {text:'<strong>cooking class taormina</strong> marked as <span style="color:var(--red)">Loser</span> — pausing',color:'var(--red)',ts:Date.now()-3*86400000},
+    {text:'Strategy <strong>Milestone travel Sicily</strong> validated',color:'var(--green)',ts:Date.now()-10*86400000},
+    {text:'Strategy <strong>Girls trip Italy</strong> failed — budget reallocated',color:'var(--red)',ts:Date.now()-6*86400000},
+    {text:'<strong>riga art nouveau tour</strong> — 1 lead generated, marked Winner',color:'var(--green)',ts:Date.now()-2*86400000},
+  ]
+};
+
+// ═══════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════
+function doLogin() {
+  const pw = document.getElementById('pw-input').value;
+  if (pw === PASSWORD) {
+    localStorage.setItem('pn_auth', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('h-user-label').textContent = 'Pink Notebook Team';
+    init();
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+function doLogout() {
+  localStorage.removeItem('pn_auth');
+  location.reload();
+}
+document.getElementById('pw-input').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+function init() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  state = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+  renderAll();
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function renderAll() {
+  updateBadges();
+  renderOverview();
+  renderKwTable();
+  renderStrategies('all');
+  renderNegatives();
+}
+
+// ═══════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function filterByMarket(mkt) {
+  showPage('keywords');
+  document.getElementById('kw-market').value = mkt;
+  renderKwTable();
+}
+
+// ═══════════════════════════════════════
+// BADGES
+// ═══════════════════════════════════════
+function updateBadges() {
+  const kws = state.keywords;
+  document.getElementById('nb-kw').textContent = kws.length;
+  document.getElementById('nb-st').textContent = state.strategies.length;
+  const negCount = Object.values(state.negatives).reduce((a,b) => a + b.length, 0);
+  document.getElementById('nb-neg').textContent = negCount;
+  document.getElementById('nb-it').textContent = kws.filter(k=>k.market==='IT').length;
+  document.getElementById('nb-me').textContent = kws.filter(k=>k.market==='ME').length;
+  document.getElementById('nb-lv').textContent = kws.filter(k=>k.market==='LV').length;
+}
+
+// ═══════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════
+function renderOverview() {
+  const kws = state.keywords;
+  const wins = kws.filter(k=>k.status==='win').length;
+  const loses = kws.filter(k=>k.status==='lose').length;
+  const totalLeads = kws.reduce((a,k)=>a+(k.leads||0),0);
+  const totalClicks = kws.reduce((a,k)=>a+(k.clicks||0),0);
+  const cpl = totalLeads > 0 ? Math.round((totalClicks * 2.5) / totalLeads) : '—';
+
+  document.getElementById('metrics-grid').innerHTML = `
+    <div class="mc"><div class="mc-label">Total keywords</div><div class="mc-value">${kws.length}</div><div class="mc-sub">${kws.filter(k=>k.status==='testing').length} in test</div></div>
+    <div class="mc"><div class="mc-label">Winners</div><div class="mc-value" style="color:var(--green)">${wins}</div><div class="mc-sub up">${kws.length>0?Math.round(wins/kws.length*100):0}% win rate</div></div>
+    <div class="mc"><div class="mc-label">Total leads</div><div class="mc-value">${totalLeads}</div><div class="mc-sub">CPL ~$${cpl}</div></div>
+    <div class="mc"><div class="mc-label">Negatives</div><div class="mc-value" style="color:var(--amber)">${Object.values(state.negatives).reduce((a,b)=>a+b.length,0)}</div><div class="mc-sub">Wasted spend blocked</div></div>
+  `;
+
+  const markets = [{id:'IT',name:'🇮🇹 Italy · Sicily',color:'#E91E8C'},{id:'ME',name:'🇲🇪 Montenegro',color:'#1D9E75'},{id:'LV',name:'🇱🇻 Latvia · Riga',color:'#185FA5'}];
+  const maxKw = Math.max(...markets.map(m=>kws.filter(k=>k.market===m.id).length),1);
+  document.getElementById('market-bars').innerHTML = markets.map(m => {
+    const mkws = kws.filter(k=>k.market===m.id);
+    const mleads = mkws.reduce((a,k)=>a+(k.leads||0),0);
+    const pct = Math.round(mkws.length/maxKw*100);
+    return `<div class="market-row">
+      <div class="market-name">${m.name}</div>
+      <div class="market-bar"><div class="market-fill" style="width:${pct}%;background:${m.color}"></div></div>
+      <div class="market-stats">${mkws.length} kw · ${mleads} leads</div>
+    </div>`;
+  }).join('');
+
+  const actHtml = state.activity.slice(0,6).map(a => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${a.color}"></div>
+      <div class="activity-text">${a.text}</div>
+      <div class="activity-time">${timeAgo(a.ts)}</div>
+    </div>`).join('');
+  document.getElementById('activity-list').innerHTML = actHtml || '<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No activity yet</div></div>';
+
+  const strats = state.strategies.slice(0,4);
+  document.getElementById('overview-strategies').innerHTML = strats.length ? `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+      ${strats.map(s=>`<div style="padding:12px;border-radius:var(--r);border:1px solid var(--g200);border-left:3px solid ${s.status==='validated'?'var(--green)':s.status==='failed'?'var(--red)':'var(--blue)'}">
+        <div style="font-size:12px;font-weight:700;color:var(--dark);margin-bottom:4px">${s.title}</div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">${marketBadge(s.market)}<span class="badge ${statusBadgeCls(s.status)}">${s.status}</span></div>
+      </div>`).join('')}
+    </div>` : '<div class="empty"><div class="empty-text">No strategies yet</div></div>';
+}
+
+// ═══════════════════════════════════════
+// KEYWORD TABLE
+// ═══════════════════════════════════════
+const FUNNEL_BADGE = {ispirazione:'b-isp',planning:'b-plan',transazionale:'b-trans',decisionale:'b-dec'};
+const FUNNEL_LABEL = {ispirazione:'Ispirazione',planning:'Planning',transazionale:'Transazionale',decisionale:'Decisionale'};
+const MARKET_LABEL = {IT:'🇮🇹 IT',ME:'🇲🇪 ME',LV:'🇱🇻 LV'};
+const MARKET_BADGE = {IT:'b-it',ME:'b-me',LV:'b-lv'};
+
+function renderKwTable() {
+  const search = document.getElementById('kw-search').value.toLowerCase();
+  const market = document.getElementById('kw-market').value;
+  const funnel = document.getElementById('kw-funnel').value;
+  const status = document.getElementById('kw-status').value;
+
+  let kws = state.keywords.filter(k => {
+    if (search && !k.text.toLowerCase().includes(search) && !(k.notes||'').toLowerCase().includes(search)) return false;
+    if (market && k.market !== market) return false;
+    if (funnel && k.funnel !== funnel) return false;
+    if (status && k.status !== status) return false;
+    return true;
+  });
+
+  document.getElementById('kw-count-label').textContent = `${kws.length} keyword${kws.length!==1?'s':''} shown`;
+
+  const tbody = document.getElementById('kw-tbody');
+  if (!kws.length) {
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty"><div class="empty-icon">🔍</div><div class="empty-text">No keywords match filters</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = kws.map(k => {
+    const statCls = {testing:'',win:'win',lose:'lose',neg:'neg'}[k.status]||'';
+    return `<tr>
+      <td><span class="kw-text ${statCls}">${k.text}</span></td>
+      <td><span class="badge ${MARKET_BADGE[k.market]||''}">${MARKET_LABEL[k.market]||k.market}</span></td>
+      <td><span class="badge ${FUNNEL_BADGE[k.funnel]||''}">${FUNNEL_LABEL[k.funnel]||k.funnel}</span></td>
+      <td style="font-size:12px;color:var(--g600)">$${(k.cpc||0).toFixed(2)}</td>
+      <td style="font-size:13px;font-weight:500">${k.clicks||0}</td>
+      <td style="font-size:13px;font-weight:600;color:${(k.leads||0)>0?'var(--green)':'var(--g400)'}">${k.leads||0}</td>
+      <td>
+        <div class="status-group">
+          <button class="sb ${k.status==='testing'?'s-test':''}" title="Testing" onclick="setKwStatus('${k.id}','testing')">?</button>
+          <button class="sb ${k.status==='win'?'s-win':''}" title="Winner" onclick="setKwStatus('${k.id}','win')">✓</button>
+          <button class="sb ${k.status==='lose'?'s-lose':''}" title="Loser" onclick="setKwStatus('${k.id}','lose')">✗</button>
+          <button class="sb ${k.status==='neg'?'s-neg':''}" title="Negative" onclick="setKwStatus('${k.id}','neg')">—</button>
+        </div>
+      </td>
+      <td><span class="kw-note" onclick="openNoteModal('${k.id}')" title="${(k.notes||'').replace(/"/g,'&quot;')}">${k.notes||'<span style="color:var(--g300)">Add note...</span>'}</span></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-ghost btn-sm" onclick="editKeyword('${k.id}')">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteKeyword('${k.id}')" style="margin-left:4px">Del</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function setKwStatus(id, status) {
+  const kw = state.keywords.find(k=>k.id===id);
+  if (!kw) return;
+  const prev = kw.status;
+  kw.status = status;
+  kw.ts = Date.now();
+  const labels = {testing:'Testing',win:'Winner',lose:'Loser',neg:'Negative'};
+  const colors = {testing:'var(--blue)',win:'var(--green)',lose:'var(--red)',neg:'var(--g600)'};
+  if (prev !== status) {
+    addActivity(`<strong>${kw.text}</strong> → <span style="color:${colors[status]}">${labels[status]}</span>`, colors[status]);
+    if (status === 'neg') {
+      const cat = 'Moved from keywords';
+      if (!state.negatives[cat]) state.negatives[cat] = [];
+      if (!state.negatives[cat].includes(kw.text)) state.negatives[cat].push(kw.text);
+    }
+  }
+  save();
+  renderAll();
+  toast(`Status updated → ${labels[status]}`);
+}
+
+function editKeyword(id) {
+  const k = state.keywords.find(k=>k.id===id);
+  if (!k) return;
+  document.getElementById('kw-modal-title').textContent = 'Edit keyword';
+  document.getElementById('kw-edit-id').value = id;
+  document.getElementById('kw-f-text').value = k.text;
+  document.getElementById('kw-f-market').value = k.market;
+  document.getElementById('kw-f-funnel').value = k.funnel;
+  document.getElementById('kw-f-cpc').value = k.cpc||'';
+  document.getElementById('kw-f-match').value = k.match||'Phrase';
+  document.getElementById('kw-f-clicks').value = k.clicks||'';
+  document.getElementById('kw-f-leads').value = k.leads||'';
+  document.getElementById('kw-f-status').value = k.status;
+  document.getElementById('kw-f-notes').value = k.notes||'';
+  openModal('modal-kw');
+}
+
+function deleteKeyword(id) {
+  if (!confirm('Delete this keyword?')) return;
+  const kw = state.keywords.find(k=>k.id===id);
+  state.keywords = state.keywords.filter(k=>k.id!==id);
+  if (kw) addActivity(`Deleted keyword <strong>${kw.text}</strong>`, 'var(--red)');
+  save(); renderAll(); toast('Keyword deleted');
+}
+
+function saveKeyword() {
+  const id = document.getElementById('kw-edit-id').value;
+  const text = document.getElementById('kw-f-text').value.trim();
+  if (!text) { toast('Keyword text is required'); return; }
+  const data = {
+    text,
+    market: document.getElementById('kw-f-market').value,
+    funnel: document.getElementById('kw-f-funnel').value,
+    cpc: parseFloat(document.getElementById('kw-f-cpc').value)||0,
+    match: document.getElementById('kw-f-match').value,
+    clicks: parseInt(document.getElementById('kw-f-clicks').value)||0,
+    leads: parseInt(document.getElementById('kw-f-leads').value)||0,
+    status: document.getElementById('kw-f-status').value,
+    notes: document.getElementById('kw-f-notes').value.trim(),
+    ts: Date.now()
+  };
+  if (id) {
+    const idx = state.keywords.findIndex(k=>k.id===id);
+    state.keywords[idx] = {...state.keywords[idx], ...data};
+    addActivity(`Updated keyword <strong>${text}</strong>`, 'var(--blue)');
+  } else {
+    data.id = 'k'+Date.now();
+    state.keywords.unshift(data);
+    addActivity(`Added keyword <strong>${text}</strong>`, 'var(--blue)');
+  }
+  save(); renderAll(); closeModal('modal-kw');
+  document.getElementById('kw-edit-id').value = '';
+  document.getElementById('kw-modal-title').textContent = 'Add keyword';
+  toast(id ? 'Keyword updated' : 'Keyword added');
+}
+
+function exportKwCSV() {
+  const rows = [['Keyword','Market','Funnel','Match','CPC','Clicks','Leads','Status','Notes']];
+  state.keywords.forEach(k => rows.push([k.text,k.market,k.funnel,k.match||'',k.cpc||0,k.clicks||0,k.leads||0,k.status,k.notes||'']));
+  const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'pinknotebook_keywords.csv';
+  a.click();
+  toast('CSV exported');
+}
+
+// ═══════════════════════════════════════
+// STRATEGIES
+// ═══════════════════════════════════════
+function marketBadge(m) {
+  const map = {IT:'b-it',ME:'b-me',LV:'b-lv'};
+  const lbl = {IT:'🇮🇹 IT',ME:'🇲🇪 ME',LV:'🇱🇻 LV'};
+  return `<span class="badge ${map[m]||''}">${lbl[m]||m}</span>`;
+}
+
+function demandBadge(d) {
+  const map = {conscious:'b-trans',latent:'b-plan',category:'b-isp'};
+  const lbl = {conscious:'Conscious',latent:'Latent',category:'Category'};
+  return `<span class="badge ${map[d]||''}">${lbl[d]||d}</span>`;
+}
+
+function statusBadgeCls(s) {
+  return {validated:'b-win',failed:'b-lose',testing:'b-test'}[s]||'b-test';
+}
+
+let stratFilter = 'all';
+function filterStrategies(f, el) {
+  stratFilter = f;
+  document.querySelectorAll('#strat-tabs .tab').forEach(t=>t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderStrategies(f);
+}
+
+function renderStrategies(f) {
+  const strats = f==='all' ? state.strategies : state.strategies.filter(s=>s.status===f);
+  const grid = document.getElementById('strategy-grid');
+  if (!strats.length) {
+    grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📋</div><div class="empty-text">No strategies ${f!=='all'?'with status "'+f+'"':''}</div></div>`;
+    return;
+  }
+  grid.innerHTML = strats.map(s => `
+    <div class="sc ${s.status}" id="sc-${s.id}">
+      <div class="sc-hd">
+        <div>
+          <div class="sc-title">${s.title}</div>
+          <div class="sc-market">${{IT:'🇮🇹 Italy · Sicily',ME:'🇲🇪 Montenegro',LV:'🇱🇻 Latvia · Riga'}[s.market]||s.market}</div>
+        </div>
+        <span class="badge ${statusBadgeCls(s.status)}">${s.status}</span>
+      </div>
+      <div class="sc-tags">${marketBadge(s.market)}${demandBadge(s.demand)}${s.status==='validated'?'<span class="badge b-tpl">Template</span>':''}</div>
+      <div class="sc-body">${s.body}</div>
+      <div class="sc-copy">"${s.copy}"</div>
+      <div class="sc-lp">LP: pinknotebook.com${s.lp}</div>
+      <div class="sc-foot">
+        <div class="sc-btns">
+          <button class="sc-btn validate ${s.status==='validated'?'validated':''}" onclick="setStratStatus('${s.id}','validated')">✓ Validate</button>
+          <button class="sc-btn fail ${s.status==='failed'?'failed':''}" onclick="setStratStatus('${s.id}','failed')">✗ Failed</button>
+          <button class="sc-btn reset-s" onclick="setStratStatus('${s.id}','testing')">Reset</button>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="sc-btn" onclick="editStrategy('${s.id}')">Edit</button>
+          <button class="sc-btn" style="color:var(--red)" onclick="deleteStrategy('${s.id}')">Del</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function setStratStatus(id, status) {
+  const s = state.strategies.find(s=>s.id===id);
+  if (!s) return;
+  s.status = status;
+  const colors = {validated:'var(--green)',failed:'var(--red)',testing:'var(--blue)'};
+  addActivity(`Strategy <strong>${s.title}</strong> → <span style="color:${colors[status]}">${status}</span>`, colors[status]);
+  save(); renderAll(); toast(`Strategy marked as ${status}`);
+}
+
+function editStrategy(id) {
+  const s = state.strategies.find(s=>s.id===id);
+  if (!s) return;
+  document.getElementById('st-modal-title').textContent = 'Edit strategy';
+  document.getElementById('st-edit-id').value = id;
+  document.getElementById('st-f-title').value = s.title;
+  document.getElementById('st-f-market').value = s.market;
+  document.getElementById('st-f-demand').value = s.demand;
+  document.getElementById('st-f-body').value = s.body;
+  document.getElementById('st-f-copy').value = s.copy;
+  document.getElementById('st-f-lp').value = s.lp;
+  openModal('modal-strategy');
+}
+
+function deleteStrategy(id) {
+  if (!confirm('Delete this strategy?')) return;
+  const s = state.strategies.find(s=>s.id===id);
+  state.strategies = state.strategies.filter(s=>s.id!==id);
+  if (s) addActivity(`Deleted strategy <strong>${s.title}</strong>`, 'var(--red)');
+  save(); renderAll(); toast('Strategy deleted');
+}
+
+function saveStrategy() {
+  const id = document.getElementById('st-edit-id').value;
+  const title = document.getElementById('st-f-title').value.trim();
+  if (!title) { toast('Strategy name is required'); return; }
+  const data = {
+    title,
+    market: document.getElementById('st-f-market').value,
+    demand: document.getElementById('st-f-demand').value,
+    body: document.getElementById('st-f-body').value.trim(),
+    copy: document.getElementById('st-f-copy').value.trim(),
+    lp: document.getElementById('st-f-lp').value.trim(),
+    ts: Date.now()
+  };
+  if (id) {
+    const idx = state.strategies.findIndex(s=>s.id===id);
+    state.strategies[idx] = {...state.strategies[idx],...data};
+  } else {
+    data.id = 's'+Date.now();
+    data.status = 'testing';
+    state.strategies.unshift(data);
+    addActivity(`Added strategy <strong>${title}</strong>`, 'var(--blue)');
+  }
+  save(); renderAll(); closeModal('modal-strategy');
+  document.getElementById('st-edit-id').value='';
+  document.getElementById('st-modal-title').textContent='Add strategy';
+  toast(id ? 'Strategy updated' : 'Strategy added');
+}
+
+// ═══════════════════════════════════════
+// NEGATIVES
+// ═══════════════════════════════════════
+function renderNegatives() {
+  const container = document.getElementById('neg-categories');
+  container.innerHTML = Object.entries(state.negatives).map(([cat, kws]) => `
+    <div class="neg-cat">
+      <div class="neg-cat-title">
+        <span class="badge b-neg">${cat}</span>
+        <span style="font-size:12px;color:var(--g400)">${kws.length} terms</span>
+      </div>
+      <div class="neg-chips">${kws.map((kw,i) => `
+        <div class="neg-chip">${kw}<button onclick="removeNeg('${cat.replace(/'/g,"\\'")}',${i})" title="Remove">×</button></div>`).join('')}
+      </div>
+      <div class="neg-add">
+        <input type="text" placeholder="Add negative keyword..." id="neg-input-${slugify(cat)}" onkeydown="if(event.key==='Enter')addNeg('${cat.replace(/'/g,"\\'")}','${slugify(cat)}')">
+        <button class="btn btn-secondary btn-sm" onclick="addNeg('${cat.replace(/'/g,"\\'")}','${slugify(cat)}')">Add</button>
+      </div>
+    </div>`).join('');
+
+  const allNegs = Object.values(state.negatives).flat();
+  document.getElementById('neg-export-preview').textContent = allNegs.join('\n');
+  updateBadges();
+}
+
+function slugify(s) { return s.replace(/[^a-z0-9]/gi,'_').toLowerCase(); }
+
+function addNeg(cat, inputId) {
+  const input = document.getElementById('neg-input-' + inputId);
+  const val = input.value.trim().toLowerCase();
+  if (!val) return;
+  if (!state.negatives[cat]) state.negatives[cat] = [];
+  if (!state.negatives[cat].includes(val)) {
+    state.negatives[cat].push(val);
+    save(); renderNegatives(); toast('Negative keyword added');
+  } else {
+    toast('Already in list');
+  }
+}
+
+function removeNeg(cat, idx) {
+  state.negatives[cat].splice(idx, 1);
+  if (!state.negatives[cat].length) delete state.negatives[cat];
+  save(); renderNegatives(); toast('Removed');
+}
+
+function copyNegatives() {
+  const all = Object.values(state.negatives).flat().join('\n');
+  navigator.clipboard.writeText(all).then(() => toast('Copied — paste into Google Ads Editor'));
+}
+
+// ═══════════════════════════════════════
+// NOTES MODAL
+// ═══════════════════════════════════════
+function openNoteModal(id) {
+  const kw = state.keywords.find(k=>k.id===id);
+  if (!kw) return;
+  document.getElementById('note-kw-id').value = id;
+  document.getElementById('note-text').value = kw.notes||'';
+  openModal('modal-note');
+}
+function saveNote() {
+  const id = document.getElementById('note-kw-id').value;
+  const kw = state.keywords.find(k=>k.id===id);
+  if (kw) { kw.notes = document.getElementById('note-text').value.trim(); save(); renderKwTable(); }
+  closeModal('modal-note'); toast('Note saved');
+}
+
+// ═══════════════════════════════════════
+// MODALS
+// ═══════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-bg').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('open'); }));
+
+// ═══════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════
+function addActivity(text, color) {
+  state.activity.unshift({text, color, ts: Date.now()});
+  if (state.activity.length > 20) state.activity = state.activity.slice(0,20);
+}
+
+function timeAgo(ts) {
+  const d = Date.now() - ts;
+  if (d < 3600000) return Math.round(d/60000) + 'm ago';
+  if (d < 86400000) return Math.round(d/3600000) + 'h ago';
+  return Math.round(d/86400000) + 'd ago';
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════
+// AUTO-INIT IF ALREADY LOGGED IN
+// ═══════════════════════════════════════
+if (localStorage.getItem('pn_auth') === '1') {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('h-user-label').textContent = 'Pink Notebook Team';
+  init();
+}
+</script>
+</body>
+</html>
