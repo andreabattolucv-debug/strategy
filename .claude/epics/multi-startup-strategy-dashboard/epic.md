@@ -5,7 +5,7 @@ created: 2026-04-09
 updated: 2026-04-09
 progress: 0%
 prd: .claude/prds/multi-startup-strategy-dashboard.md
-github: (will be set on sync)
+github: https://github.com/andreabattolucv-debug/strategy/issues/1
 ---
 
 # Epic: multi-startup-strategy-dashboard
