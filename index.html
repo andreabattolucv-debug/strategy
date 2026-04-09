@@ -200,6 +200,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ret-good{background:var(--green-l);color:var(--green-d);font-weight:600;border-radius:4px}
 .ret-bad{background:var(--red-l);color:var(--red-d);font-weight:600;border-radius:4px}
 .ret-mid{background:var(--amber-l);color:var(--amber-d);border-radius:4px}
+.ov-projects{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.ov-proj{border-radius:var(--rl);padding:20px;border:1px solid var(--g200);background:white;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.ov-proj:hover{box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-1px)}
+.ov-proj-bar{position:absolute;top:0;left:0;right:0;height:3px}
+.ov-proj-hd{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.ov-proj-logo{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:white;flex-shrink:0}
+.ov-proj-name{font-size:15px;font-weight:700;color:var(--dark)}
+.ov-proj-sub{font-size:11px;color:var(--g400);margin-top:1px}
+.ov-proj-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.ov-ps{text-align:center;padding:8px 4px;border-radius:var(--r);background:var(--g50)}
+.ov-ps-val{font-size:20px;font-weight:700;line-height:1;margin-bottom:3px}
+.ov-ps-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--g400)}
+.ov-proj-channels{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:14px}
+.ov-ch{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--g100);color:var(--g600);font-weight:500}
+.ov-proj-cta{width:100%;padding:8px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-align:center}
+.ov-dec-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);margin-bottom:6px;border:1px solid var(--g100);background:var(--g50)}
+.ov-dec-item:last-child{margin-bottom:0}
+.ov-dec-proj{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;flex-shrink:0}
+.ov-dec-name{font-size:13px;font-weight:600;color:var(--dark);flex:1}
+.ov-dec-meta{font-size:11px;color:var(--g400)}
+.ov-dec-age{font-size:11px;font-weight:600;flex-shrink:0}
+.ov-dec-btns{display:flex;gap:5px;flex-shrink:0}
+.ov-widgets{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px}
+.ov-fw-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--r);margin-bottom:5px;background:var(--g50)}
+.ov-fw-row:last-child{margin-bottom:0}
+.ov-fw-name{font-size:13px;font-weight:600;color:var(--dark)}
+.ov-fw-count{font-size:20px;font-weight:700}
+.ov-kpi-row{padding:8px 0;border-bottom:1px solid var(--g100)}
+.ov-kpi-row:last-child{border-bottom:none}
+.ov-kpi-proj{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--g400);margin-bottom:4px}
+.ov-kpi-vals{display:flex;gap:10px;flex-wrap:wrap}
+.ov-kpi-item{font-size:12px;color:var(--g600)}.ov-kpi-item strong{color:var(--dark)}
+@media(max-width:900px){.ov-projects{grid-template-columns:1fr}.ov-widgets{grid-template-columns:1fr}}
 .proj-switch{display:flex;gap:4px;padding:8px 8px 6px;border-bottom:1px solid var(--g100);margin-bottom:6px}
 .ps-tab{flex:1;padding:6px 8px;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--g200);background:white;color:var(--g600);text-align:center;transition:all .15s;letter-spacing:.02em}
 .ps-tab:hover{border-color:var(--g400);color:var(--g900)}
@@ -273,26 +306,44 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
       <!-- OVERVIEW -->
       <div class="page active" id="page-overview">
-        <div class="ph"><div class="ph-title">Overview</div><div class="ph-sub">Strategy status at a glance — startup validation mode</div></div>
-        <div class="card"><div class="card-hd"><div class="card-title">Active platforms</div></div>
-          <div class="pp" id="ov-platforms">
-            <div class="pill pill-g"><div class="pill-dot"></div>Google Ads</div>
-            <div class="pill pill-m"><div class="pill-dot"></div>Meta Ads</div>
-            <div class="pill pill-p"><div class="pill-dot"></div>Pinterest</div>
-          </div>
+        <div class="ph">
+          <div class="ph-title">Overview</div>
+          <div class="ph-sub">Tutti i progetti · a colpo d'occhio</div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
-          <div class="card" style="margin:0"><div class="card-hd"><div class="card-title">Active markets</div></div><div class="cg" id="country-grid"></div></div>
-          <div class="card" style="margin:0"><div class="card-hd"><div class="card-title">Strategy stats</div></div><div id="strat-stats"></div></div>
-        </div>
-        <div class="card">
+
+        <!-- ROW 1: Project cards -->
+        <div class="ov-projects" id="ov-projects"></div>
+
+        <!-- ROW 2: Decisioni urgenti -->
+        <div class="card" id="ov-decisions-card">
           <div class="card-hd">
-            <div class="card-title">Strategies</div>
-            <button class="btn btn-p btn-sm" onclick="showPage('strat',null);openStratModal()">+ New strategy</button>
+            <div class="card-title">⚡ Decisioni in sospeso</div>
+            <span class="badge b-test" id="ov-decisions-count">0</span>
           </div>
-          <div id="ov-strats"></div>
+          <div id="ov-decisions"></div>
         </div>
-        <div class="card"><div class="card-hd"><div class="card-title">Recent activity</div></div><div class="alist" id="alist"></div></div>
+
+        <!-- ROW 3: 3 widget -->
+        <div class="ov-widgets">
+          <!-- Funnel tasks -->
+          <div class="card" style="margin:0">
+            <div class="card-hd"><div class="card-title">📋 Funnel & Dev</div></div>
+            <div id="ov-funnel-widget"></div>
+          </div>
+          <!-- Focus settimana -->
+          <div class="card" style="margin:0">
+            <div class="card-hd">
+              <div class="card-title">🎯 Focus settimana</div>
+              <button class="btn btn-g btn-sm" id="focus-save-btn" onclick="saveFocusNote()" style="display:none">Salva</button>
+            </div>
+            <textarea id="focus-note" placeholder="Scrivi le priorità della settimana per il team…" style="width:100%;min-height:110px;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;color:var(--g600);resize:vertical;outline:none;line-height:1.6;background:var(--g50)" oninput="document.getElementById('focus-save-btn').style.display=''" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--g200)'"></textarea>
+          </div>
+          <!-- KPI snapshot -->
+          <div class="card" style="margin:0">
+            <div class="card-hd"><div class="card-title">📊 KPI Snapshot</div></div>
+            <div id="ov-kpi-widget"></div>
+          </div>
+        </div>
       </div>
 
       <!-- KEYWORD TRACKER -->
@@ -747,54 +798,140 @@ function updateBadges(){
 
 // OVERVIEW
 function renderOverview(){
-  if(activeProject.boardType==='audience'){ renderOverviewMC(); return; }
-  // PN overview
-  const mkts=[{id:'IT',name:'Italy · Sicily',flag:'🇮🇹'},{id:'ME',name:'Montenegro',flag:'🇲🇪'},{id:'LV',name:'Latvia · Riga',flag:'🇱🇻'}];
-  document.getElementById('country-grid').innerHTML=mkts.map(m=>{
-    const active=S.strategies.some(s=>s.market===m.id&&s.status!=='failed');
-    const kc=S.keywords.filter(k=>k.market===m.id).length;
-    return `<div class="cc"><div class="cflag">${m.flag}</div><div class="cname">${m.name}</div><div class="cstat">${active?'<span class="cdot"></span>Active':'Inactive'}</div><div class="cstat" style="margin-top:4px">${kc} keywords</div></div>`;
-  }).join('');
-  const v=S.strategies.filter(s=>s.status==='validated').length,t=S.strategies.filter(s=>s.status==='testing').length,f=S.strategies.filter(s=>s.status==='failed').length;
-  document.getElementById('strat-stats').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="mc" style="margin:0"><div class="mc-lbl">In progress</div><div class="mc-val" style="color:var(--blue)">${t}</div></div><div class="mc" style="margin:0"><div class="mc-lbl">Validated</div><div class="mc-val" style="color:var(--green)">${v}</div></div><div class="mc" style="margin:0"><div class="mc-lbl">Failed</div><div class="mc-val" style="color:var(--red)">${f}</div></div><div class="mc" style="margin:0"><div class="mc-lbl">Total</div><div class="mc-val">${S.strategies.length}</div></div></div>`;
-  document.getElementById('ov-strats').innerHTML=S.strategies.map(s=>`
-    <div class="ov-row ${s.status}" onclick="openDet('${s.id}')">
-      <div style="flex:1"><div class="ov-name">${s.title}</div><div class="ov-meta">${mktLabel(s.market)} · ${platLabel(s.platform)} · ${daysCtr(s)}</div></div>
-      <span class="badge ${stsBadge(s.status)}">${s.status}</span>
-    </div>`).join('')||'<div style="text-align:center;padding:24px;color:var(--g400)">No strategies yet</div>';
-  document.getElementById('alist').innerHTML=S.activity.slice(0,6).map(a=>`<div class="aitem"><div class="adot" style="background:${a.color}"></div><div class="atext">${a.text}</div><div class="atime">${ago(a.ts)}</div></div>`).join('')||'<div style="text-align:center;padding:20px;color:var(--g400);font-size:13px">No activity yet</div>';
+  renderOvProjects();
+  renderOvDecisions();
+  renderOvFunnel();
+  renderOvKpi();
+  // Restore focus note
+  const saved=localStorage.getItem('mp_focus_note')||'';
+  document.getElementById('focus-note').value=saved;
+  document.getElementById('focus-save-btn').style.display='none';
 }
 
-function renderOverviewMC(){
+function saveFocusNote(){
+  localStorage.setItem('mp_focus_note', document.getElementById('focus-note').value);
+  document.getElementById('focus-save-btn').style.display='none';
+  toast('Focus salvato');
+}
+
+// Widget 1 — Project cards
+function renderOvProjects(){
   const auds=loadAudiences();
-  const testing=auds.filter(a=>a.status==='testing').length;
-  const validated=auds.filter(a=>a.status==='validated').length;
-  const failed=auds.filter(a=>a.status==='failed').length;
-  const planned=auds.filter(a=>a.status==='planned').length;
-  // Geo: US/CA
-  document.getElementById('country-grid').innerHTML=activeProject.geo.map(g=>
-    `<div class="cc"><div class="cflag">${g.flag}</div><div class="cname">${g.label}</div><div class="cstat"><span class="cdot"></span>Active</div></div>`
-  ).join('');
-  document.getElementById('strat-stats').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="mc" style="margin:0"><div class="mc-lbl">Testing</div><div class="mc-val" style="color:var(--blue)">${testing}</div></div>
-      <div class="mc" style="margin:0"><div class="mc-lbl">Validated</div><div class="mc-val" style="color:var(--green)">${validated}</div></div>
-      <div class="mc" style="margin:0"><div class="mc-lbl">Failed</div><div class="mc-val" style="color:var(--red)">${failed}</div></div>
-      <div class="mc" style="margin:0"><div class="mc-lbl">Planned</div><div class="mc-val" style="color:var(--g400)">${planned}</div></div>
-    </div>`;
-  // Platforms pill (channels)
-  document.getElementById('ov-platforms').innerHTML=activeProject.channels.map(ch=>
-    `<div class="pill" style="background:var(--accent-l);border-color:var(--accent);color:var(--accent)"><div class="pill-dot" style="background:var(--accent)"></div>${ch}</div>`
-  ).join('');
-  // Audience list
-  document.getElementById('ov-strats').innerHTML=auds.map(a=>`
-    <div class="ov-row ${a.status}" onclick="showPage('strat',document.querySelector('[onclick*=strat]'))">
-      <div style="flex:1"><div class="ov-name">${a.name}</div>
-        <div class="ov-meta">${a.segment} · ${a.channels.join(' · ')} · CPM ${a.cpmRange}</div>
+  const pnItems=S.strategies;
+  const cards=PROJECTS.map(p=>{
+    const isPn=p.id==='pn';
+    const items=isPn?pnItems:auds;
+    const testing=items.filter(i=>i.status==='testing').length;
+    const validated=items.filter(i=>i.status==='validated').length;
+    const failed=items.filter(i=>i.status==='failed').length;
+    const label=isPn?'Strategie':'Audience';
+    const geoStr=p.geo.map(g=>g.flag+' '+g.code).join(' · ');
+    const channels=p.channels.slice(0,3).map(ch=>`<span class="ov-ch">${ch}</span>`).join('')+(p.channels.length>3?`<span class="ov-ch">+${p.channels.length-3}</span>`:'');
+    return `<div class="ov-proj" onclick="setActiveProject('${p.id}');showPage('overview',null)">
+      <div class="ov-proj-bar" style="background:${p.color}"></div>
+      <div class="ov-proj-hd">
+        <div class="ov-proj-logo" style="background:${p.color}">${p.logo}</div>
+        <div><div class="ov-proj-name">${p.name}</div><div class="ov-proj-sub">${geoStr}</div></div>
       </div>
-      <span class="badge ${a.status==='validated'?'b-win':a.status==='failed'?'b-lose':a.status==='testing'?'b-test':'b-neg'}">${a.status}</span>
+      <div class="ov-proj-stats">
+        <div class="ov-ps"><div class="ov-ps-val" style="color:var(--blue)">${testing}</div><div class="ov-ps-lbl">Testing</div></div>
+        <div class="ov-ps"><div class="ov-ps-val" style="color:var(--green)">${validated}</div><div class="ov-ps-lbl">Validated</div></div>
+        <div class="ov-ps"><div class="ov-ps-val" style="color:var(--red)">${failed}</div><div class="ov-ps-lbl">Failed</div></div>
+      </div>
+      <div class="ov-proj-channels">${channels}</div>
+      <button class="ov-proj-cta" style="background:${p.colorLight};color:${p.color}" onclick="event.stopPropagation();setActiveProject('${p.id}');showPage('strat',document.querySelector('[data-project=all][onclick*=strat]'))">
+        Vai a ${isPn?'Strategy Board':'Audience Board'} →
+      </button>
+    </div>`;
+  }).join('');
+  document.getElementById('ov-projects').innerHTML=cards;
+}
+
+// Widget 2 — Decisioni urgenti (testing da > 7gg)
+function renderOvDecisions(){
+  const DAYS_THRESHOLD=7;
+  const now=Date.now();
+  const decisions=[];
+  // PN strategies
+  S.strategies.filter(s=>s.status==='testing'&&s.startDate).forEach(s=>{
+    const age=Math.round((now-new Date(s.startDate))/864e5);
+    if(age>=DAYS_THRESHOLD) decisions.push({proj:'PN',color:'#E91E8C',colorL:'#FBEAF0',name:s.title,meta:mktLabel(s.market)+' · '+platLabel(s.platform),age,type:'strategy',id:s.id});
+  });
+  // MC audiences
+  loadAudiences().filter(a=>a.status==='testing').forEach(a=>{
+    const age=a.kpi.cpd!=null?14:7; // mock: se ha KPI assume 14gg, altrimenti 7
+    const kpiStr=a.kpi.cpd!=null?`CPD $${a.kpi.cpd} · CPAU $${a.kpi.cpau} · W4 ${a.kpi.w4ret}%`:'KPI non ancora inseriti';
+    if(age>=DAYS_THRESHOLD) decisions.push({proj:'MC',color:'#6B4FE0',colorL:'#EEEDFE',name:a.name,meta:kpiStr,age,type:'audience',id:a.id});
+  });
+  decisions.sort((a,b)=>b.age-a.age);
+  const el=document.getElementById('ov-decisions');
+  const countEl=document.getElementById('ov-decisions-count');
+  countEl.textContent=decisions.length;
+  if(!decisions.length){
+    el.innerHTML='<div style="text-align:center;padding:16px;color:var(--g400);font-size:13px">Nessuna decisione urgente 🎉</div>';
+    return;
+  }
+  el.innerHTML=decisions.map(d=>`
+    <div class="ov-dec-item">
+      <span class="ov-dec-proj" style="background:${d.colorL};color:${d.color}">${d.proj}</span>
+      <div style="flex:1;min-width:0">
+        <div class="ov-dec-name">${d.name}</div>
+        <div class="ov-dec-meta">${d.meta}</div>
+      </div>
+      <span class="ov-dec-age" style="color:${d.age>14?'var(--red)':'var(--amber)'}">${d.age}gg</span>
+      <div class="ov-dec-btns">
+        ${d.type==='strategy'
+          ?`<button class="sc-btn val" onclick="setSts('${d.id}','validated');renderOverview()">✓</button>
+             <button class="sc-btn fail" onclick="setSts('${d.id}','failed');renderOverview()">✗</button>`
+          :`<button class="sc-btn val" onclick="setAudSts('${d.id}','validated');renderOverview()">✓</button>
+             <button class="sc-btn fail" onclick="setAudSts('${d.id}','failed');renderOverview()">✗</button>`
+        }
+      </div>
     </div>`).join('');
-  document.getElementById('alist').innerHTML='<div style="text-align:center;padding:20px;color:var(--g400);font-size:13px">Activity log coming soon</div>';
+}
+
+// Widget 3 — Funnel tasks per assignee
+function renderOvFunnel(){
+  const assignees=[{key:'andrea',label:'Andrea'},{key:'mattia',label:'Mattia'},{key:'team',label:'Team'}];
+  const allTodos=[
+    ...loadTodos('pn').filter(t=>t.status!=='done'),
+    ...loadTodos('mc').filter(t=>t.status!=='done')
+  ];
+  const totalOpen=allTodos.length;
+  const el=document.getElementById('ov-funnel-widget');
+  if(!totalOpen){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--g400);font-size:13px">Nessun task aperto 🎉</div>';
+    return;
+  }
+  el.innerHTML=assignees.map(a=>{
+    const count=allTodos.filter(t=>(t.assignee||'team')===a.key).length;
+    const inprogress=allTodos.filter(t=>(t.assignee||'team')===a.key&&t.status==='inprogress').length;
+    if(!count) return '';
+    return `<div class="ov-fw-row">
+      <div><div class="ov-fw-name">${a.label}</div>${inprogress?`<div style="font-size:11px;color:var(--blue)">${inprogress} in corso</div>`:''}
+      </div>
+      <div class="ov-fw-count" style="color:${count>3?'var(--red)':count>1?'var(--amber)':'var(--green)'}">${count}</div>
+    </div>`;
+  }).join('')+`<div style="font-size:11px;color:var(--g400);margin-top:8px;text-align:center">${totalOpen} task aperti in totale</div>`;
+}
+
+// Widget 4 — KPI Snapshot (ultimi dati inseriti per progetto)
+function renderOvKpi(){
+  const el=document.getElementById('ov-kpi-widget');
+  let html='';
+  PROJECTS.forEach(p=>{
+    const saved=JSON.parse(localStorage.getItem('mp_kpi_'+p.id)||'{}');
+    const rows=Object.entries(saved);
+    if(!rows.length){ html+=`<div class="ov-kpi-row"><div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div><div style="font-size:12px;color:var(--g300)">Nessun dato ancora</div></div>`; return; }
+    // Prendi prima riga con almeno un valore
+    const firstRow=rows.find(([,vals])=>Object.keys(vals).length>0);
+    if(!firstRow){ html+=`<div class="ov-kpi-row"><div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div><div style="font-size:12px;color:var(--g300)">Nessun dato ancora</div></div>`; return; }
+    const [,vals]=firstRow;
+    const items=Object.entries(vals).filter(([,v])=>v).slice(0,4).map(([k,v])=>
+      `<span class="ov-kpi-item"><strong>${k}</strong> ${v}</span>`).join('');
+    html+=`<div class="ov-kpi-row"><div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div><div class="ov-kpi-vals">${items||'<span style="color:var(--g300);font-size:12px">—</span>'}</div></div>`;
+  });
+  el.innerHTML=html;
 }
 
 // HELPERS
