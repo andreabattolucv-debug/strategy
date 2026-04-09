@@ -807,14 +807,20 @@ async function init(){
 function save(){ localStorage.setItem(SK,JSON.stringify(S)); if(sb) sbSyncPN(); }
 
 async function sbSyncPN(){
-  try {
+  sbRun(async()=>{
     if(S.keywords.length) await sb.from('keywords').upsert(S.keywords.map(kwToDb));
     if(S.strategies.length) await sb.from('strategies').upsert(S.strategies.map(stToDb));
-    // Negatives: delete all and re-insert to handle removals
     await sb.from('negatives').delete().gt('id',0);
     const negRows=[]; Object.entries(S.negatives).forEach(([cat,kws])=>kws.forEach(kw=>negRows.push({category:cat,keyword:kw})));
     if(negRows.length) await sb.from('negatives').insert(negRows);
-  } catch(e){ console.error('Supabase sync PN:',e); }
+  });
+}
+
+// Central Supabase call wrapper — isolates any sync/async error from UI code
+function sbRun(fn){
+  if(!sb) return;
+  try { Promise.resolve(fn()).catch(e=>console.warn('sb:',e?.message||e)); }
+  catch(e){ console.warn('sb sync:',e?.message||e); }
 }
 
 // ── LOAD ALL FROM SUPABASE ────────────────────────────────────────────────────
@@ -963,7 +969,7 @@ function saveFocusNote(){
   localStorage.setItem('mp_focus_note',content);
   document.getElementById('focus-save-btn').style.display='none';
   toast('Focus salvato');
-  if(sb) sb.from('focus_notes').upsert({project_id:'all',content},{onConflict:'project_id'}).catch(e=>console.error(e));
+  sbRun(()=>sb.from('focus_notes').upsert({project_id:'all',content},{onConflict:'project_id'}));
 }
 
 // Widget 1 — Project cards
@@ -1183,7 +1189,7 @@ function delKw(id){
   S.keywords=S.keywords.filter(k=>k.id!==id);
   if(k) addAct(`Deleted <strong>${k.text}</strong>`,'var(--red)');
   save(); renderAll();
-  if(sb) sb.from('keywords').delete().eq('id',id).catch(e=>console.error(e));
+  sbRun(()=>sb.from('keywords').delete().eq('id',id));
   toast('Keyword deleted');
 }
 
@@ -1368,7 +1374,7 @@ function delStrat(id){
   S.strategies=S.strategies.filter(s=>s.id!==id);
   if(s) addAct(`Deleted strategy <strong>${s.title}</strong>`,'var(--red)');
   save(); renderAll();
-  if(sb) sb.from('strategies').delete().eq('id',id).catch(e=>console.error(e));
+  sbRun(()=>sb.from('strategies').delete().eq('id',id));
   toast('Deleted');
 }
 
@@ -1403,7 +1409,7 @@ function rmNeg(cat,idx){
   const kw=S.negatives[cat][idx];
   S.negatives[cat].splice(idx,1); if(!S.negatives[cat].length) delete S.negatives[cat];
   save(); renderNegs();
-  if(sb) sb.from('negatives').delete().eq('category',cat).eq('keyword',kw).catch(e=>console.error(e));
+  sbRun(()=>sb.from('negatives').delete().eq('category',cat).eq('keyword',kw));
   toast('Removed');
 }
 function copyNegs(){ navigator.clipboard.writeText(Object.values(S.negatives).flat().join('\n')).then(()=>toast('Copied — paste into Google Ads Editor')); }
@@ -1468,7 +1474,7 @@ function delTodo(id){
   if(!confirm('Delete?')) return;
   const todos=loadTodos(activeProject.id);
   saveTodos(activeProject.id,todos.filter(t=>t.id!==id));
-  if(sb) sb.from('todos').delete().eq('id',id).catch(e=>console.error(e));
+  sbRun(()=>sb.from('todos').delete().eq('id',id));
   renderFunnelPage(); updateBadges(); toast('Deleted');
 }
 function openTodoModal(){
@@ -1517,7 +1523,7 @@ const MC_AUDIENCES_DEFAULT=[
 function loadAudiences(){ const s=localStorage.getItem('mp_audiences_mc'); return s?JSON.parse(s):JSON.parse(JSON.stringify(MC_AUDIENCES_DEFAULT)); }
 function saveAudiences(data){
   localStorage.setItem('mp_audiences_mc',JSON.stringify(data));
-  if(sb) sb.from('audiences').upsert(data.map(audToDb)).catch(e=>console.error('sbAud:',e));
+  sbRun(()=>sb.from('audiences').upsert(data.map(audToDb)));
 }
 
 function renderAudienceBoard(){
@@ -1650,7 +1656,7 @@ function saveKpiCell(el){
   const val=el.textContent.trim();
   data[el.dataset.row][el.dataset.col]=val;
   localStorage.setItem(key,JSON.stringify(data));
-  if(sb) sb.from('kpi_data').upsert({project_id:el.dataset.proj,row_key:el.dataset.row,col_key:el.dataset.col,value:val},{onConflict:'project_id,row_key,col_key'}).catch(e=>console.error(e));
+  sbRun(()=>sb.from('kpi_data').upsert({project_id:el.dataset.proj,row_key:el.dataset.row,col_key:el.dataset.col,value:val},{onConflict:'project_id,row_key,col_key'}));
 }
 
 // ─── T-05: RETENTION COHORTS ─────────────────────────────────────────────────
@@ -1686,7 +1692,7 @@ function saveRetCell(el){
   localStorage.setItem('mp_retention_mc',JSON.stringify(data));
   const v=parseFloat(val);
   el.className='kpi-cell ret-cell '+getRetCls(v,el.dataset.col);
-  if(sb) sb.from('retention_data').upsert({audience_id:el.dataset.row,week:el.dataset.col,value:val},{onConflict:'audience_id,week'}).catch(e=>console.error(e));
+  sbRun(()=>sb.from('retention_data').upsert({audience_id:el.dataset.row,week:el.dataset.col,value:val},{onConflict:'audience_id,week'}));
 }
 
 // ─── T-06: FUNNEL REFACTOR ────────────────────────────────────────────────────
@@ -1707,7 +1713,7 @@ function loadTodos(projectId){ return JSON.parse(localStorage.getItem('mp_todos_
 function saveTodos(projectId,todos){
   _lastTodoWrite=Date.now();
   localStorage.setItem('mp_todos_'+projectId,JSON.stringify(todos));
-  if(sb) sb.from('todos').upsert(todos.map(t=>todoToDb(t,projectId))).catch(e=>console.error('sbTodo:',e));
+  sbRun(()=>sb.from('todos').upsert(todos.map(t=>todoToDb(t,projectId))));
 }
 
 // Boot — check existing session or show login
