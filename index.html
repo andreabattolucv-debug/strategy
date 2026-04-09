@@ -1497,7 +1497,7 @@ function saveTodo(){
     document.getElementById('todo-mtitle').textContent='Add to-do';
     renderFunnelPage(); updateBadges();
     toast(id?'Aggiornato ✓':'Salvato ✓');
-  } catch(e){ console.error('saveTodo error:',e); toast('Errore nel salvataggio — riprova'); }
+  } catch(e){ console.error('saveTodo error:',e); toast('Errore: '+e.message); }
 }
 
 // NOTES
