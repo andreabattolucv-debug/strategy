@@ -297,7 +297,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       </div>
       <div class="ni" onclick="showPage('funnel',this)" data-project="all">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12l-4.5 5.5V13l-3-1.5V8.5L2 3z"/></svg>
-        Funnel &amp; Site Dev <span class="nb" id="nb-todo">0</span>
+        To-Dos <span class="nb" id="nb-todo">0</span>
       </div>
       <div class="sdiv" data-project="all"></div>
       <div class="sl" id="geo-label" data-project="all">Markets</div>
@@ -443,7 +443,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
       <!-- FUNNEL & SITE DEV -->
       <div class="page" id="page-funnel">
-        <div class="ph"><div class="ph-title">Funnel &amp; Site Dev</div><div class="ph-sub" id="funnel-sub">Dev work — landing pages, tracking, funnel improvements</div></div>
+        <div class="ph"><div class="ph-title">To-Dos</div><div class="ph-sub" id="funnel-sub">Task del team — landing pages, tracking, funnel, dev</div></div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div class="filters" style="margin:0">
             <select class="fsel" id="filter-assignee" onchange="renderFunnelPage()">
@@ -790,15 +790,17 @@ document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='
 document.getElementById('em-input').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('pw-input').focus(); });
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+let _lastTodoWrite=0; // race-condition guard
+
 async function init(){
   const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD));
   const savedProj=localStorage.getItem('mp_active_project')||'pn';
   setActiveProject(savedProj);
   renderAll(); // Render from local cache first (instant)
   if(sb){
+    setupRealtime(); // Start realtime BEFORE loading — catches writes that happen during load
     await loadAllFromSupabase();
     renderAll(); // Re-render with Supabase data
-    setupRealtime();
   }
 }
 
@@ -835,8 +837,9 @@ async function loadAllFromSupabase(){
     if(stRes.data?.length) S.strategies=stRes.data.map(dbToSt);
     if(negRes.data?.length){ S.negatives={}; negRes.data.forEach(r=>{ if(!S.negatives[r.category]) S.negatives[r.category]=[]; S.negatives[r.category].push(r.keyword); }); }
     if(audRes.data?.length) localStorage.setItem('mp_audiences_mc',JSON.stringify(audRes.data.map(dbToAud)));
-    if(todoPnRes.data?.length) localStorage.setItem('mp_todos_pn',JSON.stringify(todoPnRes.data.map(dbToTodo)));
-    if(todoMcRes.data?.length) localStorage.setItem('mp_todos_mc',JSON.stringify(todoMcRes.data.map(dbToTodo)));
+    const loadStart=Date.now();
+    if(todoPnRes.data?.length&&_lastTodoWrite<loadStart) localStorage.setItem('mp_todos_pn',JSON.stringify(todoPnRes.data.map(dbToTodo)));
+    if(todoMcRes.data?.length&&_lastTodoWrite<loadStart) localStorage.setItem('mp_todos_mc',JSON.stringify(todoMcRes.data.map(dbToTodo)));
     if(kpiRes.data?.length){
       const kp={pn:{},mc:{}};
       kpiRes.data.forEach(r=>{ if(!kp[r.project_id]) kp[r.project_id]={}; if(!kp[r.project_id][r.row_key]) kp[r.project_id][r.row_key]={}; kp[r.project_id][r.row_key][r.col_key]=r.value; });
@@ -1479,19 +1482,22 @@ function openTodoModal(){
   openModal('modal-todo');
 }
 function saveTodo(){
-  const id=document.getElementById('todo-eid').value;
-  const projId=document.getElementById('todo-project').value||activeProject.id;
-  const title=document.getElementById('todo-title').value.trim();
-  if(!title){ toast('Title required'); return; }
-  const d={title,desc:document.getElementById('todo-desc').value.trim(),status:document.getElementById('todo-sts').value,cat:document.getElementById('todo-cat').value,startDate:document.getElementById('todo-start').value,dueDate:document.getElementById('todo-due').value,assignee:document.getElementById('todo-who').value||'team',project:projId,ts:Date.now()};
-  const todos=loadTodos(projId);
-  if(id){ const i=todos.findIndex(t=>t.id===id); todos[i]={...todos[i],...d}; }
-  else{ d.id='t'+Date.now(); todos.unshift(d); }
-  saveTodos(projId,todos);
-  renderFunnelPage(); updateBadges(); closeModal('modal-todo');
-  document.getElementById('todo-eid').value='';
-  document.getElementById('todo-mtitle').textContent='Add implementation';
-  toast(id?'Updated':'Added');
+  try {
+    const id=document.getElementById('todo-eid').value;
+    const projId=document.getElementById('todo-project').value||activeProject.id;
+    const title=document.getElementById('todo-title').value.trim();
+    if(!title){ toast('Title required'); return; }
+    const d={title,desc:document.getElementById('todo-desc').value.trim(),status:document.getElementById('todo-sts').value,cat:document.getElementById('todo-cat').value,startDate:document.getElementById('todo-start').value,dueDate:document.getElementById('todo-due').value,assignee:document.getElementById('todo-who').value||'team',project:projId,ts:Date.now()};
+    const todos=loadTodos(projId);
+    if(id){ const i=todos.findIndex(t=>t.id===id); if(i>=0) todos[i]={...todos[i],...d}; else todos.unshift({...d,id}); }
+    else{ d.id='t'+Date.now(); todos.unshift(d); }
+    saveTodos(projId,todos);
+    closeModal('modal-todo');
+    document.getElementById('todo-eid').value='';
+    document.getElementById('todo-mtitle').textContent='Add to-do';
+    renderFunnelPage(); updateBadges();
+    toast(id?'Aggiornato ✓':'Salvato ✓');
+  } catch(e){ console.error('saveTodo error:',e); toast('Errore nel salvataggio — riprova'); }
 }
 
 // NOTES
@@ -1699,6 +1705,7 @@ function migrateTodos(){
 
 function loadTodos(projectId){ return JSON.parse(localStorage.getItem('mp_todos_'+projectId)||'[]'); }
 function saveTodos(projectId,todos){
+  _lastTodoWrite=Date.now();
   localStorage.setItem('mp_todos_'+projectId,JSON.stringify(todos));
   if(sb) sb.from('todos').upsert(todos.map(t=>todoToDb(t,projectId))).catch(e=>console.error('sbTodo:',e));
 }
