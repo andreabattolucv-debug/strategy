@@ -598,6 +598,45 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<!-- AUDIENCE DETAIL MODAL -->
+<div class="modal-bg" id="modal-aud-det">
+  <div class="modal" style="width:700px;max-height:90vh;overflow-y:auto">
+    <div id="aud-det-content"></div>
+    <div class="modal-foot" style="position:sticky;bottom:0;background:var(--white);padding-top:12px">
+      <button class="btn btn-s" onclick="closeModal('modal-aud-det')">Close</button>
+      <button class="btn btn-s" id="aud-det-notes-btn">Notes</button>
+      <button class="btn btn-p" id="aud-det-edit-btn">Edit audience</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIENCE ADD / EDIT MODAL -->
+<div class="modal-bg" id="modal-aud">
+  <div class="modal" style="width:680px;max-height:90vh;overflow-y:auto">
+    <div class="modal-title" id="aud-mtitle">Add audience</div>
+    <div class="fgrid">
+      <input type="hidden" id="aud-eid">
+      <div class="fg full"><label>Audience name</label><input type="text" id="aud-name" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder="e.g. Wealth-Building Millennials"></div>
+      <div class="fg"><label>Segment</label><input type="text" id="aud-segment" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder="e.g. Finance / Investing"></div>
+      <div class="fg"><label>Age range</label><input type="text" id="aud-age" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder="e.g. 25–40"></div>
+      <div class="fg"><label>CPM range</label><input type="text" id="aud-cpm" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder="e.g. $15–$50"></div>
+      <div class="fg"><label>Geo</label><input type="text" id="aud-geo" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder="e.g. US/CA"></div>
+      <div class="fg full"><label>Channels (comma-separated)</label><input type="text" id="aud-channels" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder="e.g. TikTok, IG Reels, YT Shorts"></div>
+      <div class="fg full"><label>Hook / User job-to-be-done</label><input type="text" id="aud-hook" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder='"I want to..."'></div>
+      <div class="fg full"><label>Why this audience</label><textarea id="aud-why" style="min-height:80px;width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;resize:vertical" placeholder="Rationale, CPM value, product fit..."></textarea></div>
+      <div class="fg full"><label>Primary use cases</label><textarea id="aud-usecases" style="min-height:80px;width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;resize:vertical" placeholder="Content formats and examples..."></textarea></div>
+      <div class="fg full"><label>Market size (TAM / SAM / SOM)</label><textarea id="aud-market" style="min-height:60px;width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;resize:vertical" placeholder="TAM: ...&#10;SAM: ...&#10;SOM: ..."></textarea></div>
+      <div class="fg full"><label>Signals (one per line)</label><textarea id="aud-signals" style="min-height:60px;width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;resize:vertical" placeholder="High willingness to pay&#10;Proven subscription behavior&#10;..."></textarea></div>
+      <div class="fg"><label>Status</label><select id="aud-sts" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%"><option value="testing">Testing</option><option value="validated">Validated</option><option value="failed">Failed</option><option value="planned">Planned</option></select></div>
+      <div class="fg"><label>Priority (1 = highest)</label><input type="number" id="aud-priority" min="1" max="10" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%" placeholder="e.g. 1"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-s" onclick="closeModal('modal-aud')">Cancel</button>
+      <button class="btn btn-p" onclick="saveAud()">Save audience</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -754,11 +793,11 @@ function initSupabase(){
 // ── DB MAPPERS ────────────────────────────────────────────────────────────────
 const dbToKw  = r=>({id:r.id,text:r.text,market:r.market,funnel:r.funnel,cpc:r.cpc,match:r.match_type,clicks:r.clicks,leads:r.leads,status:r.status,notes:r.notes,ts:r.ts});
 const dbToSt  = r=>({id:r.id,title:r.title,market:r.market,demand:r.demand,platform:r.platform,startDate:r.start_date,endDate:r.end_date,why:r.why,persona:r.persona,mindset:r.mindset,body:r.body,copy:r.copy,lp:r.lp,funnel:r.funnel,status:r.status,ts:r.ts});
-const dbToAud = r=>({id:r.id,name:r.name,segment:r.segment,ageRange:r.age_range,cpmRange:r.cpm_range,geo:r.geo,channels:r.channels||[],hook:r.hook,status:r.status,kpi:r.kpi||{},notes:r.notes||[]});
+const dbToAud = r=>({id:r.id,name:r.name,segment:r.segment,ageRange:r.age_range,cpmRange:r.cpm_range,geo:r.geo,channels:r.channels||[],hook:r.hook,status:r.status,kpi:r.kpi||{},notes:r.notes||[],why:r.kpi?.why||'',useCases:r.kpi?.useCases||'',market:r.kpi?.market||'',signals:r.kpi?.signals||[],priority:r.kpi?.priority||null});
 const dbToTodo= r=>({id:r.id,title:r.title,desc:r.description,status:r.status,cat:r.category,startDate:r.start_date,dueDate:r.due_date,assignee:r.assignee,project:r.project_id,ts:r.ts});
 const kwToDb  = k=>({id:k.id,text:k.text,market:k.market,funnel:k.funnel,cpc:k.cpc,match_type:k.match,clicks:k.clicks,leads:k.leads,status:k.status,notes:k.notes,ts:k.ts||Date.now()});
 const stToDb  = s=>({id:s.id,title:s.title,market:s.market,demand:s.demand,platform:s.platform,start_date:s.startDate,end_date:s.endDate,why:s.why,persona:s.persona,mindset:s.mindset,body:s.body,copy:s.copy,lp:s.lp,funnel:s.funnel,status:s.status,ts:s.ts||Date.now()});
-const audToDb = a=>({id:a.id,name:a.name,segment:a.segment,age_range:a.ageRange,cpm_range:a.cpmRange,geo:a.geo,channels:a.channels,hook:a.hook,status:a.status,kpi:a.kpi,notes:a.notes});
+const audToDb = a=>({id:a.id,name:a.name,segment:a.segment,age_range:a.ageRange,cpm_range:a.cpmRange,geo:a.geo,channels:a.channels,hook:a.hook,status:a.status,kpi:{...((a.kpi||{})),why:a.why,useCases:a.useCases,market:a.market,signals:a.signals,priority:a.priority},notes:a.notes});
 const todoToDb= (t,pid)=>({id:t.id,project_id:pid||t.project||'pn',title:t.title,description:t.desc||'',status:t.status,category:t.cat||'other',start_date:t.startDate||null,due_date:t.dueDate||null,assignee:t.assignee||'team',ts:t.ts||Date.now()});
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
@@ -1512,70 +1551,139 @@ function saveNote(){ const id=document.getElementById('note-kid').value; const k
 
 // ─── T-03: AUDIENCE BOARD (Mindcast) ─────────────────────────────────────────
 const MC_AUDIENCES_DEFAULT=[
-  {id:'aud01',name:'Wealth-Building Millennials',segment:'Finance',ageRange:'25–40',cpmRange:'$15–50',geo:'US/CA',channels:['TikTok','IG Reels'],status:'testing',hook:'"I want to understand money while I commute."',kpi:{cpd:1.88,cpau:4.20,w4ret:11.27,paywall:null},notes:[]},
-  {id:'aud02',name:'Ambitious Self-Improvers',segment:'Self-Improvement',ageRange:'22–35',cpmRange:'$8–15',geo:'US/CA',channels:['LinkedIn','IG Reels'],status:'testing',hook:'"I want to think better and faster."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
-  {id:'aud03',name:'Longevity & Health Optimizers',segment:'Health',ageRange:'30–50',cpmRange:'$8–18',geo:'US/CA',channels:['YT Shorts','IG Reels'],status:'planned',hook:'"I want to optimize my body and mind."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
-  {id:'aud04',name:'History & Geopolitics Enthusiasts',segment:'Knowledge',ageRange:'28–55',cpmRange:'$5–12',geo:'US/CA',channels:['Reddit','YT Shorts'],status:'planned',hook:'"I want real analysis, not headlines."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
-  {id:'aud05',name:'Entrepreneurship & Startup Builders',segment:'Business',ageRange:'25–45',cpmRange:'$12–30',geo:'US/CA',channels:['LinkedIn','TikTok'],status:'planned',hook:'"I want to learn from founders who shipped."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
-  {id:'aud06',name:'Spiritually Curious & Philosophy Seekers',segment:'Philosophy',ageRange:'22–40',cpmRange:'$6–14',geo:'US/CA',channels:['TikTok','Reddit'],status:'planned',hook:'"I want to explore big questions on my commute."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]}
+  {id:'aud01',name:'Wealth-Building Millennials',segment:'Finance / Investing',ageRange:'25–40',cpmRange:'$15–$50',geo:'US/CA',channels:['TikTok','IG Reels','YT Shorts'],status:'testing',hook:'"I want to understand money while I commute."',priority:1,
+   why:'Personal finance and investing content commands the highest advertiser CPM on YouTube ($15–$50) because each acquired user is worth $500–$2,000+ in lifetime value to financial services companies. This audience already pays for tools (Robinhood, Betterment, premium newsletters) and listens habitually during commutes. The content requirement — historical figures discussing economic philosophy, financial decision-making, entrepreneurial mindset — is perfectly suited to Mindcast\'s static knowledge base.',
+   useCases:'Finance fundamentals through historical dialogue: Adam Smith and Keynes debate whether you should pay off your mortgage early or invest the difference.\n\nEntrepreneurial decision-making series: Rockefeller and Carnegie debate the ethics of ruthless growth in today\'s startup world.',
+   market:'TAM: ~85M adults in US/CA actively engaging with personal finance content ($85B+)\nSAM: ~18M podcast listeners in finance/investing vertical ($12B)\nSOM: ~180k–500k paying users by 2030 ($200M ARR)',
+   signals:['Very high willingness to pay','Highest advertiser CPM','Habitual daily listeners','Static content — achievable with current tech','Competitive niche — quality bar is high'],
+   kpi:{cpd:1.88,cpau:4.20,w4ret:11.27,paywall:null},notes:[]},
+  {id:'aud02',name:'Ambitious Self-Improvers',segment:'Self-improvement / Productivity',ageRange:'22–38',cpmRange:'$8–$15',geo:'US/CA',channels:['LinkedIn','IG Reels','YT Shorts'],status:'testing',hook:'"I want to think better, lead better, live better."',priority:2,
+   why:'Self-improvement is one of the largest and most habitual digital content markets globally. Users in this segment already pay for Blinkist ($80/yr), MasterClass ($180/yr), and productivity courses — making them among the highest converters to subscription models in any consumer app category. Philosophy, stoicism, leadership, psychology are static domains where AI knowledge bases perform reliably.',
+   useCases:'Philosophical frameworks for modern challenges: Marcus Aurelius and Seneca debate how to handle a difficult boss — framed as practical advice.\n\nLeadership decoded through historical decisions: How Lincoln managed a divided cabinet — and what it teaches about leading people who disagree with you.',
+   market:'TAM: ~142M adults in US/CA interested in self-improvement content ($77B)\nSAM: ~40M who consume self-improvement audio/podcasts regularly ($12B)\nSOM: ~200k–400k users reachable by 2030 ($80M ARR)',
+   signals:['High willingness to pay','Strong morning/commute habit formation','Proven subscription behavior (Blinkist, MasterClass)','Static knowledge — ideal for current AI stack','High competition (Blinkist, Headway, MasterClass)'],
+   kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud03',name:'Longevity & Health Optimizers',segment:'Health / Longevity',ageRange:'28–50',cpmRange:'$8–$18',geo:'US/CA',channels:['YT Shorts','IG Reels','Spotify'],status:'planned',hook:'"I want to live longer, feel better, understand my body."',priority:4,
+   why:'Longevity and health optimization is one of the fastest-growing podcast niches in the US. Advertisers in supplements, biotech, and wellness brands pay premium CPMs. The content is inherently static — historical figures in medicine, philosophy, and science discussing principles of living well. Strong crossover with self-improvement segment creates a natural content bridge.',
+   useCases:'Ancient wisdom meets modern longevity science: Hippocrates and Galen debate whether sleep or nutrition matters more — with modern context woven in.\n\nMindset of longevity thinkers: Michelangelo (worked actively until 88) discusses how he thought about energy, rest, and obsession.',
+   market:'TAM: ~90M health-conscious adults actively consuming wellness content in US/CA ($60B+)\nSAM: ~22M longevity/health podcast listeners ($8B)\nSOM: ~150k–350k users reachable by 2030 ($60M ARR)',
+   signals:['Fast-growing niche (19x channel growth YoY)','Strong supplement/wellness advertiser demand','High crossover with self-improvement audience','Static content — achievable now','Requires careful sourcing — health misinformation risk'],
+   kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud04',name:'History, Geopolitics & Current Affairs',segment:'Entertainment / History / News',ageRange:'18–40',cpmRange:'$6–$14',geo:'US/CA',channels:['TikTok','YT Shorts','Reddit','X/Twitter'],status:'planned',hook:'"I want to understand the world — past and present — through voices that make it interesting."',priority:6,
+   why:'Expanded from v1 "History Lovers." The unexpected angle and contrast between the voice and the topic is the entertainment, not factual authority. Broadened to include geopolitics and current affairs: trade wars, elections, international conflicts become far more engaging filtered through historical figures who faced similar dynamics. Churchill on European security, Bismarck on great-power competition, Sun Tzu dissecting a corporate acquisition.',
+   useCases:'Historical figures react to modern situations: Julius Caesar reacts to Uber Eats delivery drivers — draws parallels to how Rome managed supply chains. Bismarck analyzes EU internal tensions through 19th-century alliance politics.\n\nGeopolitical events through historical lens: Churchill and De Gaulle discuss the current Western alliance. Machiavelli analyzes a recent election campaign.\n\nUnexpected advice: Cleopatra\'s guide to personal branding. Napoleon\'s tips for managing a remote team.',
+   market:'TAM: ~200M podcast and news-audio listeners in US/CA across history, geopolitics, current affairs ($130B+)\nSAM: ~35M engaged listeners at the history/geopolitics/current affairs crossover ($14B)\nSOM: ~250k–600k users reachable by 2030 ($65M ARR)',
+   signals:['Very high virality potential (TikTok/Reels/X clips)','Larger TAM than pure history — geopolitics adds significant reach','Strong top-of-funnel acquisition engine for all verticals','Current affairs angle increases return frequency','Lower CPM than finance/self-improvement','Medium willingness to pay — primarily a free-tier and ad-revenue driver','Requires strict editorial moderation framework'],
+   kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud05',name:'Entrepreneurship & Startup Builders',segment:'Entrepreneurship / Business',ageRange:'23–40',cpmRange:'$10–$16',geo:'US/CA',channels:['LinkedIn','Spotify','YT Shorts','X/Twitter'],status:'planned',hook:'"I\'m building something. I want to learn from people who built empires."',priority:3,
+   why:'Entrepreneurs and early-stage founders are among the most loyal and highest-spending podcast audiences. They listen during commutes, gym sessions, and late-night work sessions. Strong CPM ($10–$16) because software tools, productivity apps, and business education advertisers compete heavily to reach founders. Content is static and deep: historical business leaders, their decisions, their mistakes.',
+   useCases:'Strategic playbooks from empire builders: Andrew Carnegie walks through how he thought about vertical integration — applied to modern SaaS businesses.\n\nFailure autopsies with historical CEOs: Napoleon\'s post-mortem on Waterloo as a masterclass in overconfidence — framed for founders who have raised too much and scaled too fast.',
+   market:'TAM: ~55M entrepreneurs, freelancers, and startup employees in US/CA ($40B+)\nSAM: ~15M who actively consume business/entrepreneurship podcasts ($8B)\nSOM: ~120k–300k paying users by 2030 ($60M ARR)',
+   signals:['High willingness to pay','Strong tool/software advertiser demand','Excellent crossover with finance audience','Static content — fits current AI stack well','High-quality bar required — demanding audience'],
+   kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud06',name:'Spiritually Curious & Philosophy Seekers',segment:'Mindfulness / Philosophy',ageRange:'25–45',cpmRange:'$7–$15',geo:'US/CA',channels:['TikTok','IG Reels','Spotify','Apple Podcasts'],status:'planned',hook:'"I want to slow down and think about what actually matters."',priority:5,
+   why:'Philosophy and spirituality content is consumed habitually — during morning routines, before sleep, in reflective moments. Mindfulness app users already pay $60–$80/year for Calm and Headspace. Stoicism has seen massive mainstream interest. This audience is the natural evolution of the self-improvement segment into deeper territory — slower, more reflective, less "productivity-hack." It should feel like sitting with a wise voice, not attending a seminar.',
+   useCases:'Stoic reflections for the modern mind: Marcus Aurelius on how to deal with a day when nothing went as planned — 6 minutes, reflective tone, ends with a practice.\n\nGreat philosophical debates made accessible: Nietzsche and the Buddha discuss whether suffering is necessary for a meaningful life. No resolution — just perspective.',
+   market:'TAM: ~102M mindfulness/philosophy-interested adults in US/CA ($50B+)\nSAM: ~36M who actively consume philosophy/spirituality audio ($7B)\nSOM: ~180k–360k users reachable by 2030 ($55M ARR)',
+   signals:['Proven subscription behavior (Calm, Headspace)','Very high retention — habitual daily listening','Strong crossover with self-improvement','Ideal for pre-built series format','Requires careful handling of religious/ideological content'],
+   kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]}
 ];
 
-function loadAudiences(){ const s=localStorage.getItem('mp_audiences_mc'); return s?JSON.parse(s):JSON.parse(JSON.stringify(MC_AUDIENCES_DEFAULT)); }
+function loadAudiences(){
+  const s=localStorage.getItem('mp_audiences_mc');
+  if(!s) return JSON.parse(JSON.stringify(MC_AUDIENCES_DEFAULT));
+  const saved=JSON.parse(s);
+  // v2 migration: if saved data lacks 'why' field (v1), merge with defaults
+  const hasV2=saved.some(a=>a.why);
+  if(!hasV2){
+    const merged=MC_AUDIENCES_DEFAULT.map(def=>{
+      const old=saved.find(a=>a.id===def.id);
+      return old?{...def,...old,why:def.why,useCases:def.useCases,market:def.market,signals:def.signals,priority:def.priority,hook:def.hook,segment:def.segment,ageRange:def.ageRange,cpmRange:def.cpmRange,channels:def.channels}:def;
+    });
+    // Add any user-created audiences not in defaults
+    saved.filter(a=>!MC_AUDIENCES_DEFAULT.find(d=>d.id===a.id)).forEach(a=>merged.push(a));
+    localStorage.setItem('mp_audiences_mc',JSON.stringify(merged));
+    saveAudiences(merged); // push v2 data to Supabase
+    return merged;
+  }
+  return saved;
+}
 function saveAudiences(data){
   localStorage.setItem('mp_audiences_mc',JSON.stringify(data));
   sbRun(()=>sb.from('audiences').upsert(data.map(audToDb)));
 }
 
+let audFilter='all';
+function filterAud(f,el){ audFilter=f; document.querySelectorAll('#aud-tabs .tab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); renderAudienceBoard(); }
+
 function renderAudienceBoard(){
-  const audiences=loadAudiences();
+  let audiences=loadAudiences();
   const testing=audiences.filter(a=>a.status==='testing').length;
   const validated=audiences.filter(a=>a.status==='validated').length;
   const failed=audiences.filter(a=>a.status==='failed').length;
   const planned=audiences.filter(a=>a.status==='planned').length;
   const ph=document.querySelector('#page-strat .ph');
-  if(ph){
-    ph.innerHTML=`<div class="ph-title">Audience Board</div><div class="ph-sub">Validate or kill audience segments — Mindcast AI</div>`;
+  if(ph) ph.innerHTML=`<div class="ph-title">Audience Board</div><div class="ph-sub">Validate or kill audience segments — Mindcast AI</div>`;
+
+  // Show audience-specific add button and tabs (hide strategy ones)
+  const stratBtn=document.querySelector('#page-strat .btn-pb');
+  if(stratBtn) stratBtn.style.display='none';
+  const stratTabs=document.getElementById('strat-tabs');
+  if(stratTabs) stratTabs.style.display='none';
+
+  // Inject audience add button + tabs if not present
+  let audCtrl=document.getElementById('aud-board-ctrl');
+  if(!audCtrl){
+    audCtrl=document.createElement('div');
+    audCtrl.id='aud-board-ctrl';
+    const sgrid=document.getElementById('sgrid');
+    sgrid.parentNode.insertBefore(audCtrl,sgrid);
   }
-  // Replace the strategy board CTA with audience stats
-  const existingBtn=document.querySelector('#page-strat .btn-pb');
-  if(existingBtn) existingBtn.style.display='none';
-  const tabs=document.getElementById('strat-tabs');
-  if(tabs) tabs.style.display='none';
+  audCtrl.innerHTML=`
+    <button class="btn-pb" onclick="openAudModal()">+ Add new audience</button>
+    <div class="tabs" id="aud-tabs">
+      <div class="tab ${audFilter==='all'?'active':''}" onclick="filterAud('all',this)">All <span style="font-size:11px;color:var(--g400)">${audiences.length}</span></div>
+      <div class="tab ${audFilter==='testing'?'active':''}" onclick="filterAud('testing',this)">Testing <span style="font-size:11px;color:var(--blue)">${testing}</span></div>
+      <div class="tab ${audFilter==='validated'?'active':''}" onclick="filterAud('validated',this)">Validated <span style="font-size:11px;color:var(--green)">${validated}</span></div>
+      <div class="tab ${audFilter==='failed'?'active':''}" onclick="filterAud('failed',this)">Failed <span style="font-size:11px;color:var(--red)">${failed}</span></div>
+      <div class="tab ${audFilter==='planned'?'active':''}" onclick="filterAud('planned',this)">Planned <span style="font-size:11px;color:var(--g400)">${planned}</span></div>
+    </div>`;
+
+  if(audFilter!=='all') audiences=audiences.filter(a=>a.status===audFilter);
   const grid=document.getElementById('sgrid');
-  // Stats bar
-  const statsHtml=`<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Testing</div><div class="mc-val" style="color:var(--blue)">${testing}</div></div>
-    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Validated</div><div class="mc-val" style="color:var(--green)">${validated}</div></div>
-    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Failed</div><div class="mc-val" style="color:var(--red)">${failed}</div></div>
-    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Planned</div><div class="mc-val" style="color:var(--g400)">${planned}</div></div>
-  </div>`;
-  grid.innerHTML=statsHtml+audiences.map(a=>audienceCard(a)).join('');
+  if(!audiences.length){ grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--g400)">No audiences${audFilter!=='all'?' with status "'+audFilter+'"':''}</div>`; return; }
+  grid.innerHTML=audiences.map(a=>audienceCard(a)).join('');
 }
 
 function audienceCard(a){
   const kpiVal=(v,unit)=>v!=null?`${v}${unit||''}`:'<span style="color:var(--g300)">—</span>';
   const channelBadges=a.channels.map(ch=>`<span class="badge b-neg">${ch}</span>`).join('');
   const notesCount=a.notes&&a.notes.length?`<span class="badge b-isp">${a.notes.length} note${a.notes.length>1?'s':''}</span>`:'';
-  return `<div class="sc ${a.status}" onclick="event.stopPropagation()">
+  const priorityBadge=a.priority?`<span class="badge b-plan">#${a.priority} priority</span>`:'';
+  return `<div class="sc ${a.status}" onclick="openAudDet('${a.id}')">
     <div class="sc-hd">
       <div><div class="sc-title">${a.name}</div><div class="sc-mkt">${a.segment} · ${a.ageRange} · ${a.geo}</div></div>
       <span class="badge ${a.status==='validated'?'b-win':a.status==='failed'?'b-lose':a.status==='testing'?'b-test':'b-neg'}">${a.status}</span>
     </div>
-    <div class="sc-tags">${channelBadges}<span class="badge b-plan">CPM ${a.cpmRange}</span>${notesCount}</div>
+    <div class="sc-tags">${channelBadges}<span class="badge b-plan">CPM ${a.cpmRange}</span>${priorityBadge}${notesCount}</div>
     <div class="sc-copy">${a.hook}</div>
     <div class="sc-kpi">
-      <div class="sc-kpi-item"><div class="sc-kpi-label">CPD</div><div class="sc-kpi-val">${kpiVal(a.kpi.cpd,'$')}</div></div>
-      <div class="sc-kpi-item"><div class="sc-kpi-label">CPAU</div><div class="sc-kpi-val">${kpiVal(a.kpi.cpau,'$')}</div></div>
-      <div class="sc-kpi-item"><div class="sc-kpi-label">W4 ret</div><div class="sc-kpi-val">${kpiVal(a.kpi.w4ret,'%')}</div></div>
-      <div class="sc-kpi-item"><div class="sc-kpi-label">Paywall</div><div class="sc-kpi-val">${kpiVal(a.kpi.paywall,'%')}</div></div>
+      <div class="sc-kpi-item"><div class="sc-kpi-label">CPD target</div><div class="sc-kpi-val" style="color:var(--accent)">&lt; $2.50</div></div>
+      <div class="sc-kpi-item"><div class="sc-kpi-label">CPAU target</div><div class="sc-kpi-val" style="color:var(--accent)">&lt; $5</div></div>
+      <div class="sc-kpi-item"><div class="sc-kpi-label">W4 ret target</div><div class="sc-kpi-val" style="color:var(--accent)">&gt; 10%</div></div>
+      <div class="sc-kpi-item"><div class="sc-kpi-label">Paywall target</div><div class="sc-kpi-val" style="color:var(--accent)">5–8%</div></div>
     </div>
-    <div class="sc-foot" style="margin-top:10px">
+    ${a.why?`<div class="sc-persona" style="margin-top:8px"><div class="sc-pl">Why this audience</div>${a.why.substring(0,110)}${a.why.length>110?'...':''}</div>`:''}
+    <div class="sc-foot" style="margin-top:10px" onclick="event.stopPropagation()">
       <div class="sc-btns">
         <button class="sc-btn val ${a.status==='validated'?'on':''}" onclick="setAudSts('${a.id}','validated')">✓ Validate</button>
         <button class="sc-btn fail ${a.status==='failed'?'on':''}" onclick="setAudSts('${a.id}','failed')">✗ Kill</button>
         <button class="sc-btn" onclick="setAudSts('${a.id}','testing')">Reset</button>
       </div>
-      <button class="sc-btn" onclick="openAudNotes('${a.id}')">Notes${a.notes&&a.notes.length?' ('+a.notes.length+')':''}</button>
+      <div style="display:flex;gap:6px">
+        <button class="sc-btn" onclick="editAud('${a.id}')">Edit</button>
+        <button class="sc-btn" style="color:var(--red)" onclick="delAud('${a.id}')">Del</button>
+      </div>
     </div>
   </div>`;
 }
@@ -1584,7 +1692,114 @@ function setAudSts(id,status){
   const auds=loadAudiences();
   const a=auds.find(a=>a.id===id); if(!a) return;
   a.status=status; saveAudiences(auds);
-  toast(`Audience ${status}`); renderStrats(sFilter); updateBadges();
+  toast(`Audience ${status}`); renderAudienceBoard(); updateBadges();
+}
+
+function openAudDet(id){
+  const auds=loadAudiences(); const a=auds.find(a=>a.id===id); if(!a) return;
+  const channelBadges=a.channels.map(ch=>`<span class="badge b-neg">${ch}</span>`).join('');
+  const signalsList=(a.signals||[]).map(s=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="color:var(--accent);font-size:14px">●</span><span style="font-size:13px;color:var(--g600)">${s}</span></div>`).join('');
+  const notesHtml=(a.notes||[]).map(n=>`<div style="padding:8px;background:var(--g50);border-radius:var(--r);margin-bottom:6px;font-size:12px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><strong>${n.author||'Team'}</strong><span style="color:var(--g400)">${new Date(n.ts).toLocaleDateString('it-IT')}</span></div><div>${n.text}</div></div>`).join('');
+  document.getElementById('aud-det-content').innerHTML=`
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:19px;font-weight:700;color:var(--dark);margin-bottom:6px">${a.name}</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="badge b-plan">${a.segment}</span>
+          <span class="badge b-neg">Age ${a.ageRange}</span>
+          <span class="badge b-neg">CPM ${a.cpmRange}</span>
+          <span class="badge b-neg">${a.geo}</span>
+          ${a.priority?`<span class="badge b-plan">#${a.priority} priority</span>`:''}
+          <span class="badge ${a.status==='validated'?'b-win':a.status==='failed'?'b-lose':a.status==='testing'?'b-test':'b-neg'}">${a.status}</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:14px;background:var(--g50);border-left:3px solid var(--accent);padding:10px 12px;border-radius:4px;font-size:14px;font-style:italic;color:var(--g700)">${a.hook}</div>
+    <div style="margin-bottom:10px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px">Channels</div><div style="display:flex;gap:6px;flex-wrap:wrap">${channelBadges}</div></div>
+    ${a.why?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Why this audience</div><div style="font-size:13px;color:var(--g600);line-height:1.65;background:var(--blue-l);padding:10px 12px;border-radius:var(--r)">${a.why}</div></div>`:''}
+    ${a.useCases?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Primary use cases</div><div style="font-size:13px;color:var(--g600);line-height:1.65;background:var(--accent-l);padding:10px 12px;border-radius:var(--r);white-space:pre-line">${a.useCases}</div></div>`:''}
+    ${a.market?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Market size</div><div style="font-size:13px;color:var(--g600);line-height:1.8;background:var(--amber-l);padding:10px 12px;border-radius:var(--r);white-space:pre-line">${a.market}</div></div>`:''}
+    ${signalsList?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:8px">Signals</div>${signalsList}</div>`:''}
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:8px">KPI Targets</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <div style="background:var(--g50);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:11px;color:var(--g400);margin-bottom:4px">CPD target</div><div style="font-size:16px;font-weight:700;color:var(--accent)">&lt; $2.50</div></div>
+        <div style="background:var(--g50);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:11px;color:var(--g400);margin-bottom:4px">CPAU target</div><div style="font-size:16px;font-weight:700;color:var(--accent)">&lt; $5</div></div>
+        <div style="background:var(--g50);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:11px;color:var(--g400);margin-bottom:4px">W4 ret target</div><div style="font-size:16px;font-weight:700;color:var(--accent)">&gt; 10%</div></div>
+        <div style="background:var(--g50);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:11px;color:var(--g400);margin-bottom:4px">Paywall target</div><div style="font-size:16px;font-weight:700;color:var(--accent)">5–8%</div></div>
+      </div>
+      <div style="font-size:11px;color:var(--g400);margin-top:6px;padding:0 2px">Benchmark from micro-test: CPD $1.88 · W4 retention 11.27%</div>
+    </div>
+    ${notesHtml?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:8px">Notes (${a.notes.length})</div>${notesHtml}</div>`:''}`;
+  document.getElementById('aud-det-edit-btn').onclick=()=>{ closeModal('modal-aud-det'); editAud(id); };
+  document.getElementById('aud-det-notes-btn').onclick=()=>{ closeModal('modal-aud-det'); openAudNotes(id); };
+  openModal('modal-aud-det');
+}
+
+function openAudModal(){
+  document.getElementById('aud-mtitle').textContent='Add audience';
+  document.getElementById('aud-eid').value='';
+  ['aud-name','aud-segment','aud-age','aud-cpm','aud-geo','aud-channels','aud-hook','aud-why','aud-usecases','aud-market','aud-signals'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('aud-sts').value='testing';
+  document.getElementById('aud-priority').value='';
+  openModal('modal-aud');
+}
+
+function editAud(id){
+  const auds=loadAudiences(); const a=auds.find(a=>a.id===id); if(!a) return;
+  document.getElementById('aud-mtitle').textContent='Edit audience';
+  document.getElementById('aud-eid').value=id;
+  document.getElementById('aud-name').value=a.name||'';
+  document.getElementById('aud-segment').value=a.segment||'';
+  document.getElementById('aud-age').value=a.ageRange||'';
+  document.getElementById('aud-cpm').value=a.cpmRange||'';
+  document.getElementById('aud-geo').value=a.geo||'';
+  document.getElementById('aud-channels').value=(a.channels||[]).join(', ');
+  document.getElementById('aud-hook').value=a.hook||'';
+  document.getElementById('aud-why').value=a.why||'';
+  document.getElementById('aud-usecases').value=a.useCases||'';
+  document.getElementById('aud-market').value=a.market||'';
+  document.getElementById('aud-signals').value=(a.signals||[]).join('\n');
+  document.getElementById('aud-sts').value=a.status||'testing';
+  document.getElementById('aud-priority').value=a.priority||'';
+  openModal('modal-aud');
+}
+
+function saveAud(){
+  const id=document.getElementById('aud-eid').value;
+  const name=document.getElementById('aud-name').value.trim();
+  if(!name){ toast('Name required'); return; }
+  const channelsRaw=document.getElementById('aud-channels').value;
+  const channels=channelsRaw.split(',').map(s=>s.trim()).filter(Boolean);
+  const signalsRaw=document.getElementById('aud-signals').value;
+  const signals=signalsRaw.split('\n').map(s=>s.trim()).filter(Boolean);
+  const d={
+    name, segment:document.getElementById('aud-segment').value.trim(),
+    ageRange:document.getElementById('aud-age').value.trim(),
+    cpmRange:document.getElementById('aud-cpm').value.trim(),
+    geo:document.getElementById('aud-geo').value.trim()||'US/CA',
+    channels, hook:document.getElementById('aud-hook').value.trim(),
+    why:document.getElementById('aud-why').value.trim(),
+    useCases:document.getElementById('aud-usecases').value.trim(),
+    market:document.getElementById('aud-market').value.trim(),
+    signals, status:document.getElementById('aud-sts').value,
+    priority:parseInt(document.getElementById('aud-priority').value)||null
+  };
+  const auds=loadAudiences();
+  if(id){ const i=auds.findIndex(a=>a.id===id); if(i>=0) auds[i]={...auds[i],...d}; else auds.unshift({...d,id,kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]}); }
+  else{ d.id='aud'+Date.now(); d.kpi={cpd:null,cpau:null,w4ret:null,paywall:null}; d.notes=[]; auds.push(d); }
+  saveAudiences(auds);
+  closeModal('modal-aud');
+  renderAudienceBoard(); updateBadges();
+  toast(id?'Updated':'Added');
+}
+
+function delAud(id){
+  if(!confirm('Delete this audience?')) return;
+  const auds=loadAudiences();
+  saveAudiences(auds.filter(a=>a.id!==id));
+  sbRun(()=>sb.from('audiences').delete().eq('id',id));
+  renderAudienceBoard(); updateBadges(); toast('Deleted');
 }
 
 let _audNotesId=null;
@@ -1623,6 +1838,8 @@ function restoreStratBoard(){
   if(btn) btn.style.display='';
   const tabs=document.getElementById('strat-tabs');
   if(tabs) tabs.style.display='';
+  const audCtrl=document.getElementById('aud-board-ctrl');
+  if(audCtrl) audCtrl.remove();
 }
 
 // ─── T-04: KPI TABLE ──────────────────────────────────────────────────────────

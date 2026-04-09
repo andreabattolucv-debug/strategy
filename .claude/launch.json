@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "strategy-dashboard",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", "-s", ".", "-p", "3456", "--no-clipboard"],
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "3456"],
       "port": 3456
     }
   ]
