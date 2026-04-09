@@ -275,7 +275,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="page active" id="page-overview">
         <div class="ph"><div class="ph-title">Overview</div><div class="ph-sub">Strategy status at a glance — startup validation mode</div></div>
         <div class="card"><div class="card-hd"><div class="card-title">Active platforms</div></div>
-          <div class="pp">
+          <div class="pp" id="ov-platforms">
             <div class="pill pill-g"><div class="pill-dot"></div>Google Ads</div>
             <div class="pill pill-m"><div class="pill-dot"></div>Meta Ads</div>
             <div class="pill pill-p"><div class="pill-dot"></div>Pinterest</div>
@@ -716,6 +716,12 @@ function showPage(id,el){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(el) el.classList.add('active');
+  // Trigger render on navigation
+  if(id==='strat') renderStrats(sFilter);
+  else if(id==='kpi') renderKpiTable();
+  else if(id==='retention') renderRetentionTable();
+  else if(id==='funnel') renderFunnelPage();
+  else if(id==='overview') renderOverview();
 }
 function filterMkt(m,el){ showPage('kw',el); document.getElementById('kw-mkt').value=m; renderKw(); }
 
@@ -741,6 +747,8 @@ function updateBadges(){
 
 // OVERVIEW
 function renderOverview(){
+  if(activeProject.boardType==='audience'){ renderOverviewMC(); return; }
+  // PN overview
   const mkts=[{id:'IT',name:'Italy · Sicily',flag:'🇮🇹'},{id:'ME',name:'Montenegro',flag:'🇲🇪'},{id:'LV',name:'Latvia · Riga',flag:'🇱🇻'}];
   document.getElementById('country-grid').innerHTML=mkts.map(m=>{
     const active=S.strategies.some(s=>s.market===m.id&&s.status!=='failed');
@@ -755,6 +763,38 @@ function renderOverview(){
       <span class="badge ${stsBadge(s.status)}">${s.status}</span>
     </div>`).join('')||'<div style="text-align:center;padding:24px;color:var(--g400)">No strategies yet</div>';
   document.getElementById('alist').innerHTML=S.activity.slice(0,6).map(a=>`<div class="aitem"><div class="adot" style="background:${a.color}"></div><div class="atext">${a.text}</div><div class="atime">${ago(a.ts)}</div></div>`).join('')||'<div style="text-align:center;padding:20px;color:var(--g400);font-size:13px">No activity yet</div>';
+}
+
+function renderOverviewMC(){
+  const auds=loadAudiences();
+  const testing=auds.filter(a=>a.status==='testing').length;
+  const validated=auds.filter(a=>a.status==='validated').length;
+  const failed=auds.filter(a=>a.status==='failed').length;
+  const planned=auds.filter(a=>a.status==='planned').length;
+  // Geo: US/CA
+  document.getElementById('country-grid').innerHTML=activeProject.geo.map(g=>
+    `<div class="cc"><div class="cflag">${g.flag}</div><div class="cname">${g.label}</div><div class="cstat"><span class="cdot"></span>Active</div></div>`
+  ).join('');
+  document.getElementById('strat-stats').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="mc" style="margin:0"><div class="mc-lbl">Testing</div><div class="mc-val" style="color:var(--blue)">${testing}</div></div>
+      <div class="mc" style="margin:0"><div class="mc-lbl">Validated</div><div class="mc-val" style="color:var(--green)">${validated}</div></div>
+      <div class="mc" style="margin:0"><div class="mc-lbl">Failed</div><div class="mc-val" style="color:var(--red)">${failed}</div></div>
+      <div class="mc" style="margin:0"><div class="mc-lbl">Planned</div><div class="mc-val" style="color:var(--g400)">${planned}</div></div>
+    </div>`;
+  // Platforms pill (channels)
+  document.getElementById('ov-platforms').innerHTML=activeProject.channels.map(ch=>
+    `<div class="pill" style="background:var(--accent-l);border-color:var(--accent);color:var(--accent)"><div class="pill-dot" style="background:var(--accent)"></div>${ch}</div>`
+  ).join('');
+  // Audience list
+  document.getElementById('ov-strats').innerHTML=auds.map(a=>`
+    <div class="ov-row ${a.status}" onclick="showPage('strat',document.querySelector('[onclick*=strat]'))">
+      <div style="flex:1"><div class="ov-name">${a.name}</div>
+        <div class="ov-meta">${a.segment} · ${a.channels.join(' · ')} · CPM ${a.cpmRange}</div>
+      </div>
+      <span class="badge ${a.status==='validated'?'b-win':a.status==='failed'?'b-lose':a.status==='testing'?'b-test':'b-neg'}">${a.status}</span>
+    </div>`).join('');
+  document.getElementById('alist').innerHTML='<div style="text-align:center;padding:20px;color:var(--g400);font-size:13px">Activity log coming soon</div>';
 }
 
 // HELPERS
