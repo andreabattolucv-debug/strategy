@@ -239,17 +239,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ps-tab.active{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.sgrid{grid-template-columns:1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <div id="login-screen">
   <div class="lbox">
-    <div class="llogo">PN</div>
-    <div class="ltitle">Ads Strategy Dashboard</div>
-    <div class="lsub">Pink Notebook — Internal Tool</div>
+    <div class="llogo">SD</div>
+    <div class="ltitle">Strategy Dashboard</div>
+    <div class="lsub">Pink Notebook &amp; Mindcast AI — sign in to continue</div>
+    <input class="linput" type="email" id="em-input" placeholder="Email" autocomplete="email">
     <input class="linput" type="password" id="pw-input" placeholder="Password" autocomplete="current-password">
     <button class="lbtn" onclick="doLogin()">Access Dashboard</button>
-    <div class="lerr" id="lerr">Incorrect password</div>
+    <div class="lerr" id="lerr">Email o password non validi</div>
   </div>
 </div>
 
@@ -699,7 +701,7 @@ function renderFunnelPage(){
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
-const PWD='pinknotebook2025', SK='pn_dash_v4';
+const SK='pn_dash_v4'; // localStorage key for PN data cache
 let S={keywords:[],strategies:[],negatives:{},activity:[],todos:[]};
 
 const DD={
@@ -738,27 +740,172 @@ const DD={
   ]
 };
 
-// AUTH
-function doLogin(){
-  if(document.getElementById('pw-input').value===PWD){
-    localStorage.setItem('pn_auth','1');
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-    document.getElementById('h-user').textContent='Pink Notebook Team';
-    init();
-  } else { document.getElementById('lerr').style.display='block'; document.getElementById('pw-input').value=''; }
-}
-function doLogout(){ localStorage.removeItem('pn_auth'); location.reload(); }
-document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+// ── SUPABASE CONFIG ───────────────────────────────────────────────────────────
+// Fill these in after creating your Supabase project (Settings → API)
+const SB_URL = 'SUPABASE_URL_HERE';
+const SB_KEY = 'SUPABASE_ANON_KEY_HERE';
+let sb = null;
 
-// INIT
-function init(){
+function initSupabase(){
+  if(typeof supabase === 'undefined' || SB_URL === 'SUPABASE_URL_HERE'){ return; }
+  sb = supabase.createClient(SB_URL, SB_KEY, { auth:{ persistSession:true, autoRefreshToken:true } });
+}
+
+// ── DB MAPPERS ────────────────────────────────────────────────────────────────
+const dbToKw  = r=>({id:r.id,text:r.text,market:r.market,funnel:r.funnel,cpc:r.cpc,match:r.match_type,clicks:r.clicks,leads:r.leads,status:r.status,notes:r.notes,ts:r.ts});
+const dbToSt  = r=>({id:r.id,title:r.title,market:r.market,demand:r.demand,platform:r.platform,startDate:r.start_date,endDate:r.end_date,why:r.why,persona:r.persona,mindset:r.mindset,body:r.body,copy:r.copy,lp:r.lp,funnel:r.funnel,status:r.status,ts:r.ts});
+const dbToAud = r=>({id:r.id,name:r.name,segment:r.segment,ageRange:r.age_range,cpmRange:r.cpm_range,geo:r.geo,channels:r.channels||[],hook:r.hook,status:r.status,kpi:r.kpi||{},notes:r.notes||[]});
+const dbToTodo= r=>({id:r.id,title:r.title,desc:r.description,status:r.status,cat:r.category,startDate:r.start_date,dueDate:r.due_date,assignee:r.assignee,project:r.project_id,ts:r.ts});
+const kwToDb  = k=>({id:k.id,text:k.text,market:k.market,funnel:k.funnel,cpc:k.cpc,match_type:k.match,clicks:k.clicks,leads:k.leads,status:k.status,notes:k.notes,ts:k.ts||Date.now()});
+const stToDb  = s=>({id:s.id,title:s.title,market:s.market,demand:s.demand,platform:s.platform,start_date:s.startDate,end_date:s.endDate,why:s.why,persona:s.persona,mindset:s.mindset,body:s.body,copy:s.copy,lp:s.lp,funnel:s.funnel,status:s.status,ts:s.ts||Date.now()});
+const audToDb = a=>({id:a.id,name:a.name,segment:a.segment,age_range:a.ageRange,cpm_range:a.cpmRange,geo:a.geo,channels:a.channels,hook:a.hook,status:a.status,kpi:a.kpi,notes:a.notes});
+const todoToDb= (t,pid)=>({id:t.id,project_id:pid||t.project||'pn',title:t.title,description:t.desc||'',status:t.status,category:t.cat||'other',start_date:t.startDate||null,due_date:t.dueDate||null,assignee:t.assignee||'team',ts:t.ts||Date.now()});
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+async function doLogin(){
+  const email=document.getElementById('em-input').value.trim();
+  const pwd=document.getElementById('pw-input').value;
+  const lerr=document.getElementById('lerr');
+  if(!email||!pwd){ lerr.style.display='block'; return; }
+  if(!sb){ lerr.textContent='Supabase non configurato'; lerr.style.display='block'; return; }
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pwd});
+  if(error){ lerr.textContent='Email o password non validi'; lerr.style.display='block'; document.getElementById('pw-input').value=''; return; }
+  onLoggedIn(data.user);
+}
+
+function onLoggedIn(user){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  const name=user.user_metadata?.name||user.email.split('@')[0];
+  document.getElementById('h-user').textContent=name;
+  init();
+}
+
+async function doLogout(){
+  if(sb) await sb.auth.signOut();
+  location.reload();
+}
+
+document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
+document.getElementById('em-input').addEventListener('keydown',e=>{ if(e.key==='Enter') document.getElementById('pw-input').focus(); });
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init(){
   const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD));
   const savedProj=localStorage.getItem('mp_active_project')||'pn';
   setActiveProject(savedProj);
-  renderAll();
+  renderAll(); // Render from local cache first (instant)
+  if(sb){
+    await loadAllFromSupabase();
+    renderAll(); // Re-render with Supabase data
+    setupRealtime();
+  }
 }
-function save(){ localStorage.setItem(SK,JSON.stringify(S)); }
+
+function save(){ localStorage.setItem(SK,JSON.stringify(S)); if(sb) sbSyncPN(); }
+
+async function sbSyncPN(){
+  try {
+    if(S.keywords.length) await sb.from('keywords').upsert(S.keywords.map(kwToDb));
+    if(S.strategies.length) await sb.from('strategies').upsert(S.strategies.map(stToDb));
+    // Negatives: delete all and re-insert to handle removals
+    await sb.from('negatives').delete().gt('id',0);
+    const negRows=[]; Object.entries(S.negatives).forEach(([cat,kws])=>kws.forEach(kw=>negRows.push({category:cat,keyword:kw})));
+    if(negRows.length) await sb.from('negatives').insert(negRows);
+  } catch(e){ console.error('Supabase sync PN:',e); }
+}
+
+// ── LOAD ALL FROM SUPABASE ────────────────────────────────────────────────────
+async function loadAllFromSupabase(){
+  try {
+    const [kwRes,stRes,negRes,audRes,todoPnRes,todoMcRes,kpiRes,retRes,fnRes]=await Promise.all([
+      sb.from('keywords').select('*'),
+      sb.from('strategies').select('*'),
+      sb.from('negatives').select('*'),
+      sb.from('audiences').select('*'),
+      sb.from('todos').select('*').eq('project_id','pn'),
+      sb.from('todos').select('*').eq('project_id','mc'),
+      sb.from('kpi_data').select('*'),
+      sb.from('retention_data').select('*'),
+      sb.from('focus_notes').select('*'),
+    ]);
+    const isEmpty=!kwRes.data?.length&&!stRes.data?.length&&!audRes.data?.length;
+    if(isEmpty){ await seedToSupabase(); return; }
+    if(kwRes.data?.length) S.keywords=kwRes.data.map(dbToKw);
+    if(stRes.data?.length) S.strategies=stRes.data.map(dbToSt);
+    if(negRes.data?.length){ S.negatives={}; negRes.data.forEach(r=>{ if(!S.negatives[r.category]) S.negatives[r.category]=[]; S.negatives[r.category].push(r.keyword); }); }
+    if(audRes.data?.length) localStorage.setItem('mp_audiences_mc',JSON.stringify(audRes.data.map(dbToAud)));
+    if(todoPnRes.data?.length) localStorage.setItem('mp_todos_pn',JSON.stringify(todoPnRes.data.map(dbToTodo)));
+    if(todoMcRes.data?.length) localStorage.setItem('mp_todos_mc',JSON.stringify(todoMcRes.data.map(dbToTodo)));
+    if(kpiRes.data?.length){
+      const kp={pn:{},mc:{}};
+      kpiRes.data.forEach(r=>{ if(!kp[r.project_id]) kp[r.project_id]={}; if(!kp[r.project_id][r.row_key]) kp[r.project_id][r.row_key]={}; kp[r.project_id][r.row_key][r.col_key]=r.value; });
+      localStorage.setItem('mp_kpi_pn',JSON.stringify(kp.pn));
+      localStorage.setItem('mp_kpi_mc',JSON.stringify(kp.mc));
+    }
+    if(retRes.data?.length){
+      const ret={}; retRes.data.forEach(r=>{ if(!ret[r.audience_id]) ret[r.audience_id]={}; ret[r.audience_id][r.week]=r.value; });
+      localStorage.setItem('mp_retention_mc',JSON.stringify(ret));
+    }
+    const fn=fnRes.data?.find(r=>r.project_id==='all');
+    if(fn?.content) localStorage.setItem('mp_focus_note',fn.content);
+    localStorage.setItem(SK,JSON.stringify(S));
+  } catch(e){ console.error('Supabase load:',e); }
+}
+
+// ── FIRST RUN SEED ────────────────────────────────────────────────────────────
+async function seedToSupabase(){
+  try {
+    if(S.keywords.length) await sb.from('keywords').upsert(S.keywords.map(kwToDb));
+    if(S.strategies.length) await sb.from('strategies').upsert(S.strategies.map(stToDb));
+    const negRows=[]; Object.entries(S.negatives).forEach(([cat,kws])=>kws.forEach(kw=>negRows.push({category:cat,keyword:kw})));
+    if(negRows.length) await sb.from('negatives').upsert(negRows,{onConflict:'category,keyword'});
+    const auds=loadAudiences(); if(auds.length) await sb.from('audiences').upsert(auds.map(audToDb));
+    const pnT=loadTodos('pn'); if(pnT.length) await sb.from('todos').upsert(pnT.map(t=>todoToDb(t,'pn')));
+    const mcT=loadTodos('mc'); if(mcT.length) await sb.from('todos').upsert(mcT.map(t=>todoToDb(t,'mc')));
+    toast('Dati sincronizzati con Supabase ✓');
+  } catch(e){ console.error('Seed error:',e); }
+}
+
+// ── REALTIME SUBSCRIPTIONS ────────────────────────────────────────────────────
+function setupRealtime(){
+  if(!sb) return;
+  sb.channel('db-sync')
+    .on('postgres_changes',{event:'*',schema:'public',table:'keywords'},p=>{
+      if(p.eventType==='DELETE') S.keywords=S.keywords.filter(x=>x.id!==p.old.id);
+      else { const k=dbToKw(p.new); const i=S.keywords.findIndex(x=>x.id===k.id); if(i>=0) S.keywords[i]=k; else S.keywords.unshift(k); }
+      localStorage.setItem(SK,JSON.stringify(S)); renderAll();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'strategies'},p=>{
+      if(p.eventType==='DELETE') S.strategies=S.strategies.filter(x=>x.id!==p.old.id);
+      else { const s=dbToSt(p.new); const i=S.strategies.findIndex(x=>x.id===s.id); if(i>=0) S.strategies[i]=s; else S.strategies.unshift(s); }
+      localStorage.setItem(SK,JSON.stringify(S)); renderAll();
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'negatives'},()=>{
+      sb.from('negatives').select('*').then(({data})=>{ if(!data) return; S.negatives={}; data.forEach(r=>{ if(!S.negatives[r.category]) S.negatives[r.category]=[]; S.negatives[r.category].push(r.keyword); }); localStorage.setItem(SK,JSON.stringify(S)); renderNegs(); updateBadges(); });
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'audiences'},()=>{
+      sb.from('audiences').select('*').then(({data})=>{ if(data) localStorage.setItem('mp_audiences_mc',JSON.stringify(data.map(dbToAud))); renderAll(); });
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'todos'},()=>{
+      Promise.all([sb.from('todos').select('*').eq('project_id','pn'),sb.from('todos').select('*').eq('project_id','mc')]).then(([pn,mc])=>{
+        if(pn.data) localStorage.setItem('mp_todos_pn',JSON.stringify(pn.data.map(dbToTodo)));
+        if(mc.data) localStorage.setItem('mp_todos_mc',JSON.stringify(mc.data.map(dbToTodo)));
+        renderAll();
+      });
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'kpi_data'},()=>{
+      sb.from('kpi_data').select('*').then(({data})=>{ if(!data) return; const kp={pn:{},mc:{}}; data.forEach(r=>{ if(!kp[r.project_id]) kp[r.project_id]={}; if(!kp[r.project_id][r.row_key]) kp[r.project_id][r.row_key]={}; kp[r.project_id][r.row_key][r.col_key]=r.value; }); localStorage.setItem('mp_kpi_pn',JSON.stringify(kp.pn)); localStorage.setItem('mp_kpi_mc',JSON.stringify(kp.mc)); renderKpiTable(); });
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'retention_data'},()=>{
+      sb.from('retention_data').select('*').then(({data})=>{ if(!data) return; const ret={}; data.forEach(r=>{ if(!ret[r.audience_id]) ret[r.audience_id]={}; ret[r.audience_id][r.week]=r.value; }); localStorage.setItem('mp_retention_mc',JSON.stringify(ret)); renderRetentionTable(); });
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'focus_notes'},p=>{
+      if(p.new?.content!=null){ localStorage.setItem('mp_focus_note',p.new.content); const el=document.getElementById('focus-note'); if(el&&document.activeElement!==el) el.value=p.new.content; }
+    })
+    .subscribe();
+}
+
 function renderAll(){ updateBadges(); renderOverview(); renderKw(); renderStrats('all'); renderNegs(); renderTodos('all'); }
 
 // NAV
@@ -809,9 +956,11 @@ function renderOverview(){
 }
 
 function saveFocusNote(){
-  localStorage.setItem('mp_focus_note', document.getElementById('focus-note').value);
+  const content=document.getElementById('focus-note').value;
+  localStorage.setItem('mp_focus_note',content);
   document.getElementById('focus-save-btn').style.display='none';
   toast('Focus salvato');
+  if(sb) sb.from('focus_notes').upsert({project_id:'all',content},{onConflict:'project_id'}).catch(e=>console.error(e));
 }
 
 // Widget 1 — Project cards
@@ -1030,7 +1179,9 @@ function delKw(id){
   const k=S.keywords.find(k=>k.id===id);
   S.keywords=S.keywords.filter(k=>k.id!==id);
   if(k) addAct(`Deleted <strong>${k.text}</strong>`,'var(--red)');
-  save(); renderAll(); toast('Keyword deleted');
+  save(); renderAll();
+  if(sb) sb.from('keywords').delete().eq('id',id).catch(e=>console.error(e));
+  toast('Keyword deleted');
 }
 
 function saveKw(){
@@ -1213,7 +1364,9 @@ function delStrat(id){
   const s=S.strategies.find(s=>s.id===id);
   S.strategies=S.strategies.filter(s=>s.id!==id);
   if(s) addAct(`Deleted strategy <strong>${s.title}</strong>`,'var(--red)');
-  save(); renderAll(); toast('Deleted');
+  save(); renderAll();
+  if(sb) sb.from('strategies').delete().eq('id',id).catch(e=>console.error(e));
+  toast('Deleted');
 }
 
 function saveStrat(){
@@ -1243,7 +1396,13 @@ function renderNegs(){
 }
 function slug(s){ return s.replace(/[^a-z0-9]/gi,'_').toLowerCase(); }
 function addNeg(cat,iid){ const inp=document.getElementById('ni-'+iid); const v=inp.value.trim().toLowerCase(); if(!v) return; if(!S.negatives[cat]) S.negatives[cat]=[]; if(!S.negatives[cat].includes(v)){ S.negatives[cat].push(v); save(); renderNegs(); toast('Added'); inp.value=''; } else toast('Already in list'); }
-function rmNeg(cat,idx){ S.negatives[cat].splice(idx,1); if(!S.negatives[cat].length) delete S.negatives[cat]; save(); renderNegs(); toast('Removed'); }
+function rmNeg(cat,idx){
+  const kw=S.negatives[cat][idx];
+  S.negatives[cat].splice(idx,1); if(!S.negatives[cat].length) delete S.negatives[cat];
+  save(); renderNegs();
+  if(sb) sb.from('negatives').delete().eq('category',cat).eq('keyword',kw).catch(e=>console.error(e));
+  toast('Removed');
+}
 function copyNegs(){ navigator.clipboard.writeText(Object.values(S.negatives).flat().join('\n')).then(()=>toast('Copied — paste into Google Ads Editor')); }
 
 // TODOS
@@ -1306,6 +1465,7 @@ function delTodo(id){
   if(!confirm('Delete?')) return;
   const todos=loadTodos(activeProject.id);
   saveTodos(activeProject.id,todos.filter(t=>t.id!==id));
+  if(sb) sb.from('todos').delete().eq('id',id).catch(e=>console.error(e));
   renderFunnelPage(); updateBadges(); toast('Deleted');
 }
 function openTodoModal(){
@@ -1349,7 +1509,10 @@ const MC_AUDIENCES_DEFAULT=[
 ];
 
 function loadAudiences(){ const s=localStorage.getItem('mp_audiences_mc'); return s?JSON.parse(s):JSON.parse(JSON.stringify(MC_AUDIENCES_DEFAULT)); }
-function saveAudiences(data){ localStorage.setItem('mp_audiences_mc',JSON.stringify(data)); }
+function saveAudiences(data){
+  localStorage.setItem('mp_audiences_mc',JSON.stringify(data));
+  if(sb) sb.from('audiences').upsert(data.map(audToDb)).catch(e=>console.error('sbAud:',e));
+}
 
 function renderAudienceBoard(){
   const audiences=loadAudiences();
@@ -1478,8 +1641,10 @@ function saveKpiCell(el){
   const key='mp_kpi_'+el.dataset.proj;
   const data=JSON.parse(localStorage.getItem(key)||'{}');
   if(!data[el.dataset.row]) data[el.dataset.row]={};
-  data[el.dataset.row][el.dataset.col]=el.textContent.trim();
+  const val=el.textContent.trim();
+  data[el.dataset.row][el.dataset.col]=val;
   localStorage.setItem(key,JSON.stringify(data));
+  if(sb) sb.from('kpi_data').upsert({project_id:el.dataset.proj,row_key:el.dataset.row,col_key:el.dataset.col,value:val},{onConflict:'project_id,row_key,col_key'}).catch(e=>console.error(e));
 }
 
 // ─── T-05: RETENTION COHORTS ─────────────────────────────────────────────────
@@ -1510,10 +1675,12 @@ function getRetCls(val,week){ const b=RET_BENCHMARKS[week]; if(!b||isNaN(val)) r
 function saveRetCell(el){
   const data=JSON.parse(localStorage.getItem('mp_retention_mc')||'{}');
   if(!data[el.dataset.row]) data[el.dataset.row]={};
-  data[el.dataset.row][el.dataset.col]=el.textContent.trim();
+  const val=el.textContent.trim();
+  data[el.dataset.row][el.dataset.col]=val;
   localStorage.setItem('mp_retention_mc',JSON.stringify(data));
-  const v=parseFloat(el.textContent.trim());
+  const v=parseFloat(val);
   el.className='kpi-cell ret-cell '+getRetCls(v,el.dataset.col);
+  if(sb) sb.from('retention_data').upsert({audience_id:el.dataset.row,week:el.dataset.col,value:val},{onConflict:'audience_id,week'}).catch(e=>console.error(e));
 }
 
 // ─── T-06: FUNNEL REFACTOR ────────────────────────────────────────────────────
@@ -1531,9 +1698,26 @@ function migrateTodos(){
 }
 
 function loadTodos(projectId){ return JSON.parse(localStorage.getItem('mp_todos_'+projectId)||'[]'); }
-function saveTodos(projectId,todos){ localStorage.setItem('mp_todos_'+projectId,JSON.stringify(todos)); }
+function saveTodos(projectId,todos){
+  localStorage.setItem('mp_todos_'+projectId,JSON.stringify(todos));
+  if(sb) sb.from('todos').upsert(todos.map(t=>todoToDb(t,projectId))).catch(e=>console.error('sbTodo:',e));
+}
 
-if(localStorage.getItem('pn_auth')==='1'){ document.getElementById('login-screen').style.display='none'; document.getElementById('app').style.display='block'; document.getElementById('h-user').textContent='Pink Notebook Team'; init(); }
+// Boot — check existing session or show login
+initSupabase();
+if(sb){
+  sb.auth.getSession().then(({data:{session}})=>{ if(session) onLoggedIn(session.user); });
+} else {
+  // Supabase not yet configured — fallback to localStorage session
+  if(localStorage.getItem('pn_auth')==='1'){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    document.getElementById('h-user').textContent='Team';
+    const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD));
+    const savedProj=localStorage.getItem('mp_active_project')||'pn';
+    setActiveProject(savedProj); renderAll();
+  }
+}
 </script>
 </body>
 </html>
