@@ -190,6 +190,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab.active{background:white;color:var(--dark);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 #toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:white;padding:10px 18px;border-radius:var(--r);font-size:13px;z-index:1000;opacity:0;transition:opacity .25s;pointer-events:none}
 #toast.show{opacity:1}
+.proj-switch{display:flex;gap:4px;padding:8px 8px 6px;border-bottom:1px solid var(--g100);margin-bottom:6px}
+.ps-tab{flex:1;padding:6px 8px;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--g200);background:white;color:var(--g600);text-align:center;transition:all .15s;letter-spacing:.02em}
+.ps-tab:hover{border-color:var(--g400);color:var(--g900)}
+.ps-tab.active{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.sgrid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -220,32 +224,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="layout">
     <nav class="sidebar">
+      <div class="proj-switch" id="proj-switch"></div>
       <div class="sl">Navigation</div>
-      <div class="ni active" onclick="showPage('overview',this)">
+      <div class="ni active" onclick="showPage('overview',this)" data-project="all">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
         Overview
       </div>
-      <div class="ni" onclick="showPage('kw',this)">
+      <div class="ni" onclick="showPage('kw',this)" data-project="pn">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
         Keyword Tracker <span class="nb" id="nb-kw">0</span>
       </div>
-      <div class="ni" onclick="showPage('strat',this)">
+      <div class="ni" onclick="showPage('strat',this)" data-project="all">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2 2 4-4"/></svg>
-        Strategy Board <span class="nb" id="nb-st">0</span>
+        <span id="nav-strat-label">Strategy Board</span> <span class="nb" id="nb-st">0</span>
       </div>
-      <div class="ni" onclick="showPage('neg',this)">
+      <div class="ni" onclick="showPage('neg',this)" data-project="pn">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h6"/></svg>
         Negative Keywords <span class="nb" id="nb-neg">0</span>
       </div>
-      <div class="ni" onclick="showPage('funnel',this)">
+      <div class="ni" onclick="showPage('kpi',this)" data-project="all">
+        <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,12 6,7 9,10 14,4"/></svg>
+        KPI &amp; Campaigns
+      </div>
+      <div class="ni" onclick="showPage('retention',this)" data-project="mc">
+        <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/><path d="M2 6h12M2 10h12M6 2v12M10 2v12"/></svg>
+        Retention Cohorts
+      </div>
+      <div class="ni" onclick="showPage('funnel',this)" data-project="all">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12l-4.5 5.5V13l-3-1.5V8.5L2 3z"/></svg>
         Funnel &amp; Site Dev <span class="nb" id="nb-todo">0</span>
       </div>
-      <div class="sdiv"></div>
-      <div class="sl">Markets</div>
-      <div class="ni" onclick="filterMkt('IT',this)"><span style="font-size:16px">🇮🇹</span> Sicily · Italy <span class="nb" id="nb-it">0</span></div>
-      <div class="ni" onclick="filterMkt('ME',this)"><span style="font-size:16px">🇲🇪</span> Montenegro <span class="nb" id="nb-me">0</span></div>
-      <div class="ni" onclick="filterMkt('LV',this)"><span style="font-size:16px">🇱🇻</span> Latvia · Riga <span class="nb" id="nb-lv">0</span></div>
+      <div class="sdiv" data-project="all"></div>
+      <div class="sl" id="geo-label" data-project="all">Markets</div>
+      <div id="geo-sidebar"></div>
     </nav>
 
     <main class="main">
@@ -338,6 +349,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div id="neg-cats"></div>
         </div>
         <div class="card"><div class="card-hd"><div class="card-title">Export preview</div></div><div class="cpblock" id="neg-export"></div></div>
+      </div>
+
+      <!-- KPI & CAMPAIGNS -->
+      <div class="page" id="page-kpi">
+        <div class="ph"><div class="ph-title">KPI &amp; Campaigns</div><div class="ph-sub" id="kpi-sub">Performance per audience / strategy</div></div>
+        <div class="card"><div class="card-hd"><div class="card-title" id="kpi-table-title">KPI Table</div></div>
+          <div class="kw-wrap"><table class="kw-tbl" id="kpi-table"></table></div>
+        </div>
+      </div>
+
+      <!-- RETENTION COHORTS (MC only) -->
+      <div class="page" id="page-retention">
+        <div class="ph"><div class="ph-title">Retention Cohorts</div><div class="ph-sub">Settimane 1–12 per audience · benchmark W4 &gt; 15% = go</div></div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title">Cohort Table</div><span class="badge b-test">Mindcast Only</span></div>
+          <div class="kw-wrap"><table class="kw-tbl" id="retention-table"></table></div>
+        </div>
+        <div class="card" style="margin-top:0">
+          <div style="display:flex;gap:16px;font-size:12px;flex-wrap:wrap">
+            <span><span style="color:var(--green-d);font-weight:700">■</span> Sopra benchmark</span>
+            <span><span style="color:var(--red-d);font-weight:700">■</span> Sotto critico</span>
+            <span><span style="color:var(--amber-d);font-weight:700">■</span> In zona</span>
+            <span style="color:var(--g400)">— = dato non disponibile</span>
+          </div>
+        </div>
       </div>
 
       <!-- FUNNEL & SITE DEV -->
@@ -506,8 +542,58 @@ function setActiveProject(id){
   r.setProperty('--accent-l',activeProject.colorLight);
   r.setProperty('--accent-m',activeProject.colorMid);
   r.setProperty('--accent-d',activeProject.colorDark);
-  // Full UI update delegated to T-02
+  // Header
+  document.querySelector('.h-logo').textContent=activeProject.logo;
+  document.querySelector('.h-sub').textContent=activeProject.name+' · '+activeProject.subtitle;
+  // Sidebar: show/hide sections by data-project
+  document.querySelectorAll('[data-project]').forEach(el=>{
+    const p=el.dataset.project;
+    el.style.display=(p==='all'||p===activeProject.id)?'':'none';
+  });
+  // Nav label Strategy/Audience
+  const lbl=document.getElementById('nav-strat-label');
+  if(lbl) lbl.textContent=activeProject.boardType==='audience'?'Audience Board':'Strategy Board';
+  // Geo sidebar
+  renderGeo();
+  // Switcher active state
+  renderProjectSwitch();
+  // Save preference
   localStorage.setItem('mp_active_project',activeProject.id);
+  // Refresh current page data
+  refreshActivePage();
+}
+
+function renderProjectSwitch(){
+  document.getElementById('proj-switch').innerHTML=PROJECTS.map(p=>
+    `<div class="ps-tab${p.id===activeProject.id?' active':''}" onclick="setActiveProject('${p.id}')">${p.logo}<span style="font-size:10px;display:block;font-weight:400;margin-top:1px;opacity:.7">${p.name.split(' ')[0]}</span></div>`
+  ).join('');
+}
+
+function renderGeo(){
+  const geo=activeProject.geo;
+  document.getElementById('geo-label').textContent=activeProject.id==='pn'?'Markets':'Geo';
+  document.getElementById('geo-sidebar').innerHTML=geo.map(g=>{
+    const nbId='nb-'+g.code.toLowerCase();
+    const isPn=activeProject.id==='pn';
+    const count=isPn?S.keywords.filter(k=>k.market===g.code).length:0;
+    const onclick=isPn?`filterMkt('${g.code}',this)`:'';
+    return `<div class="ni" ${onclick?`onclick="${onclick}"`:''}>
+      <span style="font-size:16px">${g.flag}</span> ${g.label}
+      ${isPn?`<span class="nb" id="${nbId}">${count}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function refreshActivePage(){
+  const active=document.querySelector('.page.active');
+  if(!active) return;
+  const id=active.id.replace('page-','');
+  if(id==='overview') renderOverview();
+  else if(id==='strat') renderStrats(sFilter);
+  else if(id==='kw') renderKw();
+  else if(id==='neg') renderNegs();
+  else if(id==='funnel') renderTodos(tFilter);
+  // kpi, retention handled in T-04/T-05
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -564,7 +650,12 @@ function doLogout(){ localStorage.removeItem('pn_auth'); location.reload(); }
 document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
 
 // INIT
-function init(){ const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD)); renderAll(); }
+function init(){
+  const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD));
+  const savedProj=localStorage.getItem('mp_active_project')||'pn';
+  setActiveProject(savedProj);
+  renderAll();
+}
 function save(){ localStorage.setItem(SK,JSON.stringify(S)); }
 function renderAll(){ updateBadges(); renderOverview(); renderKw(); renderStrats('all'); renderNegs(); renderTodos('all'); }
 
@@ -580,12 +671,19 @@ function filterMkt(m,el){ showPage('kw',el); document.getElementById('kw-mkt').v
 // BADGES
 function updateBadges(){
   const kw=S.keywords;
-  document.getElementById('nb-kw').textContent=kw.length;
-  document.getElementById('nb-st').textContent=S.strategies.length;
-  document.getElementById('nb-neg').textContent=Object.values(S.negatives).reduce((a,b)=>a+b.length,0);
-  document.getElementById('nb-it').textContent=kw.filter(k=>k.market==='IT').length;
-  document.getElementById('nb-me').textContent=kw.filter(k=>k.market==='ME').length;
-  document.getElementById('nb-lv').textContent=kw.filter(k=>k.market==='LV').length;
+  if(document.getElementById('nb-kw')) document.getElementById('nb-kw').textContent=kw.length;
+  document.getElementById('nb-st').textContent=
+    activeProject.boardType==='audience'
+      ? loadAudiences().length
+      : S.strategies.length;
+  if(document.getElementById('nb-neg')) document.getElementById('nb-neg').textContent=Object.values(S.negatives).reduce((a,b)=>a+b.length,0);
+  // Geo badges (PN only, dynamic)
+  if(activeProject.id==='pn'){
+    activeProject.geo.forEach(g=>{
+      const el=document.getElementById('nb-'+g.code.toLowerCase());
+      if(el) el.textContent=kw.filter(k=>k.market===g.code).length;
+    });
+  }
   document.getElementById('nb-todo').textContent=S.todos.filter(t=>t.status!=='done').length;
 }
 
