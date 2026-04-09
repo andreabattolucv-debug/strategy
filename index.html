@@ -5,23 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pink Notebook — Ads Strategy Dashboard</title>
 <style>
-:root{--pink:#E91E8C;--pink-l:#FBEAF0;--pink-m:#F4C0D1;--dark:#1A1A2E;--dark2:#2C2C54;--g50:#F8F8F6;--g100:#F1EFE8;--g200:#E0DED6;--g300:#C8C6BE;--g400:#888780;--g600:#5F5E5A;--g900:#1A1A1A;--green:#1D9E75;--green-l:#E8F5E9;--green-d:#085041;--red:#E24B4A;--red-l:#FCEBEB;--red-d:#791F1F;--amber:#BA7517;--amber-l:#FAEEDA;--amber-d:#633806;--blue:#185FA5;--blue-l:#E6F1FB;--blue-d:#0C447C;--purple:#534AB7;--purple-l:#EEEDFE;--purple-d:#3C3489;--teal:#0F6E56;--teal-l:#E1F5EE;--teal-d:#085041;--r:8px;--rl:12px}
+:root{--accent:#E91E8C;--accent-l:#FBEAF0;--accent-m:#F4C0D1;--accent-d:#c41578;--pink:#E91E8C;--pink-l:#FBEAF0;--pink-m:#F4C0D1;--dark:#1A1A2E;--dark2:#2C2C54;--g50:#F8F8F6;--g100:#F1EFE8;--g200:#E0DED6;--g300:#C8C6BE;--g400:#888780;--g600:#5F5E5A;--g900:#1A1A1A;--green:#1D9E75;--green-l:#E8F5E9;--green-d:#085041;--red:#E24B4A;--red-l:#FCEBEB;--red-d:#791F1F;--amber:#BA7517;--amber-l:#FAEEDA;--amber-d:#633806;--blue:#185FA5;--blue-l:#E6F1FB;--blue-d:#0C447C;--purple:#534AB7;--purple-l:#EEEDFE;--purple-d:#3C3489;--teal:#0F6E56;--teal-l:#E1F5EE;--teal-d:#085041;--r:8px;--rl:12px}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--g50);color:var(--g900);font-size:14px;line-height:1.5}
 #login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--dark)}
 .lbox{background:white;border-radius:var(--rl);padding:40px;width:360px;text-align:center}
-.llogo{width:52px;height:52px;background:var(--pink);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:white;margin:0 auto 16px}
+.llogo{width:52px;height:52px;background:var(--accent);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:white;margin:0 auto 16px}
 .ltitle{font-size:20px;font-weight:700;color:var(--dark);margin-bottom:4px}
 .lsub{font-size:13px;color:var(--g400);margin-bottom:28px}
 .linput{width:100%;padding:10px 14px;border:1px solid var(--g200);border-radius:var(--r);font-size:14px;margin-bottom:12px;outline:none;transition:border .15s}
-.linput:focus{border-color:var(--pink)}
-.lbtn{width:100%;padding:11px;background:var(--pink);color:white;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer}
-.lbtn:hover{background:#c41578}
+.linput:focus{border-color:var(--accent)}
+.lbtn{width:100%;padding:11px;background:var(--accent);color:white;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer}
+.lbtn:hover{background:var(--accent-d)}
 .lerr{font-size:12px;color:var(--red);margin-top:8px;display:none}
 #app{display:none}
 .header{background:var(--dark);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100}
 .h-brand{display:flex;align-items:center;gap:10px}
-.h-logo{width:30px;height:30px;background:var(--pink);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:white;flex-shrink:0}
+.h-logo{width:30px;height:30px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:white;flex-shrink:0}
 .h-title{font-weight:600;font-size:15px;color:white}
 .h-sub{font-size:11px;color:rgba(255,255,255,.45)}
 .h-right{display:flex;align-items:center;gap:10px}
@@ -33,11 +33,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sl{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--g400);padding:10px 8px 4px}
 .ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:13px;color:var(--g600);transition:all .1s;margin:1px 0;user-select:none}
 .ni:hover{background:var(--g100);color:var(--g900)}
-.ni.active{background:var(--pink-l);color:var(--pink);font-weight:600}
+.ni.active{background:var(--accent-l);color:var(--accent);font-weight:600}
 .ni-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
 .ni.active .ni-icon{opacity:1}
 .nb{margin-left:auto;font-size:11px;background:var(--g100);color:var(--g400);padding:1px 7px;border-radius:99px;font-weight:500}
-.ni.active .nb{background:var(--pink-m);color:var(--pink)}
+.ni.active .nb{background:var(--accent-m);color:var(--accent)}
 .sdiv{height:1px;background:var(--g100);margin:8px 0}
 .main{padding:24px;overflow-x:hidden}
 .page{display:none}
@@ -49,10 +49,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .card-title{font-size:15px;font-weight:700;color:var(--dark)}
 .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap}
-.b-isp{background:var(--purple-l);color:var(--purple-d)}.b-plan{background:var(--teal-l);color:var(--teal-d)}.b-trans{background:var(--amber-l);color:var(--amber-d)}.b-dec{background:var(--red-l);color:var(--red-d)}.b-win{background:var(--green-l);color:var(--green-d)}.b-lose{background:var(--red-l);color:var(--red-d)}.b-neg{background:var(--g100);color:var(--g600)}.b-test{background:var(--blue-l);color:var(--blue-d)}.b-it{background:#FAECE7;color:#712B13}.b-me{background:var(--teal-l);color:var(--teal-d)}.b-lv{background:var(--blue-l);color:var(--blue-d)}.b-tpl{background:var(--pink-l);color:var(--pink)}
+.b-isp{background:var(--purple-l);color:var(--purple-d)}.b-plan{background:var(--teal-l);color:var(--teal-d)}.b-trans{background:var(--amber-l);color:var(--amber-d)}.b-dec{background:var(--red-l);color:var(--red-d)}.b-win{background:var(--green-l);color:var(--green-d)}.b-lose{background:var(--red-l);color:var(--red-d)}.b-neg{background:var(--g100);color:var(--g600)}.b-test{background:var(--blue-l);color:var(--blue-d)}.b-it{background:#FAECE7;color:#712B13}.b-me{background:var(--teal-l);color:var(--teal-d)}.b-lv{background:var(--blue-l);color:var(--blue-d)}.b-tpl{background:var(--accent-l);color:var(--accent)}
 .btn{padding:7px 14px;border-radius:var(--r);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
-.btn-p{background:var(--pink);color:white}.btn-p:hover{background:#c41578}
-.btn-pb{background:var(--pink);color:white;padding:12px 24px;font-size:15px;font-weight:700;border-radius:var(--r);width:100%;justify-content:center;margin-bottom:20px;border:none;cursor:pointer;display:flex;align-items:center;gap:8px}.btn-pb:hover{background:#c41578}
+.btn-p{background:var(--accent);color:white}.btn-p:hover{background:var(--accent-d)}
+.btn-pb{background:var(--accent);color:white;padding:12px 24px;font-size:15px;font-weight:700;border-radius:var(--r);width:100%;justify-content:center;margin-bottom:20px;border:none;cursor:pointer;display:flex;align-items:center;gap:8px}.btn-pb:hover{background:var(--accent-d)}
 .btn-s{background:white;color:var(--g600);border:1px solid var(--g200)}.btn-s:hover{background:var(--g100)}
 .btn-g{background:transparent;color:var(--g400);border:1px solid var(--g200)}.btn-g:hover{background:var(--g100);color:var(--g900)}
 .btn-sm{padding:5px 10px;font-size:12px}
@@ -76,9 +76,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sb.s-n{background:var(--g100);border-color:var(--g600)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
 .fsel{padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;background:white;color:var(--g900);cursor:pointer;outline:none}
-.fsel:focus{border-color:var(--pink)}
+.fsel:focus{border-color:var(--accent)}
 .fins{padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;background:white;width:200px;outline:none}
-.fins:focus{border-color:var(--pink)}
+.fins:focus{border-color:var(--accent)}
 .sc{background:white;border:1px solid var(--g200);border-radius:var(--rl);padding:18px;transition:all .15s;cursor:pointer}
 .sc:hover{border-color:var(--g300);box-shadow:0 2px 8px rgba(0,0,0,.06)}
 .sc.validated{border-left:3px solid var(--green)}
@@ -89,9 +89,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sc-mkt{font-size:12px;color:var(--g400);margin-top:2px}
 .sc-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
 .sc-body{font-size:12px;color:var(--g600);line-height:1.65;margin-bottom:8px}
-.sc-copy{background:var(--g50);border-radius:6px;padding:10px;font-size:12px;color:var(--g600);border-left:3px solid var(--pink);margin-bottom:8px;font-style:italic}
+.sc-copy{background:var(--g50);border-radius:6px;padding:10px;font-size:12px;color:var(--g600);border-left:3px solid var(--accent);margin-bottom:8px;font-style:italic}
 .sc-lp{font-size:11px;font-family:'SF Mono','Fira Code',monospace;color:var(--g400);margin-bottom:8px}
-.sc-persona{background:var(--pink-l);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--pink);margin-bottom:8px}
+.sc-persona{background:var(--accent-l);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--accent);margin-bottom:8px}
 .sc-pl{font-weight:700;margin-bottom:2px;font-size:11px}
 .sc-timer{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--g400);margin-bottom:8px}
 .sc-dot{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
@@ -113,7 +113,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .neg-chip button:hover{color:var(--red)}
 .neg-add{display:flex;gap:8px;margin-top:10px;align-items:center}
 .neg-add input{flex:1;padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;font-family:'SF Mono','Fira Code',monospace;outline:none}
-.neg-add input:focus{border-color:var(--pink)}
+.neg-add input:focus{border-color:var(--accent)}
 .cpblock{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:12px;font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:var(--g600);line-height:1.8;white-space:pre-wrap;max-height:200px;overflow-y:auto}
 .alist{display:flex;flex-direction:column;gap:8px}
 .aitem{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:var(--g50);border-radius:var(--r)}
@@ -129,7 +129,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .fg.full{grid-column:1/-1}
 .fg label{font-size:12px;font-weight:600;color:var(--g600)}
 .fg input,.fg select,.fg textarea{padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;transition:border .15s;background:white;color:var(--dark)}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--pink)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
 .fg textarea{resize:vertical;min-height:72px}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .msec{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--g400);margin:16px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--g100);grid-column:1/-1}
@@ -154,7 +154,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .todo-btn{font-size:11px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid var(--g200);background:white;color:var(--g600)}
 .todo-btn:hover{background:var(--g100)}
 .csv-drop{border:2px dashed var(--g200);border-radius:var(--r);padding:24px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:12px}
-.csv-drop:hover,.csv-drop.drag{border-color:var(--pink);background:var(--pink-l)}
+.csv-drop:hover,.csv-drop.drag{border-color:var(--accent);background:var(--accent-l)}
 .csv-icon{font-size:28px;margin-bottom:8px}
 .csv-text{font-size:13px;color:var(--g600)}
 .csv-sub{font-size:11px;color:var(--g400);margin-top:4px}
@@ -190,6 +190,20 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tab.active{background:white;color:var(--dark);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 #toast{position:fixed;bottom:24px;right:24px;background:var(--dark);color:white;padding:10px 18px;border-radius:var(--r);font-size:13px;z-index:1000;opacity:0;transition:opacity .25s;pointer-events:none}
 #toast.show{opacity:1}
+.sc-kpi{display:flex;gap:12px;font-size:11px;padding:8px 0;border-top:1px solid var(--g100);margin-top:6px;flex-wrap:wrap}
+.sc-kpi-item{display:flex;flex-direction:column;gap:2px;min-width:52px}
+.sc-kpi-label{color:var(--g400);text-transform:uppercase;letter-spacing:.04em;font-size:10px}
+.sc-kpi-val{font-weight:700;color:var(--dark);font-size:13px}
+.kpi-cell{display:block;min-width:52px;padding:2px 4px;border-radius:4px;outline:none;transition:background .12s;cursor:text}
+.kpi-cell:focus{background:var(--accent-l);outline:1px solid var(--accent)}
+.kpi-cell:empty::after{content:'—';color:var(--g300);font-weight:400}
+.ret-good{background:var(--green-l);color:var(--green-d);font-weight:600;border-radius:4px}
+.ret-bad{background:var(--red-l);color:var(--red-d);font-weight:600;border-radius:4px}
+.ret-mid{background:var(--amber-l);color:var(--amber-d);border-radius:4px}
+.proj-switch{display:flex;gap:4px;padding:8px 8px 6px;border-bottom:1px solid var(--g100);margin-bottom:6px}
+.ps-tab{flex:1;padding:6px 8px;border-radius:var(--r);font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--g200);background:white;color:var(--g600);text-align:center;transition:all .15s;letter-spacing:.02em}
+.ps-tab:hover{border-color:var(--g400);color:var(--g900)}
+.ps-tab.active{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.sgrid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -220,32 +234,39 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
   <div class="layout">
     <nav class="sidebar">
+      <div class="proj-switch" id="proj-switch"></div>
       <div class="sl">Navigation</div>
-      <div class="ni active" onclick="showPage('overview',this)">
+      <div class="ni active" onclick="showPage('overview',this)" data-project="all">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
         Overview
       </div>
-      <div class="ni" onclick="showPage('kw',this)">
+      <div class="ni" onclick="showPage('kw',this)" data-project="pn">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h8M2 12h10"/></svg>
         Keyword Tracker <span class="nb" id="nb-kw">0</span>
       </div>
-      <div class="ni" onclick="showPage('strat',this)">
+      <div class="ni" onclick="showPage('strat',this)" data-project="all">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 8l2 2 4-4"/></svg>
-        Strategy Board <span class="nb" id="nb-st">0</span>
+        <span id="nav-strat-label">Strategy Board</span> <span class="nb" id="nb-st">0</span>
       </div>
-      <div class="ni" onclick="showPage('neg',this)">
+      <div class="ni" onclick="showPage('neg',this)" data-project="pn">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M5 8h6"/></svg>
         Negative Keywords <span class="nb" id="nb-neg">0</span>
       </div>
-      <div class="ni" onclick="showPage('funnel',this)">
+      <div class="ni" onclick="showPage('kpi',this)" data-project="all">
+        <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="2,12 6,7 9,10 14,4"/></svg>
+        KPI &amp; Campaigns
+      </div>
+      <div class="ni" onclick="showPage('retention',this)" data-project="mc">
+        <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/><path d="M2 6h12M2 10h12M6 2v12M10 2v12"/></svg>
+        Retention Cohorts
+      </div>
+      <div class="ni" onclick="showPage('funnel',this)" data-project="all">
         <svg class="ni-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h12l-4.5 5.5V13l-3-1.5V8.5L2 3z"/></svg>
         Funnel &amp; Site Dev <span class="nb" id="nb-todo">0</span>
       </div>
-      <div class="sdiv"></div>
-      <div class="sl">Markets</div>
-      <div class="ni" onclick="filterMkt('IT',this)"><span style="font-size:16px">🇮🇹</span> Sicily · Italy <span class="nb" id="nb-it">0</span></div>
-      <div class="ni" onclick="filterMkt('ME',this)"><span style="font-size:16px">🇲🇪</span> Montenegro <span class="nb" id="nb-me">0</span></div>
-      <div class="ni" onclick="filterMkt('LV',this)"><span style="font-size:16px">🇱🇻</span> Latvia · Riga <span class="nb" id="nb-lv">0</span></div>
+      <div class="sdiv" data-project="all"></div>
+      <div class="sl" id="geo-label" data-project="all">Markets</div>
+      <div id="geo-sidebar"></div>
     </nav>
 
     <main class="main">
@@ -340,10 +361,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="card"><div class="card-hd"><div class="card-title">Export preview</div></div><div class="cpblock" id="neg-export"></div></div>
       </div>
 
+      <!-- AUDIENCE BOARD (MC) / STRATEGY BOARD (PN) — shared #page-strat handles both via boardType -->
+
+      <!-- KPI & CAMPAIGNS -->
+      <div class="page" id="page-kpi">
+        <div class="ph"><div class="ph-title">KPI &amp; Campaigns</div><div class="ph-sub" id="kpi-sub">Performance per audience / strategy</div></div>
+        <div class="card"><div class="card-hd"><div class="card-title" id="kpi-table-title">KPI Table</div></div>
+          <div class="kw-wrap"><table class="kw-tbl" id="kpi-table"></table></div>
+        </div>
+      </div>
+
+      <!-- RETENTION COHORTS (MC only) -->
+      <div class="page" id="page-retention">
+        <div class="ph"><div class="ph-title">Retention Cohorts</div><div class="ph-sub">Settimane 1–12 per audience · benchmark W4 &gt; 15% = go</div></div>
+        <div class="card">
+          <div class="card-hd"><div class="card-title">Cohort Table</div><span class="badge b-test">Mindcast Only</span></div>
+          <div class="kw-wrap"><table class="kw-tbl" id="retention-table"></table></div>
+        </div>
+        <div class="card" style="margin-top:0">
+          <div style="display:flex;gap:16px;font-size:12px;flex-wrap:wrap">
+            <span><span style="color:var(--green-d);font-weight:700">■</span> Sopra benchmark</span>
+            <span><span style="color:var(--red-d);font-weight:700">■</span> Sotto critico</span>
+            <span><span style="color:var(--amber-d);font-weight:700">■</span> In zona</span>
+            <span style="color:var(--g400)">— = dato non disponibile</span>
+          </div>
+        </div>
+      </div>
+
       <!-- FUNNEL & SITE DEV -->
       <div class="page" id="page-funnel">
-        <div class="ph"><div class="ph-title">Funnel &amp; Site Implementations</div><div class="ph-sub">Dev work in progress — landing pages, tracking, funnel improvements</div></div>
-        <div style="display:flex;justify-content:flex-end;margin-bottom:16px"><button class="btn btn-p btn-sm" onclick="openModal('modal-todo')">+ Add implementation</button></div>
+        <div class="ph"><div class="ph-title">Funnel &amp; Site Dev</div><div class="ph-sub" id="funnel-sub">Dev work — landing pages, tracking, funnel improvements</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div class="filters" style="margin:0">
+            <select class="fsel" id="filter-assignee" onchange="renderFunnelPage()">
+              <option value="all">Tutti</option>
+              <option value="andrea">Andrea</option>
+              <option value="mattia">Mattia</option>
+              <option value="team">Team</option>
+            </select>
+            <select class="fsel" id="filter-todo-status" onchange="renderFunnelPage()">
+              <option value="all">Tutti gli stati</option>
+              <option value="todo">Da fare</option>
+              <option value="inprogress">In corso</option>
+              <option value="done">Fatto</option>
+            </select>
+          </div>
+          <button class="btn btn-p btn-sm" onclick="openTodoModal()">+ Add</button>
+        </div>
         <div class="tabs">
           <div class="tab active" onclick="filterTodos('all',this)">All</div>
           <div class="tab" onclick="filterTodos('todo',this)">To do</div>
@@ -416,7 +480,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="fg"><label>Category</label><select id="todo-cat"><option value="landing-page">Landing page</option><option value="tracking">Tracking / GTM</option><option value="funnel">Funnel</option><option value="seo">SEO</option><option value="design">Design</option><option value="dev">Dev</option><option value="other">Other</option></select></div>
       <div class="fg"><label>Start date</label><input type="date" id="todo-start"></div>
       <div class="fg"><label>Due date</label><input type="date" id="todo-due"></div>
-      <div class="fg full"><label>Assignee</label><input type="text" id="todo-who" placeholder="e.g. Dev team, Andrea, Matti"></div>
+      <div class="fg"><label>Assignee</label><select id="todo-who"><option value="andrea">Andrea</option><option value="mattia">Mattia</option><option value="team">Team</option></select></div>
+      <input type="hidden" id="todo-project">
     </div>
     <div class="modal-foot">
       <button class="btn btn-s" onclick="closeModal('modal-todo')">Cancel</button>
@@ -465,9 +530,124 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<div class="modal-bg" id="modal-aud-notes">
+  <div class="modal" style="width:480px">
+    <div class="modal-title" id="aud-notes-title">Note audience</div>
+    <div id="aud-notes-list" style="max-height:200px;overflow-y:auto;margin-bottom:14px"></div>
+    <div class="fgrid">
+      <div class="fg full"><label>Nuova nota</label><textarea id="aud-note-input" style="min-height:72px;width:100%;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;resize:vertical" placeholder="Osservazione sul test, dati, ipotesi..."></textarea></div>
+      <div class="fg"><label>Autore</label><select id="aud-note-author" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%"><option value="Andrea">Andrea</option><option value="Mattia">Mattia</option><option value="Team">Team</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-s" onclick="closeModal('modal-aud-notes')">Chiudi</button>
+      <button class="btn btn-p" onclick="saveAudNote()">Salva nota</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
+// ─── PROJECT CONFIG ───────────────────────────────────────────────────────────
+const PROJECTS=[
+  {
+    id:'pn',
+    name:'Pink Notebook',
+    color:'#E91E8C', colorLight:'#FBEAF0', colorMid:'#F4C0D1', colorDark:'#c41578',
+    logo:'PN',
+    subtitle:'Google Ads · Meta · Pinterest',
+    channels:['Google Ads','Meta Ads','Pinterest'],
+    geo:[{code:'IT',flag:'🇮🇹',label:'Sicily · Italy'},{code:'ME',flag:'🇲🇪',label:'Montenegro'},{code:'LV',flag:'🇱🇻',label:'Latvia · Riga'}],
+    boardType:'strategy',
+    sections:{specific:['kw','neg']},
+    kpiSchema:['CTR','CPC','Conv','ROAS','Spend']
+  },
+  {
+    id:'mc',
+    name:'Mindcast AI',
+    color:'#6B4FE0', colorLight:'#EEEDFE', colorMid:'#C4BDFB', colorDark:'#4d35c4',
+    logo:'MC',
+    subtitle:'TikTok · IG Reels · LinkedIn',
+    channels:['TikTok','IG Reels','YT Shorts','LinkedIn','Reddit'],
+    geo:[{code:'US',flag:'🇺🇸',label:'United States'},{code:'CA',flag:'🇨🇦',label:'Canada'}],
+    boardType:'audience',
+    sections:{specific:['retention']},
+    kpiSchema:['CPD','CPAU','W1_ret','W4_ret','W8_ret','W12_ret','Paywall','ARPU']
+  }
+];
+
+let activeProject=PROJECTS[0];
+
+function setActiveProject(id){
+  activeProject=PROJECTS.find(p=>p.id===id)||PROJECTS[0];
+  // CSS vars
+  const r=document.documentElement.style;
+  r.setProperty('--accent',activeProject.color);
+  r.setProperty('--accent-l',activeProject.colorLight);
+  r.setProperty('--accent-m',activeProject.colorMid);
+  r.setProperty('--accent-d',activeProject.colorDark);
+  // Header
+  document.querySelector('.h-logo').textContent=activeProject.logo;
+  document.querySelector('.h-sub').textContent=activeProject.name+' · '+activeProject.subtitle;
+  // Sidebar: show/hide sections by data-project
+  document.querySelectorAll('[data-project]').forEach(el=>{
+    const p=el.dataset.project;
+    el.style.display=(p==='all'||p===activeProject.id)?'':'none';
+  });
+  // Nav label Strategy/Audience
+  const lbl=document.getElementById('nav-strat-label');
+  if(lbl) lbl.textContent=activeProject.boardType==='audience'?'Audience Board':'Strategy Board';
+  // Geo sidebar
+  renderGeo();
+  // Switcher active state
+  renderProjectSwitch();
+  // Save preference
+  localStorage.setItem('mp_active_project',activeProject.id);
+  // Refresh current page data
+  refreshActivePage();
+}
+
+function renderProjectSwitch(){
+  document.getElementById('proj-switch').innerHTML=PROJECTS.map(p=>
+    `<div class="ps-tab${p.id===activeProject.id?' active':''}" onclick="setActiveProject('${p.id}')">${p.logo}<span style="font-size:10px;display:block;font-weight:400;margin-top:1px;opacity:.7">${p.name.split(' ')[0]}</span></div>`
+  ).join('');
+}
+
+function renderGeo(){
+  const geo=activeProject.geo;
+  document.getElementById('geo-label').textContent=activeProject.id==='pn'?'Markets':'Geo';
+  document.getElementById('geo-sidebar').innerHTML=geo.map(g=>{
+    const nbId='nb-'+g.code.toLowerCase();
+    const isPn=activeProject.id==='pn';
+    const count=isPn?S.keywords.filter(k=>k.market===g.code).length:0;
+    const onclick=isPn?`filterMkt('${g.code}',this)`:'';
+    return `<div class="ni" ${onclick?`onclick="${onclick}"`:''}>
+      <span style="font-size:16px">${g.flag}</span> ${g.label}
+      ${isPn?`<span class="nb" id="${nbId}">${count}</span>`:''}
+    </div>`;
+  }).join('');
+}
+
+function refreshActivePage(){
+  const active=document.querySelector('.page.active');
+  if(!active) return;
+  const id=active.id.replace('page-','');
+  if(id==='overview') renderOverview();
+  else if(id==='strat') renderStrats(sFilter);
+  else if(id==='kw') renderKw();
+  else if(id==='neg') renderNegs();
+  else if(id==='funnel') renderFunnelPage();
+  else if(id==='kpi') renderKpiTable();
+  else if(id==='retention') renderRetentionTable();
+}
+
+function renderFunnelPage(){
+  const assigneeF=document.getElementById('filter-assignee')?.value||'all';
+  const statusF=document.getElementById('filter-todo-status')?.value||'all';
+  renderTodos(tFilter,assigneeF,statusF);
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 const PWD='pinknotebook2025', SK='pn_dash_v4';
 let S={keywords:[],strategies:[],negatives:{},activity:[],todos:[]};
 
@@ -521,7 +701,12 @@ function doLogout(){ localStorage.removeItem('pn_auth'); location.reload(); }
 document.getElementById('pw-input').addEventListener('keydown',e=>{ if(e.key==='Enter') doLogin(); });
 
 // INIT
-function init(){ const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD)); renderAll(); }
+function init(){
+  const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD));
+  const savedProj=localStorage.getItem('mp_active_project')||'pn';
+  setActiveProject(savedProj);
+  renderAll();
+}
 function save(){ localStorage.setItem(SK,JSON.stringify(S)); }
 function renderAll(){ updateBadges(); renderOverview(); renderKw(); renderStrats('all'); renderNegs(); renderTodos('all'); }
 
@@ -537,13 +722,21 @@ function filterMkt(m,el){ showPage('kw',el); document.getElementById('kw-mkt').v
 // BADGES
 function updateBadges(){
   const kw=S.keywords;
-  document.getElementById('nb-kw').textContent=kw.length;
-  document.getElementById('nb-st').textContent=S.strategies.length;
-  document.getElementById('nb-neg').textContent=Object.values(S.negatives).reduce((a,b)=>a+b.length,0);
-  document.getElementById('nb-it').textContent=kw.filter(k=>k.market==='IT').length;
-  document.getElementById('nb-me').textContent=kw.filter(k=>k.market==='ME').length;
-  document.getElementById('nb-lv').textContent=kw.filter(k=>k.market==='LV').length;
-  document.getElementById('nb-todo').textContent=S.todos.filter(t=>t.status!=='done').length;
+  if(document.getElementById('nb-kw')) document.getElementById('nb-kw').textContent=kw.length;
+  document.getElementById('nb-st').textContent=
+    activeProject.boardType==='audience'
+      ? loadAudiences().length
+      : S.strategies.length;
+  if(document.getElementById('nb-neg')) document.getElementById('nb-neg').textContent=Object.values(S.negatives).reduce((a,b)=>a+b.length,0);
+  // Geo badges (PN only, dynamic)
+  if(activeProject.id==='pn'){
+    activeProject.geo.forEach(g=>{
+      const el=document.getElementById('nb-'+g.code.toLowerCase());
+      if(el) el.textContent=kw.filter(k=>k.market===g.code).length;
+    });
+  }
+  const todosOpen=loadTodos(activeProject.id).filter(t=>t.status!=='done').length;
+  document.getElementById('nb-todo').textContent=todosOpen||'';
 }
 
 // OVERVIEW
@@ -743,6 +936,8 @@ function importPaste(){
 let sFilter='all';
 function filterStrat(f,el){ sFilter=f; document.querySelectorAll('#strat-tabs .tab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); renderStrats(f); }
 function renderStrats(f){
+  if(activeProject.boardType==='audience'){ renderAudienceBoard(); return; }
+  restoreStratBoard();
   const ss=f==='all'?S.strategies:S.strategies.filter(s=>s.status===f);
   const g=document.getElementById('sgrid');
   if(!ss.length){ g.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--g400)">No strategies${f!=='all'?' with status "'+f+'"':''}</div>`; return; }
@@ -787,10 +982,10 @@ function openDet(id){
       </div>
     </div>
     ${s.why?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Why this country / location</div><div style="font-size:13px;color:var(--g600);line-height:1.65;background:var(--blue-l);padding:10px 12px;border-radius:var(--r)">${s.why}</div></div>`:''}
-    ${s.persona?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Customer persona</div><div style="font-size:13px;color:var(--g600);line-height:1.65;background:var(--pink-l);padding:10px 12px;border-radius:var(--r)">${s.persona}</div></div>`:''}
+    ${s.persona?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Customer persona</div><div style="font-size:13px;color:var(--g600);line-height:1.65;background:var(--accent-l);padding:10px 12px;border-radius:var(--r)">${s.persona}</div></div>`:''}
     ${s.mindset?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Her mindset on Google</div><div style="font-size:13px;color:var(--g600);line-height:1.65;background:var(--amber-l);padding:10px 12px;border-radius:var(--r)">${s.mindset}</div></div>`:''}
     ${s.body?`<div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Strategic rationale</div><div style="font-size:13px;color:var(--g600);line-height:1.65">${s.body}</div></div>`:''}
-    <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Primary headline</div><div style="background:var(--g50);border-left:3px solid var(--pink);padding:10px 12px;border-radius:4px;font-size:13px;font-style:italic;color:var(--g600)">"${s.copy}"</div></div>
+    <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:6px">Primary headline</div><div style="background:var(--g50);border-left:3px solid var(--accent);padding:10px 12px;border-radius:4px;font-size:13px;font-style:italic;color:var(--g600)">"${s.copy}"</div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px">Landing page</div><div style="font-size:12px;font-family:monospace;color:var(--g600)">pinknotebook.com${s.lp}</div></div>
       <div><div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:4px">Funnel type</div><div style="font-size:13px;color:var(--g600)">${s.funnel||'—'}</div></div>
@@ -877,10 +1072,15 @@ function copyNegs(){ navigator.clipboard.writeText(Object.values(S.negatives).fl
 // TODOS
 const CATLAB={'landing-page':'Landing page','tracking':'Tracking / GTM','funnel':'Funnel','seo':'SEO','design':'Design','dev':'Dev','other':'Other'};
 const CATBADGE={'landing-page':'b-tpl','tracking':'b-isp','funnel':'b-plan','seo':'b-trans','design':'b-dec','dev':'b-test','other':'b-neg'};
+const ASSIGNEE_LABELS={andrea:'Andrea',mattia:'Mattia',team:'Team'};
 let tFilter='all';
-function filterTodos(f,el){ tFilter=f; document.querySelectorAll('.tabs .tab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); renderTodos(f); }
-function renderTodos(f){
-  const ts=f==='all'?S.todos:S.todos.filter(t=>t.status===f);
+function filterTodos(f,el){ tFilter=f; document.querySelectorAll('#page-funnel .tabs .tab').forEach(t=>t.classList.remove('active')); if(el) el.classList.add('active'); renderFunnelPage(); }
+function renderTodos(f,assigneeF,statusF){
+  migrateTodos();
+  let ts=loadTodos(activeProject.id);
+  if(f&&f!=='all') ts=ts.filter(t=>t.status===f);
+  if(assigneeF&&assigneeF!=='all') ts=ts.filter(t=>(t.assignee||'team')===assigneeF);
+  if(statusF&&statusF!=='all') ts=ts.filter(t=>t.status===statusF);
   const c=document.getElementById('todo-list');
   if(!ts.length){ c.innerHTML=`<div style="text-align:center;padding:40px;color:var(--g400)">No implementations${f!=='all'?' with status "'+f+'"':''}</div>`; return; }
   c.innerHTML=ts.map(t=>{
@@ -906,29 +1106,52 @@ function renderTodos(f){
     </div>`;
   }).join('');
 }
-function cycleTodo(id){ const t=S.todos.find(t=>t.id===id); if(!t) return; const c={todo:'inprogress',inprogress:'done',done:'todo'}; t.status=c[t.status]; addAct(`Implementation <strong>${t.title}</strong> → ${t.status}`,'var(--teal)'); save(); renderTodos(tFilter); updateBadges(); toast('Status updated'); }
+function cycleTodo(id){
+  const todos=loadTodos(activeProject.id); const t=todos.find(t=>t.id===id); if(!t) return;
+  const c={todo:'inprogress',inprogress:'done',done:'todo'}; t.status=c[t.status];
+  saveTodos(activeProject.id,todos); renderFunnelPage(); updateBadges(); toast('Status updated');
+}
 function editTodo(id){
-  const t=S.todos.find(t=>t.id===id); if(!t) return;
+  const todos=loadTodos(activeProject.id); const t=todos.find(t=>t.id===id); if(!t) return;
   document.getElementById('todo-mtitle').textContent='Edit implementation';
   document.getElementById('todo-eid').value=id;
+  document.getElementById('todo-project').value=t.project||activeProject.id;
   document.getElementById('todo-title').value=t.title;
   document.getElementById('todo-desc').value=t.desc||'';
   document.getElementById('todo-sts').value=t.status;
   document.getElementById('todo-cat').value=t.cat||'other';
   document.getElementById('todo-start').value=t.startDate||'';
   document.getElementById('todo-due').value=t.dueDate||'';
-  document.getElementById('todo-who').value=t.assignee||'';
+  document.getElementById('todo-who').value=t.assignee||'team';
   openModal('modal-todo');
 }
-function delTodo(id){ if(!confirm('Delete?')) return; S.todos=S.todos.filter(t=>t.id!==id); save(); renderTodos(tFilter); updateBadges(); toast('Deleted'); }
+function delTodo(id){
+  if(!confirm('Delete?')) return;
+  const todos=loadTodos(activeProject.id);
+  saveTodos(activeProject.id,todos.filter(t=>t.id!==id));
+  renderFunnelPage(); updateBadges(); toast('Deleted');
+}
+function openTodoModal(){
+  document.getElementById('todo-mtitle').textContent='Add implementation';
+  document.getElementById('todo-eid').value='';
+  document.getElementById('todo-project').value=activeProject.id;
+  ['todo-title','todo-desc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('todo-sts').value='todo';
+  document.getElementById('todo-start').value=new Date().toISOString().split('T')[0];
+  document.getElementById('todo-due').value='';
+  openModal('modal-todo');
+}
 function saveTodo(){
   const id=document.getElementById('todo-eid').value;
+  const projId=document.getElementById('todo-project').value||activeProject.id;
   const title=document.getElementById('todo-title').value.trim();
   if(!title){ toast('Title required'); return; }
-  const d={title,desc:document.getElementById('todo-desc').value.trim(),status:document.getElementById('todo-sts').value,cat:document.getElementById('todo-cat').value,startDate:document.getElementById('todo-start').value,dueDate:document.getElementById('todo-due').value,assignee:document.getElementById('todo-who').value.trim(),ts:Date.now()};
-  if(id){ const i=S.todos.findIndex(t=>t.id===id); S.todos[i]={...S.todos[i],...d}; }
-  else{ d.id='t'+Date.now(); S.todos.unshift(d); addAct(`Added implementation <strong>${title}</strong>`,'var(--teal)'); }
-  save(); renderAll(); closeModal('modal-todo');
+  const d={title,desc:document.getElementById('todo-desc').value.trim(),status:document.getElementById('todo-sts').value,cat:document.getElementById('todo-cat').value,startDate:document.getElementById('todo-start').value,dueDate:document.getElementById('todo-due').value,assignee:document.getElementById('todo-who').value||'team',project:projId,ts:Date.now()};
+  const todos=loadTodos(projId);
+  if(id){ const i=todos.findIndex(t=>t.id===id); todos[i]={...todos[i],...d}; }
+  else{ d.id='t'+Date.now(); todos.unshift(d); }
+  saveTodos(projId,todos);
+  renderFunnelPage(); updateBadges(); closeModal('modal-todo');
   document.getElementById('todo-eid').value='';
   document.getElementById('todo-mtitle').textContent='Add implementation';
   toast(id?'Updated':'Added');
@@ -937,6 +1160,201 @@ function saveTodo(){
 // NOTES
 function openNote(id){ const k=S.keywords.find(k=>k.id===id); if(!k) return; document.getElementById('note-kid').value=id; document.getElementById('note-text').value=k.notes||''; openModal('modal-note'); }
 function saveNote(){ const id=document.getElementById('note-kid').value; const k=S.keywords.find(k=>k.id===id); if(k){ k.notes=document.getElementById('note-text').value.trim(); save(); renderKw(); } closeModal('modal-note'); toast('Note saved'); }
+
+// ─── T-03: AUDIENCE BOARD (Mindcast) ─────────────────────────────────────────
+const MC_AUDIENCES_DEFAULT=[
+  {id:'aud01',name:'Wealth-Building Millennials',segment:'Finance',ageRange:'25–40',cpmRange:'$15–50',geo:'US/CA',channels:['TikTok','IG Reels'],status:'testing',hook:'"I want to understand money while I commute."',kpi:{cpd:1.88,cpau:4.20,w4ret:11.27,paywall:null},notes:[]},
+  {id:'aud02',name:'Ambitious Self-Improvers',segment:'Self-Improvement',ageRange:'22–35',cpmRange:'$8–15',geo:'US/CA',channels:['LinkedIn','IG Reels'],status:'testing',hook:'"I want to think better and faster."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud03',name:'Longevity & Health Optimizers',segment:'Health',ageRange:'30–50',cpmRange:'$8–18',geo:'US/CA',channels:['YT Shorts','IG Reels'],status:'planned',hook:'"I want to optimize my body and mind."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud04',name:'History & Geopolitics Enthusiasts',segment:'Knowledge',ageRange:'28–55',cpmRange:'$5–12',geo:'US/CA',channels:['Reddit','YT Shorts'],status:'planned',hook:'"I want real analysis, not headlines."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud05',name:'Entrepreneurship & Startup Builders',segment:'Business',ageRange:'25–45',cpmRange:'$12–30',geo:'US/CA',channels:['LinkedIn','TikTok'],status:'planned',hook:'"I want to learn from founders who shipped."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]},
+  {id:'aud06',name:'Spiritually Curious & Philosophy Seekers',segment:'Philosophy',ageRange:'22–40',cpmRange:'$6–14',geo:'US/CA',channels:['TikTok','Reddit'],status:'planned',hook:'"I want to explore big questions on my commute."',kpi:{cpd:null,cpau:null,w4ret:null,paywall:null},notes:[]}
+];
+
+function loadAudiences(){ const s=localStorage.getItem('mp_audiences_mc'); return s?JSON.parse(s):JSON.parse(JSON.stringify(MC_AUDIENCES_DEFAULT)); }
+function saveAudiences(data){ localStorage.setItem('mp_audiences_mc',JSON.stringify(data)); }
+
+function renderAudienceBoard(){
+  const audiences=loadAudiences();
+  const testing=audiences.filter(a=>a.status==='testing').length;
+  const validated=audiences.filter(a=>a.status==='validated').length;
+  const failed=audiences.filter(a=>a.status==='failed').length;
+  const planned=audiences.filter(a=>a.status==='planned').length;
+  const ph=document.querySelector('#page-strat .ph');
+  if(ph){
+    ph.innerHTML=`<div class="ph-title">Audience Board</div><div class="ph-sub">Validate or kill audience segments — Mindcast AI</div>`;
+  }
+  // Replace the strategy board CTA with audience stats
+  const existingBtn=document.querySelector('#page-strat .btn-pb');
+  if(existingBtn) existingBtn.style.display='none';
+  const tabs=document.getElementById('strat-tabs');
+  if(tabs) tabs.style.display='none';
+  const grid=document.getElementById('sgrid');
+  // Stats bar
+  const statsHtml=`<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Testing</div><div class="mc-val" style="color:var(--blue)">${testing}</div></div>
+    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Validated</div><div class="mc-val" style="color:var(--green)">${validated}</div></div>
+    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Failed</div><div class="mc-val" style="color:var(--red)">${failed}</div></div>
+    <div class="mc" style="margin:0;flex:1;min-width:80px"><div class="mc-lbl">Planned</div><div class="mc-val" style="color:var(--g400)">${planned}</div></div>
+  </div>`;
+  grid.innerHTML=statsHtml+audiences.map(a=>audienceCard(a)).join('');
+}
+
+function audienceCard(a){
+  const kpiVal=(v,unit)=>v!=null?`${v}${unit||''}`:'<span style="color:var(--g300)">—</span>';
+  const channelBadges=a.channels.map(ch=>`<span class="badge b-neg">${ch}</span>`).join('');
+  const notesCount=a.notes&&a.notes.length?`<span class="badge b-isp">${a.notes.length} note${a.notes.length>1?'s':''}</span>`:'';
+  return `<div class="sc ${a.status}" onclick="event.stopPropagation()">
+    <div class="sc-hd">
+      <div><div class="sc-title">${a.name}</div><div class="sc-mkt">${a.segment} · ${a.ageRange} · ${a.geo}</div></div>
+      <span class="badge ${a.status==='validated'?'b-win':a.status==='failed'?'b-lose':a.status==='testing'?'b-test':'b-neg'}">${a.status}</span>
+    </div>
+    <div class="sc-tags">${channelBadges}<span class="badge b-plan">CPM ${a.cpmRange}</span>${notesCount}</div>
+    <div class="sc-copy">${a.hook}</div>
+    <div class="sc-kpi">
+      <div class="sc-kpi-item"><div class="sc-kpi-label">CPD</div><div class="sc-kpi-val">${kpiVal(a.kpi.cpd,'$')}</div></div>
+      <div class="sc-kpi-item"><div class="sc-kpi-label">CPAU</div><div class="sc-kpi-val">${kpiVal(a.kpi.cpau,'$')}</div></div>
+      <div class="sc-kpi-item"><div class="sc-kpi-label">W4 ret</div><div class="sc-kpi-val">${kpiVal(a.kpi.w4ret,'%')}</div></div>
+      <div class="sc-kpi-item"><div class="sc-kpi-label">Paywall</div><div class="sc-kpi-val">${kpiVal(a.kpi.paywall,'%')}</div></div>
+    </div>
+    <div class="sc-foot" style="margin-top:10px">
+      <div class="sc-btns">
+        <button class="sc-btn val ${a.status==='validated'?'on':''}" onclick="setAudSts('${a.id}','validated')">✓ Validate</button>
+        <button class="sc-btn fail ${a.status==='failed'?'on':''}" onclick="setAudSts('${a.id}','failed')">✗ Kill</button>
+        <button class="sc-btn" onclick="setAudSts('${a.id}','testing')">Reset</button>
+      </div>
+      <button class="sc-btn" onclick="openAudNotes('${a.id}')">Notes${a.notes&&a.notes.length?' ('+a.notes.length+')':''}</button>
+    </div>
+  </div>`;
+}
+
+function setAudSts(id,status){
+  const auds=loadAudiences();
+  const a=auds.find(a=>a.id===id); if(!a) return;
+  a.status=status; saveAudiences(auds);
+  toast(`Audience ${status}`); renderStrats(sFilter); updateBadges();
+}
+
+let _audNotesId=null;
+function openAudNotes(id){
+  _audNotesId=id;
+  const auds=loadAudiences(); const a=auds.find(a=>a.id===id); if(!a) return;
+  const existing=(a.notes||[]).map((n,i)=>
+    `<div style="padding:8px;background:var(--g50);border-radius:var(--r);margin-bottom:6px;font-size:12px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <strong>${n.author||'Team'}</strong><span style="color:var(--g400)">${new Date(n.ts).toLocaleDateString('it-IT')}</span>
+      </div>
+      <div>${n.text}</div>
+    </div>`).join('');
+  document.getElementById('aud-notes-list').innerHTML=existing||'<div style="color:var(--g400);font-size:13px;padding:8px">Nessuna nota</div>';
+  document.getElementById('aud-note-input').value='';
+  document.getElementById('aud-notes-title').textContent='Note — '+a.name;
+  openModal('modal-aud-notes');
+}
+
+function saveAudNote(){
+  const text=document.getElementById('aud-note-input').value.trim();
+  const author=document.getElementById('aud-note-author').value||'Team';
+  if(!text||!_audNotesId) return;
+  const auds=loadAudiences(); const a=auds.find(a=>a.id===_audNotesId); if(!a) return;
+  if(!a.notes) a.notes=[];
+  a.notes.push({text,author,ts:Date.now()});
+  saveAudiences(auds);
+  toast('Note salvata'); openAudNotes(_audNotesId);
+}
+
+// Restore strategy board UI for PN
+function restoreStratBoard(){
+  const ph=document.querySelector('#page-strat .ph');
+  if(ph) ph.innerHTML=`<div class="ph-title">Strategy Board</div><div class="ph-sub">Validate or discard strategies fast — startup iteration mode</div>`;
+  const btn=document.querySelector('#page-strat .btn-pb');
+  if(btn) btn.style.display='';
+  const tabs=document.getElementById('strat-tabs');
+  if(tabs) tabs.style.display='';
+}
+
+// ─── T-04: KPI TABLE ──────────────────────────────────────────────────────────
+function renderKpiTable(){
+  const schema=activeProject.kpiSchema;
+  const rows=activeProject.boardType==='audience'?loadAudiences():S.strategies;
+  const key='mp_kpi_'+activeProject.id;
+  const saved=JSON.parse(localStorage.getItem(key)||'{}');
+  document.getElementById('kpi-sub').textContent=activeProject.name+' · '+schema.join(', ');
+  document.getElementById('kpi-table-title').textContent='Performance '+(activeProject.boardType==='audience'?'per audience':'per strategy');
+  let html='<thead><tr><th>Nome</th>';
+  schema.forEach(k=>{ html+=`<th>${k}</th>`; });
+  html+='</tr></thead><tbody>';
+  rows.forEach(row=>{
+    const rid=row.id; const rname=row.name||row.title;
+    html+=`<tr><td class="kwt">${rname}</td>`;
+    schema.forEach(k=>{
+      const val=(saved[rid]&&saved[rid][k]!=null)?saved[rid][k]:'';
+      html+=`<td><span class="kpi-cell" contenteditable="true" data-row="${rid}" data-col="${k}" data-proj="${activeProject.id}" onblur="saveKpiCell(this)">${val}</span></td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody>';
+  document.getElementById('kpi-table').innerHTML=html;
+}
+
+function saveKpiCell(el){
+  const key='mp_kpi_'+el.dataset.proj;
+  const data=JSON.parse(localStorage.getItem(key)||'{}');
+  if(!data[el.dataset.row]) data[el.dataset.row]={};
+  data[el.dataset.row][el.dataset.col]=el.textContent.trim();
+  localStorage.setItem(key,JSON.stringify(data));
+}
+
+// ─── T-05: RETENTION COHORTS ─────────────────────────────────────────────────
+const RET_BENCHMARKS={W1:{good:40,bad:25},W2:{good:25,bad:15},W3:{good:20,bad:10},W4:{good:15,bad:8},W8:{good:10,bad:5},W12:{good:8,bad:3}};
+const RET_WEEKS=['W1','W2','W3','W4','W8','W12'];
+
+function renderRetentionTable(){
+  const audiences=loadAudiences();
+  const saved=JSON.parse(localStorage.getItem('mp_retention_mc')||'{}');
+  let html='<thead><tr><th>Audience</th>';
+  RET_WEEKS.forEach(w=>{ html+=`<th>${w} %</th>`; });
+  html+='</tr></thead><tbody>';
+  audiences.forEach(a=>{
+    html+=`<tr><td class="kwt">${a.name}</td>`;
+    RET_WEEKS.forEach(w=>{
+      const val=(saved[a.id]&&saved[a.id][w]!=null)?saved[a.id][w]:'';
+      const cls=val!==''?getRetCls(parseFloat(val),w):'';
+      html+=`<td><span class="kpi-cell ret-cell ${cls}" contenteditable="true" data-row="${a.id}" data-col="${w}" onblur="saveRetCell(this)">${val}</span></td>`;
+    });
+    html+='</tr>';
+  });
+  html+='</tbody>';
+  document.getElementById('retention-table').innerHTML=html;
+}
+
+function getRetCls(val,week){ const b=RET_BENCHMARKS[week]; if(!b||isNaN(val)) return ''; if(val>=b.good) return 'ret-good'; if(val<b.bad) return 'ret-bad'; return 'ret-mid'; }
+
+function saveRetCell(el){
+  const data=JSON.parse(localStorage.getItem('mp_retention_mc')||'{}');
+  if(!data[el.dataset.row]) data[el.dataset.row]={};
+  data[el.dataset.row][el.dataset.col]=el.textContent.trim();
+  localStorage.setItem('mp_retention_mc',JSON.stringify(data));
+  const v=parseFloat(el.textContent.trim());
+  el.className='kpi-cell ret-cell '+getRetCls(v,el.dataset.col);
+}
+
+// ─── T-06: FUNNEL REFACTOR ────────────────────────────────────────────────────
+function migrateTodos(){
+  if(localStorage.getItem('mp_todos_migrated')) return;
+  const old=localStorage.getItem(SK);
+  if(old){
+    const parsed=JSON.parse(old);
+    if(parsed.todos&&parsed.todos.length){
+      const migrated=parsed.todos.map(t=>({...t,project:'pn',assignee:t.assignee||'team'}));
+      localStorage.setItem('mp_todos_pn',JSON.stringify(migrated));
+    }
+  }
+  localStorage.setItem('mp_todos_migrated','1');
+}
+
+function loadTodos(projectId){ return JSON.parse(localStorage.getItem('mp_todos_'+projectId)||'[]'); }
+function saveTodos(projectId,todos){ localStorage.setItem('mp_todos_'+projectId,JSON.stringify(todos)); }
 
 if(localStorage.getItem('pn_auth')==='1'){ document.getElementById('login-screen').style.display='none'; document.getElementById('app').style.display='block'; document.getElementById('h-user').textContent='Pink Notebook Team'; init(); }
 </script>
