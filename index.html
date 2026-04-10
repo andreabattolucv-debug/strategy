@@ -2999,9 +2999,13 @@ function renderKpiPage(){
     container.innerHTML=headerHtml+`<div class="kpi-lds"><span class="kpi-spin"></span>Caricamento Meta Ads...</div>`;
     kpiApplyTheme();
     const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=true;
+    // Capture project ID at call time — discard response if project switched before it resolves
+    const _loadProj=activeProject.id;
     loadMetaCampaigns(integ.adAccountId,integ.accessToken,_kpiPreset).then(data=>{
-      _kpiData=data; kpiRenderContent();
+      if(activeProject.id!==_loadProj) return; // stale: project switched while loading
+      _kpiData={...data,_projectId:_loadProj}; kpiRenderContent();
     }).catch(e=>{
+      if(activeProject.id!==_loadProj) return;
       container.innerHTML=headerHtml+`<div class="kpi-msg-err">⚠ ${metaErrMsg(e)}</div>`; kpiApplyTheme();
     }).finally(()=>{ const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=false; });
     return;
@@ -3012,6 +3016,8 @@ function renderKpiPage(){
 function kpiRenderContent(){
   const container=document.getElementById('kpi-body'); if(!container) return;
   const integ=getInteg(activeProject.id,'meta'); if(!integ||!_kpiData) return;
+  // Safety guard: if cached data belongs to a different project, clear and re-render
+  if(_kpiData._projectId && _kpiData._projectId!==activeProject.id){ _kpiData=null; renderKpiPage(); return; }
   const {campData,insData,ltData,dashType}=_kpiData;
   const m=kpiAggMetrics(insData,dashType);
   const effDT=dashType;
