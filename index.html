@@ -2139,37 +2139,65 @@ function saveInteg(){
   closeModal('modal-integ'); toast('Credenziali salvate ✓'); _kpiData=null; renderKpiPage();
 }
 
-// ── T-008: renderKpiPage — orchestrator ───────────────────────────────────────
-async function renderKpiPage(){
+// ── T-008: renderKpiPage — iframe embed orchestrator ──────────────────────────
+const KPI_DASH_BASE='https://marketingpop-ads.vercel.app';
+
+function renderKpiPage(){
   const container=document.getElementById('kpi-body');
   if(!container) return;
   const integ=getInteg(activeProject.id,'meta');
   document.getElementById('kpi-sub').textContent=activeProject.name+' · Meta Ads';
+
+  // No credentials yet → show setup prompt
   if(!integ?.adAccountId||!integ?.accessToken){
-    container.innerHTML=kpiHeaderHtml()+`<div style="text-align:center;padding:60px 24px;background:var(--g50);border-radius:var(--r);border:1px dashed var(--g200)">
+    container.innerHTML=`<div style="text-align:center;padding:60px 24px;background:var(--g50);border-radius:var(--r);border:1px dashed var(--g200)">
       <div style="font-size:32px;margin-bottom:12px">🔑</div>
       <div style="font-size:16px;font-weight:700;color:var(--g700);margin-bottom:8px">Configura le credenziali Meta Ads</div>
       <div style="font-size:13px;color:var(--g400);max-width:380px;margin:0 auto 20px">Inserisci Ad Account ID e Access Token per vedere i dati live delle campagne.</div>
       <button class="btn btn-p" onclick="openIntegModal()">⚙ Configura Meta Ads</button>
     </div>`; return;
   }
-  container.innerHTML=kpiHeaderHtml()+`<div id="kpi-content"><div style="text-align:center;padding:40px;color:var(--g400)"><span class="spin" style="display:inline-block;width:20px;height:20px;border:2px solid var(--g200);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px"></span><div style="font-size:13px">Caricamento Meta Ads...</div></div></div>`;
-  if(_kpiPlatform==='gads'){ document.getElementById('kpi-content').innerHTML=kpiGadsStubHtml(); return; }
-  try {
-    const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=true;
-    _kpiData=await loadMetaCampaigns(integ.adAccountId,integ.accessToken,_kpiPreset);
-    const {campData,insData,ltData,metrics,dashType}=_kpiData;
-    document.getElementById('kpi-content').innerHTML=
-      renderKpiCards(metrics,dashType,campData)+
-      `<div style="font-size:13px;font-weight:600;color:var(--g700);margin-bottom:10px">Campagne (${campData.length})</div>`+
-      renderCampaignsTable(campData,insData,ltData,dashType);
-  } catch(e){
-    document.getElementById('kpi-content').innerHTML=`<div style="background:#fff0f0;border:1px solid var(--red);border-radius:var(--r);padding:14px 16px;font-size:13px;color:var(--red)">⚠ ${metaErrMsg(e)}</div>`;
-  } finally {
-    const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=false;
-  }
+
+  // Platform tabs header + optional Google Ads stub
+  const dashType=integ.dashboardType||'ecommerce';
+  const tabsHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="display:flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden;background:white">
+      <button onclick="switchKpiPlatform('meta')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='meta'?'var(--accent)':'white'};color:${_kpiPlatform==='meta'?'white':'var(--g400)'}">Meta Ads</button>
+      <button onclick="switchKpiPlatform('gads')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='gads'?'var(--accent)':'white'};color:${_kpiPlatform==='gads'?'white':'var(--g400)'}">Google Ads</button>
+    </div>
+    <button onclick="openIntegModal()" class="btn btn-s" style="margin-left:auto">⚙ Configura Meta</button>
+  </div>`;
+
+  if(_kpiPlatform==='gads'){ container.innerHTML=tabsHtml+kpiGadsStubHtml(); return; }
+
+  // Choose dashboard file based on project type
+  const dashFile=dashType==='app_installs'?'dashboard-leadgen.html':'dashboard.html';
+  const iframeUrl=`${KPI_DASH_BASE}/${dashFile}`;
+
+  container.innerHTML=tabsHtml+`
+    <iframe
+      id="kpi-iframe"
+      src="${iframeUrl}"
+      style="width:100%;height:calc(100vh - 220px);min-height:600px;border:none;border-radius:var(--r);background:white;display:block"
+      onload="sendKpiCredentials()"
+    ></iframe>`;
 }
-async function refreshKpiData(){ _kpiData=null; _campPage=0; await renderKpiPage(); }
+
+function sendKpiCredentials(){
+  const integ=getInteg(activeProject.id,'meta');
+  const iframe=document.getElementById('kpi-iframe');
+  if(!iframe||!integ) return;
+  iframe.contentWindow.postMessage({
+    type:'mp_init',
+    account:integ.adAccountId,
+    token:integ.accessToken,
+    name:activeProject.name,
+    roasTarget:4.5,
+    cplTarget:10
+  }, KPI_DASH_BASE);
+}
+
+function refreshKpiData(){ renderKpiPage(); }
 
 // ─── T-05: RETENTION COHORTS ─────────────────────────────────────────────────
 const RET_BENCHMARKS={W1:{good:40,bad:25},W2:{good:25,bad:15},W3:{good:20,bad:10},W4:{good:15,bad:8},W8:{good:10,bad:5},W12:{good:8,bad:3}};
