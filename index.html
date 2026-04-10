@@ -406,6 +406,37 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kpi-tipc .ticb{font-size:12px;color:var(--g400);line-height:1.6}
 .kpi-msaved{font-size:11px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--green-l);color:var(--green)}
 input[type=range]{accent-color:var(--accent)}
+/* ── KPI dark skin ────────────────────────────────────────────────────────── */
+#kpi-body{
+  background:#1c1c1a;border-radius:12px;padding:20px;margin-top:4px;
+  --g50:#252523;--g100:#2e2e2b;--g200:rgba(255,255,255,.10);
+  --g300:rgba(255,255,255,.18);--g400:#9a9993;--g500:#7a7972;
+  --g700:#c8c5c0;--g900:#f0ede8;
+  --green:#97C459;--green-l:#173404;--green-d:#3B6D11;
+  --red:#F09595;--red-l:#501313;--red-d:#A32D2D;
+  --amber:#FAC775;--amber-l:#412402;--amber-d:#854F0B;
+  --blue:#85B7EB;--blue-l:#042C53;--blue2:#378ADD;
+  color:#f0ede8;
+}
+#kpi-body .kpi-card,#kpi-body .kpi-metric,#kpi-body .kpi-demc,#kpi-body .kpi-acc,
+#kpi-body .kpi-tbc,#kpi-body .kpi-prop,#kpi-body .kpi-strat,#kpi-body .kpi-msec,
+#kpi-body .kpi-advc,#kpi-body .kpi-em,#kpi-body .kpi-tipc,#kpi-body .kpi-simc,
+#kpi-body .kpi-msec{background:#252523;border-color:rgba(255,255,255,.10)}
+#kpi-body .kpi-strat{border-color:var(--blue)}
+#kpi-body .kpi-miw{background:#333330;border-color:rgba(255,255,255,.10)}
+#kpi-body .kpi-miw input{color:#f0ede8}
+#kpi-body .kpi-mc{background:#2e2e2b;border-right-color:rgba(255,255,255,.10);color:#9a9993}
+#kpi-body .kpi-pc{background:#2e2e2b;color:#c8c5c0}
+#kpi-body .kpi-erow td{background:#252523}
+#kpi-body .kpi-crow:hover td{background:#2e2e2b}
+#kpi-body .kpi-crt tr:hover td,#kpi-body .kpi-mct tr:hover td{background:#2e2e2b}
+#kpi-body .kpi-metric .mv{color:#f0ede8}
+#kpi-body .kpi-spin{border-color:rgba(255,255,255,.12);border-top-color:#f0ede8}
+/* platform toggle & header controls */
+#kpi-body .kpi-hdr-ctrl{background:#252523;border-color:rgba(255,255,255,.10)}
+#kpi-body .kpi-hdr-btn{background:#252523;color:#9a9993;border:none}
+#kpi-body .kpi-hdr-btn.active{background:var(--accent);color:white}
+#kpi-body .kpi-hdr-sel{background:#2e2e2b;border-color:rgba(255,255,255,.10);color:#f0ede8}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -2285,8 +2316,8 @@ function kpiCompMetrics(ins){
 // ── Tab renderer ─────────────────────────────────────────────────────────────
 function kpiTabsHtml(dashType){
   const tabs=dashType==='app_installs'
-    ?[['overview','Panoramica'],['campaigns','Campagne'],['advanced','Avanzate'],['roasreale','ROAS Reale'],['creative','Creatività']]
-    :[['overview','Panoramica'],['campaigns','Campagne'],['advanced','Avanzate'],['optimize','Ottimizzazioni'],['margin','Margine'],['creative','Creatività']];
+    ?[['overview','Panoramica'],['campaigns','Tutte le campagne'],['advanced','Metriche avanzate'],['roasreale','ROAS Reale'],['creative','Creatività']]
+    :[['overview','Panoramica'],['campaigns','Tutte le campagne'],['advanced','Metriche avanzate'],['optimize','Ottimizzazioni'],['margin','Margine'],['creative','Creatività']];
   return `<div class="kpi-tabs">${tabs.map(([id,label])=>`<button class="kpi-tab${_kpiTab===id?' active':''}" onclick="kpiShowTab('${id}')">${label}</button>`).join('')}</div>`;
 }
 function kpiShowTab(tab){ _kpiTab=tab; if(_kpiData) kpiRenderContent(); }
@@ -2707,11 +2738,11 @@ function renderKpiPage(){
   }
 
   const headerHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-    <div style="display:flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden;background:white">
-      <button onclick="switchKpiPlatform('meta')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='meta'?'var(--accent)':'white'};color:${_kpiPlatform==='meta'?'white':'var(--g400)'}">Meta Ads</button>
-      <button onclick="switchKpiPlatform('gads')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='gads'?'var(--accent)':'white'};color:${_kpiPlatform==='gads'?'white':'var(--g400)'}">Google Ads</button>
+    <div class="kpi-hdr-ctrl" style="display:flex;border-radius:var(--r);overflow:hidden">
+      <button onclick="switchKpiPlatform('meta')" class="kpi-hdr-btn${_kpiPlatform==='meta'?' active':''}" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Meta Ads</button>
+      <button onclick="switchKpiPlatform('gads')" class="kpi-hdr-btn${_kpiPlatform==='gads'?' active':''}" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Google Ads</button>
     </div>
-    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" style="padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:white;${_kpiPlatform==='gads'?'display:none':''}">
+    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200);${_kpiPlatform==='gads'?'display:none':''}">
       ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn" ${_kpiPlatform==='gads'?'disabled':''}>↻ Aggiorna</button>
@@ -2739,11 +2770,11 @@ function kpiRenderContent(){
   const {campData,insData,ltData,dashType}=_kpiData;
   const m=kpiAggMetrics(insData,dashType);
   const headerHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-    <div style="display:flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden;background:white">
-      <button onclick="switchKpiPlatform('meta')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:var(--accent);color:white">Meta Ads</button>
-      <button onclick="switchKpiPlatform('gads')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:white;color:var(--g400)">Google Ads</button>
+    <div class="kpi-hdr-ctrl" style="display:flex;border-radius:var(--r);overflow:hidden">
+      <button onclick="switchKpiPlatform('meta')" class="kpi-hdr-btn active" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Meta Ads</button>
+      <button onclick="switchKpiPlatform('gads')" class="kpi-hdr-btn" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Google Ads</button>
     </div>
-    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" style="padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:white">
+    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200)">
       ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn">↻ Aggiorna</button>
