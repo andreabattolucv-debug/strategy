@@ -405,6 +405,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kpi-tipc .tict{font-size:13px;font-weight:500;margin-bottom:5px}
 .kpi-tipc .ticb{font-size:12px;color:var(--g400);line-height:1.6}
 .kpi-msaved{font-size:11px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--green-l);color:var(--green)}
+.kpi-tipc .ticu{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px;margin-top:8px}
+.kpi-tipc .ticu.bb{background:var(--blue-l);color:var(--blue)}.kpi-tipc .ticu.bok{background:var(--amber-l);color:var(--amber)}.kpi-tipc .ticu.bg{background:var(--green-l);color:var(--green)}
+.kpi-tipc .tico{font-size:18px;margin-bottom:6px}.kpi-tipc .tict{font-size:13px;font-weight:600;margin-bottom:5px}.kpi-tipc .ticb{font-size:12px;color:var(--g400);line-height:1.6}
+.kpi-cr-hdr2{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:12px}
+.kpi-cr-title{font-size:16px;font-weight:600;color:var(--g900)}
+.kpi-cr-sub{font-size:12px;color:var(--g400);margin-top:2px}
+.kpi-cr-sort{background:var(--g100);border:1px solid var(--g200);border-radius:var(--r);padding:5px 10px;font-size:12px;color:var(--g900);outline:none;cursor:pointer}
+.kpi-drb{height:8px}
+.kpi-drv{min-width:45px;text-align:right;font-size:12px;font-weight:600}
 input[type=range]{accent-color:var(--accent)}
 /* ── KPI dark skin ────────────────────────────────────────────────────────── */
 #kpi-body{
@@ -2638,15 +2647,51 @@ function kpiThumbHtml(a){
   const phStyle=a.thumb?'display:none':'';
   return `<img class="kpi-cr-thumb" data-ad-thumb="${a.id}" src="${a.thumb||''}" style="${imgStyle}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="kpi-cr-thumb-ph" style="${phStyle}">${a.format==='video'?'▶':'🖼'}</div>`;
 }
+function kpiRenderCrTips(dashType){
+  if(!_kpiCrData.length) return '';
+  const tips=[];
+  const hf=_kpiCrData.filter(a=>a.freq>3.0&&a.spend>10);
+  if(hf.length) tips.push({ico:'↻',t:'Refresh creativa urgente',b:hf.length+' inserzione'+(hf.length>1?'i':'')+' con frequenza sopra 3.0. Il pubblico vede le stesse grafiche troppe volte. Sostituisci entro 7 giorni.',u:'Alta',uc:'bb'});
+  const vids=_kpiCrData.filter(a=>a.format==='video'&&a.roas!==null);
+  const imgs=_kpiCrData.filter(a=>a.format==='image'&&a.roas!==null);
+  if(vids.length&&imgs.length){
+    const avR=vids.reduce((s,a)=>s+a.roas,0)/vids.length;
+    const aiR=imgs.reduce((s,a)=>s+a.roas,0)/imgs.length;
+    if(avR>aiR*1.2) tips.push({ico:'▶',t:'Scala i video',b:'I video hanno ROAS medio '+kpiFmt(avR)+' contro '+kpiFmt(aiR)+' delle statiche. Aumenta budget sugli adset con video.',u:'Media',uc:'bok'});
+    else if(aiR>avR*1.2) tips.push({ico:'▪',t:'Le statiche performano meglio',b:'Le immagini hanno ROAS medio '+kpiFmt(aiR)+' contro '+kpiFmt(avR)+' dei video. Investi in grafiche statiche di qualità.',u:'Media',uc:'bok'});
+  }
+  const lc=_kpiCrData.filter(a=>a.ctr<0.8&&a.spend>20);
+  if(lc.length) tips.push({ico:'↓',t:'CTR sotto soglia',b:lc.length+' inserzione'+(lc.length>1?'i':'')+' con CTR sotto 0.8% e spesa significativa. Testa nuovi hook visivi per ridurre CPM.',u:lc.length>2?'Alta':'Media',uc:lc.length>2?'bb':'bok'});
+  if(!tips.length) tips.push({ico:'✓',t:'Creatività nella norma',b:'Nessuna criticità rilevata. Continua a monitorare la frequenza settimanalmente.',u:'Bassa',uc:'bg'});
+  const fallbacks=[{ico:'◆',t:'Testa 2-3 varianti per adset',b:'Mantieni almeno 2-3 inserzioni diverse in test. Lascia girare ogni variante per almeno 7 giorni prima di giudicare.',u:'Bassa',uc:'bg'},{ico:'▤',t:'Formati per placement',b:'Usa 9:16 per Stories e Reels, 1:1 per Feed, 4:5 per Feed verticale. Creatività adattate al placement migliorano CTR del 15-25%.',u:'Bassa',uc:'bg'}];
+  while(tips.length<3) tips.push(fallbacks[tips.length-1]||fallbacks[0]);
+  return `<div class="kpi-tipsg">${tips.slice(0,3).map(t=>`<div class="kpi-tipc"><div class="tico">${t.ico}</div><div class="tict">${t.t}</div><div class="ticb">${t.b}</div><div class="ticu ${t.uc}">Priorità ${t.u}</div></div>`).join('')}</div>`;
+}
 function kpiRenderCreativeHtml(dashType){
-  const sorted=[..._kpiCrData].sort((a,b)=>dashType==='app_installs'?(b.metric||0)-(a.metric||0):(b.roas||0)-(a.roas||0));
-  const top3=sorted.slice(0,3), bot3=sorted.slice(-3).reverse();
-  const topHtml=top3.map(a=>`<div class="kpi-tbr"><div class="kpi-cr-name-cell">${kpiThumbHtml(a)}<div class="tbn">${a.name}</div></div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
-  const botHtml=bot3.map(a=>`<div class="kpi-tbr"><div class="kpi-cr-name-cell">${kpiThumbHtml(a)}<div class="tbn">${a.name}</div></div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
-  const tableRows=_kpiCrData.map(a=>`<tr><td><div class="kpi-cr-name-cell">${kpiThumbHtml(a)}<span class="kpi-tn" title="${a.name}">${a.name}</span></div></td><td><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span></td><td>€${kpiFmt(a.spend)}</td><td class="${dashType==='app_installs'?kpiCplClass(a.cpl):kpiRc(a.roas)}">${dashType==='app_installs'?a.metric+' lead':(a.roas?kpiFmt(a.roas):'—')}</td><td>${kpiFmt(a.ctr)}%</td><td>€${kpiFmt(a.cpm)}</td><td class="${a.freq>3.5?'kpi-red':a.freq>2.5?'kpi-amber':''}">${kpiFmt(a.freq,2)}</td><td class="kpi-tn">${a.adset}</td></tr>`).join('');
-  return `<div class="kpi-tbg"><div class="kpi-tbc top"><div class="tbt">Top 3 inserzioni</div>${topHtml}</div><div class="kpi-tbc bot"><div class="tbt">Bottom 3 inserzioni</div>${botHtml}</div></div>
-  <div class="kpi-crtw"><table class="kpi-crt"><thead><tr><th>Inserzione</th><th>Formato</th><th>Spesa</th><th>${dashType==='app_installs'?'Lead':'ROAS'}</th><th>CTR</th><th>CPM</th><th>Freq.</th><th>Adset</th></tr></thead><tbody>${tableRows}</tbody></table></div>
-  <div class="kpi-demog"><div class="kpi-demc"><div class="dt">Breakdown per età</div><div id="kpi-demo-age"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div><div class="kpi-demc"><div class="dt">Breakdown per genere</div><div id="kpi-demo-gen"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div></div>`;
+  const fmtLabel={image:'Statica',video:'Video',carousel:'Carosello'};
+  // Sort selector header
+  const sortOpts=dashType==='app_installs'
+    ?`<option value="metric" ${_kpiCrSort==='metric'?'selected':''}>Lead</option><option value="cpl" ${_kpiCrSort==='cpl'?'selected':''}>CPL</option>`
+    :`<option value="roas" ${_kpiCrSort==='roas'?'selected':''}>ROAS</option><option value="spend" ${_kpiCrSort==='spend'?'selected':''}>Spesa</option><option value="ctr" ${_kpiCrSort==='ctr'?'selected':''}>CTR</option>`;
+  const hdrHtml=`<div class="kpi-cr-hdr2"><div><div class="kpi-cr-title">Analisi creatività</div><div class="kpi-cr-sub">Performance inserzioni · Demographic breakdown · Consigli</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:var(--g400)">Ordina per</span><select class="kpi-cr-sort" onchange="_kpiCrSort=this.value;_kpiCrDir=-1;document.getElementById('kpi-creative-area').innerHTML='<div class=kpi-lds><span class=kpi-spin></span>Ricarico...</div>';kpiFetchCreative()">${sortOpts}</select></div></div>`;
+  // TOP3/BOTTOM3 — no thumbnails, just name + ROAS/metric (colored) + spend badge
+  const withPerf=_kpiCrData.filter(a=>a.spend>2);
+  const sorted=[...withPerf].sort((a,b)=>dashType==='app_installs'?(b.metric||0)-(a.metric||0):(b.roas||0)-(a.roas||0));
+  const top3=sorted.slice(0,3), bot3=[...sorted].reverse().slice(0,3);
+  const tbRow=a=>{
+    const rv=dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—';
+    const rc=a.roas!==null?(a.roas>=6?'kpi-green':a.roas>=3?'kpi-amber':'kpi-red'):'';
+    return `<div class="kpi-tbr"><span class="tbn" title="${a.name}">${a.name}</span><span class="tbv ${rc}">${rv}</span><span style="font-size:10px;background:var(--g100);color:var(--g400);padding:2px 6px;border-radius:20px">€${kpiFmt(a.spend)}</span></div>`;
+  };
+  const topHtml=top3.map(tbRow).join('')||'<div style="color:var(--g400);font-size:12px">Nessun dato.</div>';
+  const botHtml=bot3.map(tbRow).join('')||'<div style="color:var(--g400);font-size:12px">Nessun dato.</div>';
+  // Table — with Acquisti column + colored format badges + colored CTR
+  const tableSorted=[..._kpiCrData].sort((a,b)=>_kpiCrDir*((b[_kpiCrSort]||0)-(a[_kpiCrSort]||0)));
+  const tableRows=tableSorted.map(a=>`<tr><td><div class="kpi-cr-name-cell">${kpiThumbHtml(a)}<span class="kpi-tn" title="${a.name}">${a.name}</span></div></td><td><span class="kpi-fbadge kpi-f${a.format}">${fmtLabel[a.format]||a.format}</span></td><td>€${kpiFmt(a.spend)}</td><td class="${dashType==='app_installs'?kpiCplClass(a.cpl):kpiRc(a.roas)}">${dashType==='app_installs'?a.metric+' lead':(a.roas?kpiFmt(a.roas):'—')}</td><td class="${a.ctr>=2?'kpi-green':a.ctr>=1?'':'kpi-red'}">${kpiFmt(a.ctr)}%</td><td>€${kpiFmt(a.cpm)}</td><td class="${a.freq>3.5?'kpi-red':a.freq>2.5?'kpi-amber':''}">${kpiFmt(a.freq,2)}</td><td>${a.purchases||'—'}</td><td class="kpi-tn" title="${a.adset}">${a.adset}</td></tr>`).join('');
+  return hdrHtml+kpiRenderCrTips(dashType)+
+    `<div class="kpi-tbg"><div class="kpi-tbc top"><div class="tbt">Top 3 inserzioni</div>${topHtml}</div><div class="kpi-tbc bot"><div class="tbt">Bottom 3 inserzioni</div>${botHtml}</div></div>
+    <div class="kpi-crtw"><table class="kpi-crt"><thead><tr><th>Inserzione</th><th>Formato</th><th>Spesa</th><th>${dashType==='app_installs'?'Lead':'ROAS'}</th><th>CTR</th><th>CPM</th><th>Frequenza</th><th>Acquisti</th><th>Adset</th></tr></thead><tbody>${tableRows}</tbody></table></div>
+    <div class="kpi-demog"><div class="kpi-demc"><div class="dt">Breakdown per età</div><div id="kpi-demo-age"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div><div class="kpi-demc"><div class="dt">Breakdown per genere</div><div id="kpi-demo-gen"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div></div>`;
 }
 async function kpiFetchAdThumbs(token){
   const ids=_kpiCrData.filter(a=>a.id).map(a=>a.id);
@@ -2671,14 +2716,32 @@ function kpiUpdateThumb(adId,url){
   });
 }
 async function kpiFetchDemo(integ,container){
+  const AGE_COLORS=['#378ADD','#639922','#BA7517','#E24B4A','#8B5CF6','#EC4899','#14B8A6'];
+  const GEN_COLORS={male:'#378ADD',female:'#EC4899',unknown:'#888'};
+  const GEN_LABELS={male:'Uomini',female:'Donne',unknown:'Non specificato'};
   try{
-    const r1=await metaApiFetch(integ.adAccountId+'/insights?fields=impressions,clicks,spend&date_preset='+_kpiPreset+'&breakdowns=age&level=account&limit=20',integ.accessToken);
-    const r2=await metaApiFetch(integ.adAccountId+'/insights?fields=impressions,clicks,spend&date_preset='+_kpiPreset+'&breakdowns=gender&level=account&limit=10',integ.accessToken);
-    const ageEl=document.getElementById('kpi-demo-age'); const genEl=document.getElementById('kpi-demo-gen');
-    if(ageEl){ const data=r1.data||[]; const maxI=Math.max(...data.map(d=>parseInt(d.impressions||0)));
-      ageEl.innerHTML=data.map(d=>{ const pct=maxI>0?parseInt(d.impressions||0)/maxI*100:0; return `<div class="kpi-dr"><div class="kpi-drl">${d.age||'?'}</div><div class="kpi-drb"><div class="kpi-drf" style="width:${pct}%;background:var(--accent)"></div></div><div class="kpi-drv">${kpiFmtI(d.impressions)}</div></div>`; }).join(''); }
-    if(genEl){ const data=r2.data||[]; const maxI=Math.max(...data.map(d=>parseInt(d.impressions||0)));
-      genEl.innerHTML=data.map(d=>{ const pct=maxI>0?parseInt(d.impressions||0)/maxI*100:0; return `<div class="kpi-dr"><div class="kpi-drl">${d.gender||'?'}</div><div class="kpi-drb"><div class="kpi-drf" style="width:${pct}%;background:var(--blue)"></div></div><div class="kpi-drv">${kpiFmtI(d.impressions)}</div></div>`; }).join(''); }
+    const [r1,r2]=await Promise.all([
+      metaApiFetch(integ.adAccountId+'/insights?fields=impressions,clicks,spend&date_preset='+_kpiPreset+'&breakdowns=age&level=account&limit=20',integ.accessToken),
+      metaApiFetch(integ.adAccountId+'/insights?fields=impressions,clicks,spend&date_preset='+_kpiPreset+'&breakdowns=gender&level=account&limit=10',integ.accessToken)
+    ]);
+    const ageEl=document.getElementById('kpi-demo-age');
+    if(ageEl){
+      const data=(r1.data||[]).sort((a,b)=>parseInt(a.age||0)-parseInt(b.age||0));
+      const maxI=Math.max(...data.map(d=>parseInt(d.impressions||0)),1);
+      ageEl.innerHTML=data.map((d,i)=>{
+        const impr=parseInt(d.impressions||0), pct=(impr/maxI*100).toFixed(1);
+        return `<div class="kpi-dr"><span class="kpi-drl">${d.age||'N/D'}</span><div class="kpi-drb"><div class="kpi-drf" style="width:${pct}%;background:${AGE_COLORS[i%AGE_COLORS.length]}"></div></div><span class="kpi-drv">${impr.toLocaleString('it-IT')}</span><span style="font-size:11px;color:var(--g400);min-width:50px;text-align:right">€${kpiFmt(parseFloat(d.spend||0))}</span></div>`;
+      }).join('');
+    }
+    const genEl=document.getElementById('kpi-demo-gen');
+    if(genEl){
+      const data=r2.data||[];
+      const tot=data.reduce((s,d)=>s+parseInt(d.impressions||0),0)||1;
+      genEl.innerHTML=data.map(d=>{
+        const impr=parseInt(d.impressions||0), pct=(impr/tot*100), g=d.gender||'unknown';
+        return `<div class="kpi-dr"><span class="kpi-drl">${GEN_LABELS[g]||g}</span><div class="kpi-drb"><div class="kpi-drf" style="width:${pct.toFixed(1)}%;background:${GEN_COLORS[g]||'#888'}"></div></div><span class="kpi-drv">${pct.toFixed(1)}%</span><span style="font-size:11px;color:var(--g400);min-width:50px;text-align:right">€${kpiFmt(parseFloat(d.spend||0))}</span></div>`;
+      }).join('');
+    }
   }catch(e){ const el=document.getElementById('kpi-demo-age'); if(el) el.innerHTML='<div style="font-size:12px;color:var(--g400)">Dati demografici non disponibili.</div>'; }
 }
 
