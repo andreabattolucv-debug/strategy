@@ -610,13 +610,8 @@ input[type=range]{accent-color:var(--accent)}
           <div id="ov-decisions"></div>
         </div>
 
-        <!-- ROW 3: 3 widget -->
+        <!-- ROW 3: 2 widget -->
         <div class="ov-widgets">
-          <!-- Funnel tasks -->
-          <div class="card" style="margin:0">
-            <div class="card-hd"><div class="card-title">📋 Funnel & Dev</div></div>
-            <div id="ov-funnel-widget"></div>
-          </div>
           <!-- Focus settimana — in-progress todos -->
           <div class="card" style="margin:0">
             <div class="card-hd">
@@ -1348,9 +1343,9 @@ function updateBadges(){
 function renderOverview(){
   renderOvProjects();
   renderOvDecisions();
-  renderOvFunnel();
   renderOvFocus();
   renderOvKpi();
+  ovKpiPrefetch(); // background-fetch Meta data for all configured projects
 }
 
 // Widget 1 — Project cards
@@ -1524,9 +1519,10 @@ function renderOvKpi(){
   PROJECTS.forEach(p=>{
     const cached=_kpiProjectCache[p.id];
     if(!cached){
+      const hasInteg=!!(getInteg(p.id,'meta')?.adAccountId);
       html+=`<div class="ov-kpi-row">
         <div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div>
-        <div style="font-size:12px;color:var(--g400)">Vai al tab KPI per caricare i dati <span style="opacity:.5">→</span></div>
+        <div style="font-size:12px;color:var(--g400)">${hasInteg?'<span class="kpi-spin" style="width:12px;height:12px;border-width:2px;display:inline-block;vertical-align:middle;margin-right:4px"></span>Caricamento...':'⚙ Configura Meta Ads nel tab KPI'}</div>
       </div>`;
       return;
     }
@@ -1568,6 +1564,23 @@ function renderOvKpi(){
     }
   });
   el.innerHTML=html;
+}
+
+// Background-fetch Meta data for all projects with integrations → populates _kpiProjectCache
+// Called on every renderOverview() so the KPI snapshot is always fresh.
+async function ovKpiPrefetch(){
+  for(const p of PROJECTS){
+    const integ=getInteg(p.id,'meta');
+    if(!integ?.adAccountId||!integ?.accessToken) continue;
+    const preset=(_kpiProjState[p.id]?.preset)||'last_30d';
+    try{
+      const data=await loadMetaCampaigns(integ.adAccountId,integ.accessToken,preset);
+      _kpiProjectCache[p.id]={...data,_projectId:p.id};
+      // If we're still on the overview page, refresh the snapshot
+      const ovPage=document.querySelector('#page-overview.active');
+      if(ovPage) renderOvKpi();
+    }catch(e){} // silent — overview snapshot is best-effort
+  }
 }
 
 // HELPERS
