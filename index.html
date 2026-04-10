@@ -238,8 +238,174 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ps-tab:hover{border-color:var(--g400);color:var(--g900)}
 .ps-tab.active{border-color:var(--accent);background:var(--accent-l);color:var(--accent)}
 @media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{display:none}.sgrid{grid-template-columns:1fr}}
+/* ── KPI INLINE DASHBOARD ──────────────────────────────────────────────────── */
+.kpi-tabs{display:flex;border-bottom:1px solid var(--g200);margin-bottom:16px;overflow-x:auto;gap:0}
+.kpi-tab{font-size:13px;padding:8px 16px;cursor:pointer;border:none;background:transparent;color:var(--g400);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-weight:400}
+.kpi-tab.active{color:var(--g900);font-weight:500;border-bottom:2px solid var(--g900)}
+.kpi-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}
+.kpi-metric{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
+.kpi-metric .ml{font-size:11px;color:var(--g400);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.kpi-metric .mv{font-size:24px;font-weight:600;letter-spacing:-.02em}
+.kpi-metric .ms{font-size:11px;color:var(--g400);margin-top:3px}
+.kpi-card{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:16px 18px;margin-bottom:14px}
+.kpi-sec{font-size:11px;font-weight:500;color:var(--g400);letter-spacing:.05em;text-transform:uppercase;margin-bottom:12px}
+.kpi-acg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:14px}
+.kpi-acc{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:16px 18px}
+.kpi-ach{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.kpi-acn{font-size:13px;font-weight:500;max-width:200px;line-height:1.4}
+.kpi-acb{font-size:11px;color:var(--g400);margin-top:2px}
+.kpi-acm{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.kpi-acml{font-size:10px;color:var(--g400);margin-bottom:2px;text-align:center}
+.kpi-acmv{font-size:15px;font-weight:600;text-align:center}
+.kpi-acd{border:none;border-top:1px solid var(--g200);margin-bottom:10px}
+.kpi-aca{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.kpi-acai{display:flex;justify-content:space-between;font-size:12px}
+.kpi-acal{color:var(--g400)}
+.kpi-cw{position:relative;width:100%;height:220px}
+.kpi-tw{overflow-x:auto}
+.kpi-table{width:100%;border-collapse:collapse;font-size:13px;min-width:620px}
+.kpi-table th{text-align:left;font-size:11px;font-weight:500;color:var(--g400);padding:8px 10px;border-bottom:1px solid var(--g200);white-space:nowrap}
+.kpi-table td{padding:10px;border-bottom:1px solid var(--g200);vertical-align:middle}
+.kpi-table tbody tr:last-child td{border-bottom:none}
+.kpi-crow{cursor:pointer}
+.kpi-crow:hover td{background:var(--g50)}
+.kpi-erow td{background:var(--g50);padding:0}
+.kpi-ei{padding:4px 14px 14px 36px}
+.kpi-eg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.kpi-em{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:8px 10px}
+.kpi-em .el{font-size:10px;color:var(--g400);margin-bottom:2px}
+.kpi-em .ev{font-size:17px;font-weight:600}
+.kpi-badge-a{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--green-l);color:var(--green)}
+.kpi-badge-p{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;background:var(--g100);color:var(--g400);border:1px solid var(--g200)}
+.kpi-tag-lt{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:20px;margin-left:4px;background:var(--amber-l);color:var(--amber)}
+.kpi-tag-per{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:20px;margin-left:4px;background:var(--blue-l);color:var(--blue)}
+.kpi-green{color:var(--green)}.kpi-amber{color:var(--amber)}.kpi-red{color:var(--red)}.kpi-na{color:var(--g400)}
+.kpi-rv{font-weight:600}
+.kpi-tn{max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kpi-abtns{display:flex;gap:5px}
+.kpi-abtn{font-size:11px;padding:3px 8px;border-radius:var(--r);cursor:pointer;border:1px solid var(--g200);background:transparent;color:var(--g400);white-space:nowrap}
+.kpi-abtn.green{color:var(--green);border-color:var(--green)}
+.kpi-abtn.red{color:var(--red);border-color:var(--red)}
+.kpi-chev{font-size:9px;color:var(--g400);transition:transform .2s;display:inline-block;margin-right:4px}
+.kpi-chev.open{transform:rotate(90deg)}
+.kpi-adv-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.kpi-advc{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
+.kpi-advc .al{font-size:10px;color:var(--g400);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.kpi-advc .av{font-size:26px;font-weight:600;letter-spacing:-.02em;line-height:1;margin-bottom:5px}
+.kpi-advc .as{font-size:12px;color:var(--g400);line-height:1.5}
+.kpi-advc .ab{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;margin-top:6px}
+.kpi-ab-g{background:var(--green-l);color:var(--green)}.kpi-ab-a{background:var(--amber-l);color:var(--amber)}.kpi-ab-r{background:var(--red-l);color:var(--red)}
+.kpi-rev-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.kpi-revc{border-radius:var(--r);padding:14px 16px}
+.kpi-revc.revenue{background:var(--green-l);border:1px solid var(--green)}
+.kpi-revc.cost{background:var(--red-l);border:1px solid var(--red)}
+.kpi-revc.profit{background:var(--blue-l);border:1px solid var(--blue)}
+.kpi-revc .rl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.kpi-revc.revenue .rl{color:var(--green)}.kpi-revc.cost .rl{color:var(--red)}.kpi-revc.profit .rl{color:var(--blue)}
+.kpi-revc .rm{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:4px}
+.kpi-revc.revenue .rm{color:var(--green)}.kpi-revc.cost .rm{color:var(--red)}.kpi-revc.profit .rm{color:var(--blue)}
+.kpi-revc .rs{font-size:11px;opacity:.75}
+.kpi-prop{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px 18px;margin-bottom:10px;transition:opacity .2s}
+.kpi-prop.dis{opacity:.35;pointer-events:none}
+.kpi-ph{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.kpi-pi{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.kpi-pi.scale{background:var(--green-l);color:var(--green)}
+.kpi-pi.pause{background:var(--amber-l);color:var(--amber)}
+.kpi-pi.alert{background:var(--red-l);color:var(--red)}
+.kpi-pt{font-size:13px;font-weight:500;flex:1}
+.kpi-pb{font-size:12px;color:var(--g400);line-height:1.6;margin-bottom:8px}
+.kpi-pc{font-size:11px;background:var(--g100);border-radius:var(--r);padding:6px 10px;margin-bottom:10px;font-family:monospace}
+.kpi-prisk{display:inline-block;font-size:11px;font-weight:500;padding:2px 7px;border-radius:20px}
+.kpi-rlow{background:var(--green-l);color:var(--green)}.kpi-rmed{background:var(--amber-l);color:var(--amber)}.kpi-rhigh{background:var(--red-l);color:var(--red)}
+.kpi-strat{background:white;border:2px solid var(--blue);border-radius:var(--r);padding:18px 22px;margin-bottom:16px}
+.kpi-strat .stt{font-size:14px;font-weight:600;margin-bottom:4px}
+.kpi-strat .sts{font-size:12px;color:var(--g400);margin-bottom:14px}
+.kpi-spts{list-style:none}
+.kpi-spts li{font-size:12px;color:var(--g400);line-height:1.7;padding:7px 0;border-bottom:1px solid var(--g200);display:flex;gap:8px}
+.kpi-spts li:last-child{border-bottom:none}
+.kpi-spts li strong{color:var(--g900);font-weight:500}
+.kpi-msec{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:18px;margin-bottom:14px}
+.kpi-msec-t{font-size:13px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.kpi-mcg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.kpi-mig label{font-size:11px;color:var(--g400);display:block;margin-bottom:5px}
+.kpi-miw{display:flex;align-items:center;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden;background:var(--g50)}
+.kpi-mc{font-size:12px;color:var(--g400);padding:0 7px;background:var(--g100);border-right:1px solid var(--g200);height:34px;display:flex;align-items:center}
+.kpi-miw input{flex:1;border:none;background:transparent;padding:0 8px;height:34px;font-size:13px;color:var(--g900);outline:none}
+.kpi-mbr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--g200);font-size:13px}
+.kpi-mbr:last-child{border-bottom:none}
+.kpi-mbr.tot{font-weight:600;font-size:14px;padding-top:8px;margin-top:4px;border-top:1.5px solid var(--g200);border-bottom:none}
+.kpi-mbr .rl2{color:var(--g400)}.kpi-mbr.tot .rl2{color:var(--g900)}
+.kpi-mbr .neg{color:var(--red)}.kpi-mbr .pos{color:var(--green)}
+.kpi-mpb{height:6px;border-radius:3px;margin-top:10px;background:var(--g100);overflow:hidden}
+.kpi-mpf{height:100%;border-radius:3px;transition:width .3s}
+.kpi-mpl{font-size:11px;color:var(--g400);margin-top:5px}
+.kpi-bed{text-align:center;padding:16px 0}
+.kpi-ben{font-size:36px;font-weight:700;letter-spacing:-.03em}
+.kpi-bes{font-size:12px;color:var(--g400);margin-top:4px}
+.kpi-bec{margin-top:14px;font-size:12px}
+.kpi-ber{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--g200)}
+.kpi-ber:last-child{border-bottom:none}
+.kpi-mct th{text-align:left;font-size:11px;font-weight:500;color:var(--g400);padding:7px 8px;border-bottom:1px solid var(--g200);white-space:nowrap}
+.kpi-mct td{padding:8px;border-bottom:1px solid var(--g200);vertical-align:middle;font-size:12px}
+.kpi-mct tr:last-child td{border-bottom:none}
+.kpi-mct tr:hover td{background:var(--g50)}
+.kpi-pp{color:var(--green);font-weight:600}.kpi-pn{color:var(--red);font-weight:600}.kpi-pz{color:var(--amber);font-weight:600}
+.kpi-simgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.kpi-simc{background:var(--g100);border-radius:var(--r);padding:14px}
+.kpi-siml{font-size:11px;color:var(--g400);margin-bottom:10px}
+.kpi-simv{font-size:18px;font-weight:600;text-align:center;margin:6px 0}
+.kpi-simr{font-size:11px;color:var(--g400);text-align:center;line-height:1.6;min-height:44px}
+.kpi-crhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px}
+.kpi-tbg{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.kpi-tbc{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
+.kpi-tbc .tbt{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.kpi-tbc.top .tbt{color:var(--green)}.kpi-tbc.bot .tbt{color:var(--red)}
+.kpi-tbr{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--g200);font-size:12px;gap:6px}
+.kpi-tbr:last-child{border-bottom:none}
+.kpi-tbr .tbn{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--g400)}
+.kpi-tbr .tbv{font-weight:600;white-space:nowrap}
+.kpi-fimg{background:var(--blue-l);color:var(--blue)}.kpi-fvid{background:var(--amber-l);color:var(--amber)}.kpi-fcar{background:var(--green-l);color:var(--green)}
+.kpi-fbadge{display:inline-block;font-size:10px;font-weight:500;padding:1px 6px;border-radius:20px}
+.kpi-crtw{overflow-x:auto;margin-bottom:14px}
+.kpi-crt{width:100%;border-collapse:collapse;font-size:12px;min-width:700px}
+.kpi-crt th{text-align:left;font-size:10px;font-weight:500;color:var(--g400);padding:7px 8px;border-bottom:1px solid var(--g200);white-space:nowrap}
+.kpi-crt td{padding:8px;border-bottom:1px solid var(--g200);vertical-align:middle}
+.kpi-crt tr:last-child td{border-bottom:none}
+.kpi-crt tr:hover td{background:var(--g50)}
+.kpi-demog{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.kpi-demc{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
+.kpi-demc .dt{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--g400);margin-bottom:12px}
+.kpi-dr{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px}
+.kpi-drl{min-width:80px;color:var(--g400)}
+.kpi-drb{flex:1;background:var(--g100);border-radius:3px;height:6px;overflow:hidden}
+.kpi-drf{height:100%;border-radius:3px;transition:width .4s}
+.kpi-drv{min-width:38px;text-align:right;font-size:11px;font-weight:500}
+.kpi-frow{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.kpi-frow-label{font-size:12px;color:var(--g400);min-width:120px}
+.kpi-fbar-outer{flex:1;height:26px;background:var(--g100);border-radius:6px;overflow:hidden}
+.kpi-fbar-inner{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;transition:width .4s}
+.kpi-fbar-val{font-size:11px;font-weight:600}
+.kpi-frow-meta{font-size:11px;color:var(--g400);min-width:70px;text-align:right}
+.kpi-nr-box{background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);padding:14px 16px;margin-bottom:14px}
+.kpi-nr-title{font-size:13px;font-weight:500;color:var(--red);margin-bottom:12px}
+.kpi-nr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.kpi-nr-item{background:rgba(255,255,255,.2);border-radius:var(--r);padding:10px;text-align:center}
+.kpi-nr-v{font-size:22px;font-weight:600;color:var(--red)}
+.kpi-nr-l{font-size:10px;color:var(--red-d);margin-top:2px}
+.kpi-empty{text-align:center;padding:2rem;color:var(--g400);font-size:13px;border:1px dashed var(--g200);border-radius:var(--r)}
+.kpi-spin{display:inline-block;width:14px;height:14px;border:2px solid var(--g200);border-top-color:var(--g900);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
+.kpi-lds{text-align:center;padding:2.5rem;color:var(--g400);font-size:13px}
+.kpi-msg-err{background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:12px}
+.kpi-tipsg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.kpi-tipc{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px 16px}
+.kpi-tipc .tico{font-size:16px;margin-bottom:6px}
+.kpi-tipc .tict{font-size:13px;font-weight:500;margin-bottom:5px}
+.kpi-tipc .ticb{font-size:12px;color:var(--g400);line-height:1.6}
+.kpi-msaved{font-size:11px;font-weight:500;padding:2px 7px;border-radius:20px;background:var(--green-l);color:var(--green)}
+input[type=range]{accent-color:var(--accent)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 </head>
 <body>
 
@@ -1926,8 +2092,6 @@ const META_PRESETS=[{value:'last_7d',label:'Ultimi 7gg'},{value:'last_14d',label
 let _kpiPreset='last_30d';
 let _kpiPlatform='meta';
 let _kpiData=null;
-let _campPage=0;
-const CAMP_PER_PAGE=10;
 
 async function metaApiFetch(path,token){
   const url=META_API+path+(path.includes('?')?'&':'?')+'access_token='+encodeURIComponent(token);
@@ -1969,91 +2133,7 @@ async function loadMetaCampaigns(adAccountId,token,preset='last_30d'){
   return {campData,insData,ltData,metrics:aggregateMetrics(insData,dashType),dashType};
 }
 
-// ── T-004: KPI cards ──────────────────────────────────────────────────────────
-function renderKpiCards(metrics,dashType,campData){
-  const active=(campData||[]).filter(c=>c.status==='ACTIVE').length;
-  const total=(campData||[]).length;
-  const cur=dashType==='app_installs'?'$':'€';
-  let card2,card3;
-  if(dashType==='app_installs'){
-    const ok=metrics.cpd!=null;
-    const cls=ok?(metrics.cpd<=2.50?'color:var(--green)':metrics.cpd<=4.00?'color:var(--amber)':'color:var(--red)'):'';
-    card2=`<div class="mc"><div class="mc-lbl">CPD</div><div class="mc-val" style="${cls}">${ok?cur+metrics.cpd.toFixed(2):'—'}</div><div class="mc-lbl" style="margin-top:2px">target &lt; $2.50</div></div>`;
-    card3=`<div class="mc"><div class="mc-lbl">Download</div><div class="mc-val" style="color:var(--blue)">${fmtN(metrics.downloads)}</div><div class="mc-lbl" style="margin-top:2px">installs periodo</div></div>`;
-  } else {
-    const ok=metrics.roas!=null;
-    const cls=ok?(metrics.roas>=4.0?'color:var(--green)':metrics.roas>=2.5?'color:var(--amber)':'color:var(--red)'):'';
-    card2=`<div class="mc"><div class="mc-lbl">ROAS medio</div><div class="mc-val" style="${cls}">${ok?metrics.roas.toFixed(2)+'x':'—'}</div><div class="mc-lbl" style="margin-top:2px">target ≥ 4.0x</div></div>`;
-    card3=`<div class="mc"><div class="mc-lbl">Acquisti</div><div class="mc-val" style="color:var(--blue)">${fmtN(metrics.purchases)}</div><div class="mc-lbl" style="margin-top:2px">CTR ${fmtP(metrics.ctr)}</div></div>`;
-  }
-  return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
-    <div class="mc"><div class="mc-lbl">Spend</div><div class="mc-val">${cur}${metrics.spend.toFixed(2)}</div><div class="mc-lbl" style="margin-top:2px">periodo selezionato</div></div>
-    ${card2}${card3}
-    <div class="mc"><div class="mc-lbl">Campagne attive</div><div class="mc-val">${active}<span style="font-size:14px;color:var(--g400)"> / ${total}</span></div><div class="mc-lbl" style="margin-top:2px">totali in account</div></div>
-  </div>`;
-}
-
-// ── T-005: Campaigns table ────────────────────────────────────────────────────
-function renderCampaignsTable(campData,insData,ltData,dashType){
-  if(!campData?.length) return `<div style="text-align:center;padding:32px;color:var(--g400)">Nessuna campagna trovata. Verifica le credenziali Meta.</div>`;
-  const links=loadCampaignLinks(activeProject.id);
-  const items=activeProject.boardType==='audience'?loadAudiences():(S.strategies||[]);
-  const linkMap={},stratMap={};
-  links.forEach(l=>{ linkMap[l.campaignId]=l.strategyId; });
-  items.forEach(s=>{ stratMap[s.id]=s.title||s.name; });
-  const isApp=dashType==='app_installs'; const cur=isApp?'$':'€';
-  const head=isApp
-    ?`<tr><th></th><th>Campagna</th><th>Status</th><th>Budget/g</th><th>Spend</th><th>CPD</th><th>Download</th><th>CTR</th><th>Audience</th></tr>`
-    :`<tr><th></th><th>Campagna</th><th>Status</th><th>Budget/g</th><th>Spend</th><th>ROAS</th><th>Acquisti</th><th>CTR</th><th>Strategia</th></tr>`;
-  const start=_campPage*CAMP_PER_PAGE;
-  const rows=campData.slice(start,start+CAMP_PER_PAGE).map(c=>{
-    const ins=insData.find(i=>i.campaign_id===c.id)||ltData[c.id]||null;
-    const isLt=!insData.find(i=>i.campaign_id===c.id)&&!!ltData[c.id];
-    const active=c.status==='ACTIVE'; const dim=isLt?'opacity:.55':'';
-    const spend=ins?parseFloat(ins.spend||0):null;
-    const ctr=ins?parseFloat(ins.ctr||0):null;
-    const budget=c.daily_budget?cur+(parseFloat(c.daily_budget)/100).toFixed(0)+'/g':(c.lifetime_budget?cur+(parseFloat(c.lifetime_budget)/100).toFixed(0)+' tot':'—');
-    let mA,mB;
-    if(isApp){ const inst=ins?.actions?.find(a=>a.action_type==='mobile_app_install'); const dl=inst?parseInt(inst.value):null; const cpd=dl&&spend?spend/dl:null; mA=cpd!=null?cur+cpd.toFixed(2):'—'; mB=dl!=null?fmtN(dl):'—'; }
-    else { const roas=ins?.purchase_roas?.[0]?.value; const pur=ins?.actions?.find(a=>a.action_type==='purchase'); mA=roas?parseFloat(roas).toFixed(2)+'x':'—'; mB=pur?pur.value:'—'; }
-    const linkedId=linkMap[c.id]; const linkedName=linkedId?stratMap[linkedId]:null;
-    const linkBtn=linkedName
-      ?`<span class="badge b-plan" style="cursor:pointer;font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block" onclick="openLinkModal('${c.id}','${c.name.replace(/'/g,"\\'")}',event)" title="${linkedName}">${linkedName.substring(0,16)}${linkedName.length>16?'…':''} ×</span>`
-      :`<button class="sc-btn" style="font-size:10px;padding:2px 6px" onclick="openLinkModal('${c.id}','${c.name.replace(/'/g,"\\'")}',event)">Link →</button>`;
-    return `<tr style="${dim}">
-      <td><div style="width:8px;height:8px;border-radius:50%;background:${active?'var(--green)':'var(--g300)'}"></div></td>
-      <td style="font-weight:500;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.name}">${c.name}${isLt?' <span style="font-size:10px;color:var(--g400)">(LT)</span>':''}</td>
-      <td><span class="badge ${active?'b-test':'b-neg'}" style="font-size:10px">${active?'ACTIVE':'PAUSED'}</span></td>
-      <td style="font-size:12px">${budget}</td>
-      <td style="font-size:12px">${spend!=null?cur+spend.toFixed(2):'—'}</td>
-      <td style="font-size:12px;font-weight:600">${mA}</td>
-      <td style="font-size:12px">${mB}</td>
-      <td style="font-size:12px">${ctr!=null?ctr.toFixed(2)+'%':'—'}</td>
-      <td>${linkBtn}</td>
-    </tr>`;
-  }).join('');
-  const totalPages=Math.ceil(campData.length/CAMP_PER_PAGE);
-  const pag=totalPages>1?`<div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:10px"><button class="btn btn-s btn-sm" ${_campPage===0?'disabled':''} onclick="_campPage--;renderKpiPage()">← Prec</button><span style="font-size:12px;color:var(--g400)">Pag. ${_campPage+1} / ${totalPages}</span><button class="btn btn-s btn-sm" ${_campPage>=totalPages-1?'disabled':''} onclick="_campPage++;renderKpiPage()">Succ →</button></div>`:'';
-  return `<div class="card" style="padding:0;overflow:hidden"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead style="background:var(--g50)">${head}</thead><tbody>${rows}</tbody></table></div>${pag}`;
-}
-
-// ── T-006: Platform tabs + Google Ads stub ────────────────────────────────────
-function kpiHeaderHtml(){
-  return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
-    <div style="display:flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden">
-      <button id="tab-meta" onclick="switchKpiPlatform('meta')"
-        style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='meta'?'var(--accent)':'white'};color:${_kpiPlatform==='meta'?'white':'var(--g400)'}">Meta Ads</button>
-      <button id="tab-gads" onclick="switchKpiPlatform('gads')"
-        style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='gads'?'var(--accent)':'white'};color:${_kpiPlatform==='gads'?'white':'var(--g400)'}">Google Ads</button>
-    </div>
-    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()"
-      style="padding:7px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:white;color:var(--g700);${_kpiPlatform==='gads'?'display:none':''}">
-      ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
-    </select>
-    <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn" ${_kpiPlatform==='gads'?'disabled':''}>↻ Aggiorna</button>
-    <div style="margin-left:auto"><button onclick="openIntegModal()" class="btn btn-s">⚙ Configura Meta</button></div>
-  </div>`;
-}
+// ── T-006: Google Ads stub + platform switch ──────────────────────────────────
 function kpiGadsStubHtml(){
   return `<div style="text-align:center;padding:60px 24px;background:var(--g50);border-radius:var(--r);border:1px dashed var(--g200)">
     <div style="font-size:32px;margin-bottom:12px">🔧</div>
@@ -2062,7 +2142,7 @@ function kpiGadsStubHtml(){
     <div style="margin-top:20px"><span class="badge b-neg" style="font-size:12px">Previsto Q3 2026</span></div>
   </div>`;
 }
-function switchKpiPlatform(platform){ _kpiPlatform=platform; _campPage=0; renderKpiPage(); }
+function switchKpiPlatform(platform){ _kpiPlatform=platform; renderKpiPage(); }
 
 // ── T-007: Campaign ↔ Strategy linking ────────────────────────────────────────
 let _pendingLinkCampId=null, _pendingLinkCampName=null;
@@ -2139,65 +2219,514 @@ function saveInteg(){
   closeModal('modal-integ'); toast('Credenziali salvate ✓'); _kpiData=null; renderKpiPage();
 }
 
-// ── T-008: renderKpiPage — iframe embed orchestrator ──────────────────────────
-const KPI_DASH_BASE='https://www.adslense.com';
+// ── KPI INLINE DASHBOARD ──────────────────────────────────────────────────────
+let _kpiTab='overview';
+let _kpiCampExp=new Set();
+let _kpiAdvSel='__all__';
+let _kpiCrData=[];
+let _kpiCrSort='roas'; let _kpiCrDir=-1;
+let _kpiAllProps=[];
+let _kpiSpChart=null; let _kpiRoasChart=null;
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function kpiGetAct(ins,type){
+  if(!ins||!ins.actions) return 0;
+  const types=Array.isArray(type)?type:[type];
+  let t=0; types.forEach(tp=>{ const a=ins.actions.find(x=>x.action_type===tp); if(a) t+=parseInt(a.value); }); return t;
+}
+function kpiGetActVal(ins,type){
+  if(!ins||!ins.action_values) return 0;
+  const a=ins.action_values.find(x=>x.action_type===type); return a?parseFloat(a.value):0;
+}
+function kpiGetRoas(ins){
+  if(!ins||!ins.purchase_roas) return null;
+  const r=ins.purchase_roas.find(x=>x.action_type==='omni_purchase'); return r?parseFloat(r.value):null;
+}
+function kpiGetAtc(ins){ return kpiGetAct(ins,'omni_add_to_cart')||kpiGetAct(ins,'add_to_cart'); }
+function kpiGetLeads(ins){ if(!ins) return 0; return kpiGetAct(ins,['lead','onsite_conversion.lead_grouped','leadgen_grouped']); }
+function kpiFmt(n,d=2){ return (isNaN(n)||n===null)?'—':parseFloat(n).toFixed(d); }
+function kpiFmtI(n){ const v=parseInt(n); return v>0?v.toLocaleString('it-IT'):'—'; }
+function kpiRc(r,tgt=4.5){ if(r===null) return 'kpi-na'; if(r>=tgt) return 'kpi-green'; if(r>=3) return 'kpi-amber'; return 'kpi-red'; }
+function kpiCplClass(cpl,tgt=10){ if(cpl===null) return 'kpi-na'; return cpl<=tgt?'kpi-green':cpl<=tgt*1.5?'kpi-amber':'kpi-red'; }
+function kpiGetInsFor(id,insData,ltData){ const p=insData.find(i=>i.campaign_id===id); if(p) return {data:p,lt:false}; if(ltData[id]) return {data:ltData[id],lt:true}; return {data:null,lt:false}; }
+
+function kpiAggMetrics(insData,dashType){
+  let s=0,pur=0,rev=0,atc=0,chk=0,lp=0,impr=0,clicks=0,cpmS=0,freqS=0,leads=0,n=0;
+  insData.forEach(ins=>{
+    s+=parseFloat(ins.spend||0); impr+=parseInt(ins.impressions||0); clicks+=parseInt(ins.clicks||0);
+    cpmS+=parseFloat(ins.cpm||0); freqS+=parseFloat(ins.frequency||0); n++;
+    if(dashType==='app_installs'){
+      leads+=kpiGetLeads(ins);
+    } else {
+      pur+=kpiGetAct(ins,'omni_purchase'); rev+=kpiGetActVal(ins,'omni_purchase');
+      atc+=kpiGetAtc(ins); chk+=kpiGetAct(ins,'omni_initiated_checkout'); lp+=kpiGetAct(ins,'landing_page_view');
+    }
+  });
+  const cpm=n>0?cpmS/n:0,freq=n>0?freqS/n:0,ctr=impr>0?clicks/impr*100:0;
+  const roasVal=s>0&&rev>0?rev/s:null;
+  const cpl=leads>0?s/leads:null;
+  return {spend:s,purchases:pur,revenue:rev,atc,checkout:chk,lp,impr,clicks,cpm,freq,ctr,leads,cpl,
+    aov:pur>0&&rev>0?rev/pur:null, costPur:pur>0?s/pur:null, cpc:clicks>0?s/clicks:null, roas:roasVal};
+}
+function kpiCompMetrics(ins){
+  if(!ins) return null;
+  const spend=parseFloat(ins.spend||0),pur=kpiGetAct(ins,'omni_purchase'),rev=kpiGetActVal(ins,'omni_purchase');
+  const atc=kpiGetAtc(ins),chk=kpiGetAct(ins,'omni_initiated_checkout'),lp=kpiGetAct(ins,'landing_page_view');
+  const impr=parseInt(ins.impressions||0),clicks=parseInt(ins.clicks||0),cpm=parseFloat(ins.cpm||0),freq=parseFloat(ins.frequency||0),ctr=parseFloat(ins.ctr||0);
+  return {spend,purchases:pur,revenue:rev,atc,checkout:chk,lp,impr,clicks,cpm,freq,ctr,
+    aov:pur>0&&rev>0?rev/pur:null, costAtc:atc>0?spend/atc:null, atcConv:atc>0?pur/atc*100:null,
+    costPur:pur>0?spend/pur:null, cpc:clicks>0?spend/clicks:null, roas:kpiGetRoas(ins)};
+}
+
+// ── Tab renderer ─────────────────────────────────────────────────────────────
+function kpiTabsHtml(dashType){
+  const tabs=dashType==='app_installs'
+    ?[['overview','Panoramica'],['campaigns','Campagne'],['advanced','Avanzate'],['roasreale','ROAS Reale'],['creative','Creatività']]
+    :[['overview','Panoramica'],['campaigns','Campagne'],['advanced','Avanzate'],['optimize','Ottimizzazioni'],['margin','Margine'],['creative','Creatività']];
+  return `<div class="kpi-tabs">${tabs.map(([id,label])=>`<button class="kpi-tab${_kpiTab===id?' active':''}" onclick="kpiShowTab('${id}')">${label}</button>`).join('')}</div>`;
+}
+function kpiShowTab(tab){ _kpiTab=tab; if(_kpiData) kpiRenderContent(); }
+
+// ── Panoramica ────────────────────────────────────────────────────────────────
+function kpiRenderOverview(campData,insData,ltData,dashType,m){
+  const active=campData.filter(c=>c.status==='ACTIVE');
+  let html='';
+  if(!active.length){ html+='<div class="kpi-empty">Nessuna campagna attiva.</div>'; }
+  else {
+    html+=`<div class="kpi-sec">Campagne attive</div><div class="kpi-acg">`;
+    active.forEach(c=>{
+      const ins=insData.find(i=>i.campaign_id===c.id);
+      const cm=ins?kpiCompMetrics(ins):null;
+      const roas=cm?cm.roas:null;
+      const budget=c.daily_budget?'€'+(parseInt(c.daily_budget)/100).toFixed(0)+'/g':'—';
+      const roasCls=kpiRc(roas);
+      const dot=(v,g,ok)=>{ if(v===null) return `<span class="kpi-na">—</span>`; return `<span class="${v>=g?'kpi-green':v>=ok?'kpi-amber':'kpi-red'}">●</span>`; };
+      if(dashType==='app_installs'){
+        const leads=ins?kpiGetLeads(ins):0;
+        const cpl=ins&&leads>0?parseFloat(ins.spend||0)/leads:null;
+        html+=`<div class="kpi-acc"><div class="kpi-ach"><div><div class="kpi-acn">${c.name}</div><div class="kpi-acb">${budget} · <span class="kpi-badge-a">Attiva</span></div></div><div style="font-size:20px;font-weight:700;color:var(--teal)">${leads||'—'} lead</div></div>
+          <div class="kpi-acm"><div><div class="kpi-acml">Spesa</div><div class="kpi-acmv">€${kpiFmt(cm?.spend||0)}</div></div><div><div class="kpi-acml">CPL</div><div class="kpi-acmv ${kpiCplClass(cpl)}">${cpl!==null?'€'+kpiFmt(cpl):'—'}</div></div><div><div class="kpi-acml">CTR</div><div class="kpi-acmv">${kpiFmt(cm?.ctr||0)}%</div></div></div></div>`;
+      } else {
+        html+=`<div class="kpi-acc"><div class="kpi-ach"><div><div class="kpi-acn">${c.name}</div><div class="kpi-acb">${budget} · <span class="kpi-badge-a">Attiva</span></div></div><div class="kpi-rv ${roasCls}" style="font-size:22px;font-weight:700">ROAS ${roas!==null?kpiFmt(roas):'—'}</div></div>
+          <div class="kpi-acm"><div><div class="kpi-acml">Spesa</div><div class="kpi-acmv">€${kpiFmt(cm?.spend||0)}</div></div><div><div class="kpi-acml">Acquisti</div><div class="kpi-acmv">${cm?.purchases||'—'}</div></div><div><div class="kpi-acml">CTR</div><div class="kpi-acmv">${kpiFmt(cm?.ctr||0)}%</div></div></div>
+          <hr class="kpi-acd"><div class="kpi-aca">
+          <div class="kpi-acai"><span class="kpi-acal">AOV</span><span>${cm?.aov?'€'+kpiFmt(cm.aov):'—'} ${dot(cm?.aov,80,40)}</span></div>
+          <div class="kpi-acai"><span class="kpi-acal">Costo ATC</span><span>${cm?.costAtc?'€'+kpiFmt(cm.costAtc):'—'}</span></div>
+          <div class="kpi-acai"><span class="kpi-acal">ATC→Acquisto</span><span>${cm?.atcConv?kpiFmt(cm.atcConv,1)+'%':'—'}</span></div>
+          <div class="kpi-acai"><span class="kpi-acal">CPM</span><span>€${kpiFmt(cm?.cpm||0)} ${dot(cm?.cpm?20-cm.cpm:null,10,4)}</span></div>
+          <div class="kpi-acai"><span class="kpi-acal">Frequenza</span><span>${kpiFmt(cm?.freq||0,2)}</span></div>
+          <div class="kpi-acai"><span class="kpi-acal">Add to Cart</span><span>${cm?.atc||'—'}</span></div>
+          </div></div>`;
+      }
+    });
+    html+='</div>';
+  }
+  html+=`<div class="kpi-card"><div class="kpi-sec">Spesa per campagna</div><div class="kpi-cw"><canvas id="kpi-spend-chart"></canvas></div></div>`;
+  return html;
+}
+
+// ── Campagne table ────────────────────────────────────────────────────────────
+function kpiRenderCampaigns(campData,insData,ltData,dashType){
+  const integ=getInteg(activeProject.id,'meta');
+  const roasTgt=4.5;
+  const cplTgt=10;
+  let rows='';
+  campData.forEach((c,idx)=>{
+    const ins=kpiGetInsFor(c.id,insData,ltData); const d=ins.data,isLt=ins.lt;
+    const budget=c.daily_budget?'€'+(parseInt(c.daily_budget)/100).toFixed(0)+'/g':isLt?'—':'—';
+    const badge=c.status==='ACTIVE'?'<span class="kpi-badge-a">ACTIVE</span>':'<span class="kpi-badge-p">PAUSED</span>';
+    const dtag=isLt?'<span class="kpi-tag-lt">LT</span>':'<span class="kpi-tag-per">periodo</span>';
+    const spend=d?parseFloat(d.spend||0):0;
+    const isExp=_kpiCampExp.has(c.id);
+    let metricCell,pur,leads;
+    if(dashType==='app_installs'){
+      leads=kpiGetLeads(d);
+      const cpl=d&&leads>0?spend/leads:null;
+      const ctr=d?parseFloat(d.ctr||0):0;
+      metricCell=`<td class="kpi-rv" style="color:var(--teal)">${leads||'—'} ${dtag}</td><td class="kpi-rv ${kpiCplClass(cpl,cplTgt)}">${cpl!==null?'€'+kpiFmt(cpl):'—'}</td><td>${kpiFmt(ctr)}%</td>`;
+    } else {
+      const roas=kpiGetRoas(d); pur=kpiGetAct(d,'omni_purchase');
+      const ctr=d?parseFloat(d.ctr||0):0;
+      metricCell=`<td class="kpi-rv ${kpiRc(roas,roasTgt)}">${roas!==null?kpiFmt(roas):'—'} ${dtag}</td><td class="kpi-rv">${pur||'—'}</td><td>${kpiFmt(ctr)}%</td>`;
+    }
+    const abtns=integ?`<td><div class="kpi-abtns">
+      ${c.status==='ACTIVE'&&spend>0?`<button class="kpi-abtn red" onclick="kpiExecPause('${c.id}',event)">⏸ Pausa</button>`:`<button class="kpi-abtn green" onclick="kpiExecActivate('${c.id}',event)">▶ Attiva</button>`}
+      ${c.daily_budget?`<button class="kpi-abtn" onclick="kpiScaleBudget('${c.id}',${c.daily_budget},event)">↑ +20%</button>`:''}
+    </div></td>`:'<td></td>';
+    rows+=`<tr class="kpi-crow" onclick="kpiToggleCamp('${c.id}')">
+      <td><span class="kpi-chev${isExp?' open':''}">▶</span></td>
+      <td class="kpi-tn" title="${c.name}">${c.name}</td>
+      <td>${badge}</td><td>${budget}</td>
+      <td class="kpi-rv">€${kpiFmt(spend)}</td>
+      ${metricCell}
+      ${abtns}
+    </tr>`;
+    if(isExp){
+      const cm=kpiCompMetrics(d);
+      rows+=`<tr class="kpi-erow"><td colspan="9"><div class="kpi-ei"><div class="kpi-eg">
+        ${dashType==='app_installs'?`
+          <div class="kpi-em"><div class="el">Lead</div><div class="ev" style="color:var(--teal)">${leads||'—'}</div></div>
+          <div class="kpi-em"><div class="el">CPM</div><div class="ev">€${kpiFmt(cm?.cpm||0)}</div></div>
+          <div class="kpi-em"><div class="el">Frequenza</div><div class="ev">${kpiFmt(cm?.freq||0,2)}</div></div>
+          <div class="kpi-em"><div class="el">Impressioni</div><div class="ev">${kpiFmtI(cm?.impr||0)}</div></div>
+        `:`
+          <div class="kpi-em"><div class="el">Acquisti</div><div class="ev">${cm?.purchases||'—'}</div></div>
+          <div class="kpi-em"><div class="el">AOV</div><div class="ev">${cm?.aov?'€'+kpiFmt(cm.aov):'—'}</div></div>
+          <div class="kpi-em"><div class="el">CPM</div><div class="ev">€${kpiFmt(cm?.cpm||0)}</div></div>
+          <div class="kpi-em"><div class="el">Frequenza</div><div class="ev ${cm?.freq>3.5?'kpi-red':cm?.freq>2.5?'kpi-amber':''}">${kpiFmt(cm?.freq||0,2)}</div></div>
+        `}
+      </div></div></td></tr>`;
+    }
+  });
+  const headers=dashType==='app_installs'
+    ?'<th>▾</th><th>Campagna</th><th>Stato</th><th>Budget/g</th><th>Spesa</th><th>Lead</th><th>CPL</th><th>CTR</th><th>Azioni</th>'
+    :'<th>▾</th><th>Campagna</th><th>Stato</th><th>Budget/g</th><th>Spesa</th><th>ROAS</th><th>Acquisti</th><th>CTR</th><th>Azioni</th>';
+  return `<div style="font-size:12px;color:var(--g400);margin-bottom:10px">Clicca su una riga per espandere. Campagne in pausa mostrano <span class="kpi-tag-lt">dati lifetime</span>.</div>
+  <div class="kpi-card" style="padding:0;overflow:hidden"><div class="kpi-tw"><table class="kpi-table"><thead><tr>${headers}</tr></thead><tbody>${rows}</tbody></table></div></div>`;
+}
+function kpiToggleCamp(id){ if(_kpiCampExp.has(id)) _kpiCampExp.delete(id); else _kpiCampExp.add(id); kpiRenderContent(); }
+
+// ── Avanzate ──────────────────────────────────────────────────────────────────
+function kpiRenderAdvanced(campData,insData,ltData,dashType){
+  const roasTgt=4.5; const cplTgt=10;
+  const sel=_kpiAdvSel;
+  let src=insData;
+  if(sel!=='__all__'){ const f=insData.find(i=>i.campaign_id===sel)||ltData[sel]; src=f?[f]:[]; }
+  const m=dashType==='app_installs'?kpiAggLeads(src):kpiAggMetrics(src,dashType);
+  const campOpts=campData.map(c=>{ const hasP=insData.find(i=>i.campaign_id===c.id); const hasLt=ltData[c.id]; if(!hasP&&!hasLt) return ''; return `<option value="${c.id}"${sel===c.id?' selected':''}>${c.name.substring(0,40)}${!hasP&&hasLt?' (lt)':''}</option>`; }).join('');
+  let html=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+    <div><div style="font-size:15px;font-weight:500">Metriche avanzate</div><div style="font-size:12px;color:var(--g400);margin-top:2px">${sel==='__all__'?'Media aggregata':'Campagna specifica'}</div></div>
+    <select style="font-size:12px;padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);outline:none;background:white" onchange="_kpiAdvSel=this.value;kpiRenderContent()">
+      <option value="__all__"${sel==='__all__'?' selected':''}>— Tutto l'account —</option>${campOpts}
+    </select>
+  </div>`;
+  if(dashType==='app_installs'){
+    const cards=[
+      {l:'Lead totali',v:m.leads>0?kpiFmtI(m.leads):'—',s:'periodo selezionato',b:null,bl:null},
+      {l:'CPL medio',v:m.cpl!==null?'€'+kpiFmt(m.cpl):'—',s:`target €${cplTgt}`,b:m.cpl!==null?(m.cpl<=cplTgt?'kpi-ab-g':m.cpl<=cplTgt*1.5?'kpi-ab-a':'kpi-ab-r'):null,bl:m.cpl!==null?(m.cpl<=cplTgt?'Sotto target':'Sopra target'):null},
+      {l:'CPM medio',v:m.cpm>0?'€'+kpiFmt(m.cpm):'—',s:kpiFmtI(m.impr)+' impressioni',b:m.cpm>0?(m.cpm<10?'kpi-ab-g':m.cpm<20?'kpi-ab-a':'kpi-ab-r'):null,bl:m.cpm>0?(m.cpm<10?'Basso':'Normale'):null},
+      {l:'Frequenza',v:m.freq>0?kpiFmt(m.freq,2):'—',s:'imp/utente',b:m.freq>0?(m.freq<2.5?'kpi-ab-g':m.freq<3.5?'kpi-ab-a':'kpi-ab-r'):null,bl:m.freq>0?(m.freq<2.5?'Ottimale':m.freq<3.5?'Attenzione':'Saturazione'):null},
+      {l:'CTR medio',v:kpiFmt(m.ctr)+'%',s:kpiFmtI(m.clicks)+' click',b:m.ctr>0?(m.ctr>=2?'kpi-ab-g':m.ctr>=1?'kpi-ab-a':'kpi-ab-r'):null,bl:m.ctr>0?(m.ctr>=2?'Ottimo':m.ctr>=1?'Nella norma':'Basso'):null},
+      {l:'CPC medio',v:m.cpc!==null?'€'+kpiFmt(m.cpc):'—',s:'spesa / click',b:null,bl:null},
+    ];
+    html+=`<div class="kpi-adv-grid">${cards.map(c=>`<div class="kpi-advc"><div class="al">${c.l}</div><div class="av">${c.v}</div><div class="as">${c.s}</div>${c.b?`<div class="ab ${c.b}">${c.bl}</div>`:''}</div>`).join('')}</div>`;
+  } else {
+    const cards=[
+      {l:'ROAS medio',v:m.roas!==null?kpiFmt(m.roas):'—',s:'target 4.5',b:m.roas!==null?(m.roas>=roasTgt?'kpi-ab-g':m.roas>=3?'kpi-ab-a':'kpi-ab-r'):null,bl:m.roas!==null?(m.roas>=roasTgt?'Sopra target':m.roas>=3?'Nella norma':'Sotto target'):null},
+      {l:'Acquisti',v:m.purchases>0?kpiFmtI(m.purchases):'—',s:'periodo selezionato',b:null,bl:null},
+      {l:'AOV',v:m.aov?'€'+kpiFmt(m.aov):'—',s:'valore medio ordine',b:null,bl:null},
+      {l:'CPM medio',v:m.cpm>0?'€'+kpiFmt(m.cpm):'—',s:kpiFmtI(m.impr)+' impressioni',b:m.cpm>0?(m.cpm<10?'kpi-ab-g':m.cpm<20?'kpi-ab-a':'kpi-ab-r'):null,bl:m.cpm>0?(m.cpm<10?'Basso':'Nella norma'):null},
+      {l:'Frequenza',v:m.freq>0?kpiFmt(m.freq,2):'—',s:'imp/utente',b:m.freq>0?(m.freq<2.5?'kpi-ab-g':m.freq<3.5?'kpi-ab-a':'kpi-ab-r'):null,bl:m.freq>0?(m.freq<2.5?'Ottimale':m.freq<3.5?'Attenzione':'Saturazione'):null},
+      {l:'CTR medio',v:kpiFmt(m.ctr)+'%',s:kpiFmtI(m.clicks)+' click',b:m.ctr>0?(m.ctr>=2?'kpi-ab-g':m.ctr>=1?'kpi-ab-a':'kpi-ab-r'):null,bl:m.ctr>0?(m.ctr>=2?'Ottimo':m.ctr>=1?'Nella norma':'Basso'):null},
+    ];
+    html+=`<div class="kpi-adv-grid">${cards.map(c=>`<div class="kpi-advc"><div class="al">${c.l}</div><div class="av">${c.v}</div><div class="as">${c.s}</div>${c.b?`<div class="ab ${c.b}">${c.bl}</div>`:''}</div>`).join('')}</div>`;
+    // Revenue strip for ecommerce
+    html+=`<div class="kpi-rev-strip">
+      <div class="kpi-revc revenue"><div class="rl">Revenue</div><div class="rm">${m.revenue?'€'+kpiFmt(m.revenue):'—'}</div><div class="rs">dal periodo</div></div>
+      <div class="kpi-revc cost"><div class="rl">Spesa Meta</div><div class="rm">€${kpiFmt(m.spend)}</div><div class="rs">costo campagne</div></div>
+      <div class="kpi-revc profit"><div class="rl">Margine lordo</div><div class="rm">${m.revenue?'€'+kpiFmt(m.revenue-m.spend):'—'}</div><div class="rs">revenue − spesa</div></div>
+    </div>`;
+  }
+  return html;
+}
+function kpiAggLeads(insData){
+  let leads=0,s=0,impr=0,clicks=0,cpmS=0,freqS=0,n=0;
+  insData.forEach(ins=>{ leads+=kpiGetLeads(ins); s+=parseFloat(ins.spend||0); impr+=parseInt(ins.impressions||0); clicks+=parseInt(ins.clicks||0); cpmS+=parseFloat(ins.cpm||0); freqS+=parseFloat(ins.frequency||0); n++; });
+  const cpm=n>0?cpmS/n:0,freq=n>0?freqS/n:0,ctr=impr>0?clicks/impr*100:0;
+  return {leads,spend:s,impr,clicks,cpm,freq,ctr,cpl:leads>0?s/leads:null,cpc:clicks>0?s/clicks:null};
+}
+
+// ── Ottimizzazioni (ecommerce) ────────────────────────────────────────────────
+function kpiRenderOptimize(campData,insData,dashType){
+  const roasTgt=4.5;
+  // Strategic analysis of top campaign
+  let stratHtml='';
+  let maxSpend=0,fi=null;
+  insData.forEach(ins=>{ const sp=parseFloat(ins.spend||0); if(sp>maxSpend){maxSpend=sp;fi=ins;} });
+  if(fi){
+    const m=kpiCompMetrics(fi);
+    const pts=[
+      `<strong>Campagna principale: ${fi.campaign_name||'—'}.</strong> Spesa €${kpiFmt(m.spend)} · ${kpiFmtI(m.impr)} impressioni · ROAS ${m.roas!==null?kpiFmt(m.roas):'—'}. ${m.roas!==null&&m.roas>=roasTgt?'Performance sopra target, valuta di scalare il budget.':m.roas!==null&&m.roas>=3?'Performance nella norma, monitora quotidianamente.':'Performance sotto target, valuta ottimizzazioni creative e di pubblico.'}`,
+      `<strong>CTR ${kpiFmt(m.ctr)}%</strong> — ${m.ctr>=2?'ottimo segnale, il creativo funziona.':m.ctr>=1?'nella norma. Testa nuovi hook visivi.':'sotto la media. Refresh creativo urgente.'}`,
+      `<strong>CPM €${kpiFmt(m.cpm)}</strong> — ${m.cpm<10?'molto competitivo.':m.cpm<18?'nella norma.':'elevato, considera di allargare il pubblico.'} Frequenza ${kpiFmt(m.freq,2)}: ${m.freq<2?'pubblico non saturo.':m.freq<3?'nella norma.':'saturazione in corso, refresh creativo urgente.'}`,
+      `<strong>Prossimi 7 giorni.</strong> ${m.freq>3?'Priorità al refresh creativo (frequenza alta).':m.ctr<1?'Testa 2-3 nuove creatività con hook diversi.':m.roas!==null&&m.roas>=roasTgt?'Scala gradualmente (+20% budget) e monitora CPM.':'Mantieni e ottimizza prima di fare modifiche al budget.'}`
+    ];
+    stratHtml=`<div class="kpi-strat"><div class="stt">◆ Analisi strategica — ${fi.campaign_name}</div><div class="sts">Spesa €${kpiFmt(m.spend)} · ${kpiFmtI(m.impr)} impressioni · ${m.purchases} acquisti · CTR ${kpiFmt(m.ctr)}%</div><ul class="kpi-spts">${pts.map(p=>`<li><span style="flex-shrink:0;color:var(--blue)">◆</span><span>${p}</span></li>`).join('')}</ul></div>`;
+  }
+  // Auto proposals
+  const auto=[];
+  campData.forEach(c=>{
+    const ins=insData.find(i=>i.campaign_id===c.id); if(!ins) return;
+    const m=kpiCompMetrics(ins); const budget=c.daily_budget?parseInt(c.daily_budget):0;
+    if(c.status==='ACTIVE'&&m.roas!==null&&m.roas>6&&budget>0){ const nb=Math.round(budget*1.25); auto.push({icon:'scale',ch:'↑',t:`Scala budget — ${c.name}`,b:`ROAS <strong>${kpiFmt(m.roas)}</strong> supera 6.0. Scaling +25% consigliato.`,ch2:`daily_budget: €${(budget/100).toFixed(0)}/g → €${(nb/100).toFixed(0)}/g`,risk:'low',fn:()=>kpiExecBudget(c.id,nb)}); }
+    if(c.status==='ACTIVE'&&m.roas!==null&&m.roas<3&&m.spend>50){ auto.push({icon:'pause',ch:'⏸',t:`Pausa consigliata — ${c.name}`,b:`ROAS <strong>${kpiFmt(m.roas)}</strong> sotto 3.0 con €${kpiFmt(m.spend)} spesi.`,ch2:'status: ACTIVE → PAUSED',risk:'med',fn:()=>kpiExecStatus(c.id,'PAUSED')}); }
+    if(c.status==='ACTIVE'&&m.spend>50&&m.purchases===0&&m.atc===0){ auto.push({icon:'alert',ch:'!',t:`Nessuna interazione — ${c.name}`,b:`€${kpiFmt(m.spend)} spesi senza add-to-cart né acquisti.`,ch2:'Azione: pausa + revisione creativa',risk:'high',fn:()=>kpiExecStatus(c.id,'PAUSED')}); }
+  });
+  _kpiAllProps=auto;
+  const propsHtml=auto.length?`<div class="kpi-sec" style="margin-top:8px;margin-bottom:10px">Azioni immediate</div>`+auto.map((p,i)=>`<div class="kpi-prop" id="kpi-prop-${i}">
+    <div class="kpi-ph"><div class="kpi-pi ${p.icon}">${p.ch}</div><div class="kpi-pt">${p.t}</div><span class="kpi-prisk kpi-${p.risk==='low'?'rlow':p.risk==='med'?'rmed':'rhigh'}">Rischio ${p.risk==='low'?'Basso':p.risk==='med'?'Medio':'Alto'}</span></div>
+    <div class="kpi-pb">${p.b}</div><div class="kpi-pc">${p.ch2}</div>
+    <div style="display:flex;gap:6px"><button class="btn btn-s" style="color:var(--green);border-color:var(--green)" onclick="kpiConfProp(${i})">Confermo, procedi</button><button class="btn btn-s" onclick="kpiCanProp(${i})">Annulla</button></div>
+  </div>`).join(''):`<div class="kpi-empty">Nessuna ottimizzazione urgente. Campagne nella norma.</div>`;
+  return stratHtml+propsHtml;
+}
+async function kpiConfProp(i){ const p=_kpiAllProps[i]; if(!p) return; const box=document.getElementById('kpi-prop-'+i); box.innerHTML='<div class="kpi-lds"><span class="kpi-spin"></span>Esecuzione su Meta...</div>'; try{ await p.fn(); box.innerHTML='<div class="kpi-card" style="color:var(--green)">Modifica eseguita ✓</div>'; setTimeout(()=>refreshKpiData(),2000); }catch(e){ box.innerHTML=`<div class="kpi-msg-err">Errore: ${e.message}</div>`; } }
+function kpiCanProp(i){ const b=document.getElementById('kpi-prop-'+i); if(b){ b.classList.add('dis'); setTimeout(()=>b.remove(),300); } }
+async function kpiExecBudget(id,cents){ const token=getInteg(activeProject.id,'meta')?.accessToken; if(!token) return; const r=await fetch(`https://graph.facebook.com/v25.0/${id}`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`daily_budget=${cents}&access_token=${encodeURIComponent(token)}`}); const d=await r.json(); if(d.error) throw new Error(d.error.message); }
+async function kpiExecStatus(id,status){ const token=getInteg(activeProject.id,'meta')?.accessToken; if(!token) return; const r=await fetch(`https://graph.facebook.com/v25.0/${id}`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:`status=${status}&access_token=${encodeURIComponent(token)}`}); const d=await r.json(); if(d.error) throw new Error(d.error.message); }
+async function kpiExecPause(id,e){ e.stopPropagation(); if(!confirm('Mettere in pausa questa campagna?')) return; try{ await kpiExecStatus(id,'PAUSED'); toast('Campagna messa in pausa ✓'); refreshKpiData(); }catch(err){ toast('Errore: '+err.message); } }
+async function kpiExecActivate(id,e){ e.stopPropagation(); if(!confirm('Attivare questa campagna?')) return; try{ await kpiExecStatus(id,'ACTIVE'); toast('Campagna attivata ✓'); refreshKpiData(); }catch(err){ toast('Errore: '+err.message); } }
+async function kpiScaleBudget(id,budget,e){ e.stopPropagation(); const nb=Math.round(parseInt(budget)*1.2); if(!confirm(`Aumentare il budget da €${(parseInt(budget)/100).toFixed(0)}/g a €${(nb/100).toFixed(0)}/g (+20%)?`)) return; try{ await kpiExecBudget(id,nb); toast('Budget aggiornato ✓'); refreshKpiData(); }catch(err){ toast('Errore: '+err.message); } }
+
+// ── Margine (ecommerce) ───────────────────────────────────────────────────────
+const KPI_MSTOR='kpi_margin_v1';
+function kpiGetMarginCfg(){ const s=localStorage.getItem(KPI_MSTOR+'_'+activeProject.id); try{ return s?JSON.parse(s):{price:0,cogs:0,mat:0,fix:0,ord:1,vat:22}; }catch(e){ return {price:0,cogs:0,mat:0,fix:0,ord:1,vat:22}; } }
+function kpiSaveMarginCfg(){ const cfg={price:parseFloat(document.getElementById('km-price').value)||0,cogs:parseFloat(document.getElementById('km-cogs').value)||0,mat:parseFloat(document.getElementById('km-mat').value)||0,fix:parseFloat(document.getElementById('km-fix').value)||0,ord:parseFloat(document.getElementById('km-ord').value)||1,vat:parseFloat(document.getElementById('km-vat').value)||22}; localStorage.setItem(KPI_MSTOR+'_'+activeProject.id,JSON.stringify(cfg)); kpiUpdateMargin(); const b=document.getElementById('km-saved'); if(b){b.style.display='inline-block';setTimeout(()=>b.style.display='none',2000);} }
+function kpiCompMargin(cfg,cacOvr){ const vat=cfg.price*(cfg.vat/(100+cfg.vat)),net=cfg.price-vat,fixOrd=cfg.ord>0?cfg.fix/cfg.ord:0,cac=cacOvr!==undefined?cacOvr:kpiGetAvgCac(),costs=cfg.cogs+cfg.mat+fixOrd+cac,mEur=net-costs,mPct=net>0?mEur/net*100:0,beRoas=(net-cfg.cogs-cfg.mat-fixOrd)>0?cfg.price/(net-cfg.cogs-cfg.mat-fixOrd):null; return {price:cfg.price,vat,net,cogs:cfg.cogs,mat:cfg.mat,fixOrd,cac,costs,mEur,mPct,beRoas}; }
+function kpiGetAvgCac(){ let tot=0,pur=0; (_kpiData?.insData||[]).forEach(i=>{ const p=kpiGetAct(i,'omni_purchase'); if(p>0){tot+=parseFloat(i.spend||0);pur+=p;} }); return pur>0?tot/pur:0; }
+function kpiUpdateMargin(){
+  const cfg=kpiGetMarginCfg(); if(!cfg.price){ document.getElementById('km-breakdown').innerHTML='<div style="font-size:13px;color:var(--g400);padding:1rem 0">Inserisci il prezzo di vendita per calcolare il margine.</div>'; return; }
+  const m=kpiCompMargin(cfg); const pctColor=m.mPct>=30?'var(--green)':m.mPct>=15?'var(--amber)':'var(--red)';
+  document.getElementById('km-breakdown').innerHTML=`
+    <div class="kpi-mbr"><span class="rl2">Prezzo vendita</span><span>€${kpiFmt(m.price)}</span></div>
+    <div class="kpi-mbr"><span class="rl2">IVA (${cfg.vat}%)</span><span class="neg">− €${kpiFmt(m.vat)}</span></div>
+    <div class="kpi-mbr"><span class="rl2">Prezzo netto</span><span>€${kpiFmt(m.net)}</span></div>
+    <div class="kpi-mbr"><span class="rl2">COGS</span><span class="neg">− €${kpiFmt(m.cogs)}</span></div>
+    <div class="kpi-mbr"><span class="rl2">Materiali</span><span class="neg">− €${kpiFmt(m.mat)}</span></div>
+    <div class="kpi-mbr"><span class="rl2">Quota costi fissi</span><span class="neg">− €${kpiFmt(m.fixOrd)}</span></div>
+    <div class="kpi-mbr"><span class="rl2">CAC da Meta</span><span class="neg">− €${kpiFmt(m.cac)}</span></div>
+    <div class="kpi-mbr tot"><span class="rl2">Margine netto/ordine</span><span class="${m.mEur>=0?'pos':'neg'}">€${kpiFmt(m.mEur)} (${kpiFmt(m.mPct,1)}%)</span></div>
+    <div class="kpi-mpb"><div class="kpi-mpf" style="width:${Math.max(0,Math.min(100,m.mPct))}%;background:${pctColor}"></div></div>
+    <div class="kpi-mpl">${m.mPct>=30?'Margine sano':m.mPct>=15?'Margine accettabile':'Margine sotto soglia'}</div>`;
+  if(m.beRoas){
+    const curRoas=(()=>{ let s=0,r=0; (_kpiData?.insData||[]).forEach(i=>{ s+=parseFloat(i.spend||0); r+=kpiGetActVal(i,'omni_purchase'); }); return s>0&&r>0?r/s:null; })();
+    const gap=curRoas!==null?curRoas-m.beRoas:null;
+    const beC=m.beRoas<=2?'kpi-green':m.beRoas<=3.5?'kpi-amber':'kpi-red';
+    document.getElementById('km-breakeven').innerHTML=`<div class="kpi-bed"><div class="kpi-ben ${beC}">ROAS ${kpiFmt(m.beRoas)}</div><div class="kpi-bes">Soglia minima per non perdere</div></div>
+      <div class="kpi-bec"><div class="kpi-ber"><span style="color:var(--g400)">Break-even ROAS</span><span style="font-weight:600">${kpiFmt(m.beRoas)}</span></div><div class="kpi-ber"><span style="color:var(--g400)">ROAS attuale</span><span style="font-weight:600;color:var(${curRoas!==null&&curRoas>=m.beRoas?'--green':'--red'})">${curRoas!==null?kpiFmt(curRoas):'—'}</span></div>${gap!==null?`<div class="kpi-ber"><span style="color:var(--g400)">Margine sul BE</span><span style="font-weight:600;color:var(${gap>=0?'--green':'--red'})">${gap>=0?'+':''}${kpiFmt(gap)}</span></div>`:''}</div>`;
+  } else { document.getElementById('km-breakeven').innerHTML='<div style="font-size:13px;color:var(--g400)">Inserisci tutti i costi per calcolare il break-even ROAS.</div>'; }
+  // Per-campaign margin table
+  const campData=_kpiData?.campData||[], insData=_kpiData?.insData||[];
+  const rows=campData.map(c=>{ const ins=insData.find(i=>i.campaign_id===c.id)||(_kpiData?.ltData||{})[c.id]; if(!ins) return null; const pur=kpiGetAct(ins,'omni_purchase'),spend=parseFloat(ins.spend||0),rev=kpiGetActVal(ins,'omni_purchase'),cac=pur>0?spend/pur:0,cm=kpiCompMargin(cfg,cac),roas=kpiGetRoas(ins); return {name:c.name,status:c.status,pur,spend,rev,cac,mOrd:cm.mEur,mPct:cm.mPct,mTot:cm.mEur*pur,roas,beRoas:cm.beRoas}; }).filter(r=>r&&(r.pur>0||r.spend>0));
+  const pc=v=>v>0?'kpi-pp':v<0?'kpi-pn':'kpi-pz';
+  document.getElementById('km-camps').innerHTML=rows.length?`<div style="overflow-x:auto"><table class="kpi-mct"><thead><tr><th>Campagna</th><th>Acquisti</th><th>Spesa</th><th>CAC</th><th>Margine/ord</th><th>Margine%</th><th>BE ROAS</th><th>ROAS</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="kpi-tn" title="${r.name}">${r.name}${r.status!=='ACTIVE'?'<span class="kpi-tag-lt">pausa</span>':''}</td><td>${r.pur}</td><td>€${kpiFmt(r.spend)}</td><td>€${kpiFmt(r.cac)}</td><td class="${pc(r.mOrd)}">€${kpiFmt(r.mOrd)}</td><td class="${pc(r.mPct)}">${kpiFmt(r.mPct,1)}%</td><td>${r.beRoas!==null?kpiFmt(r.beRoas):'—'}</td><td class="kpi-rv ${kpiRc(r.roas)}">${r.roas!==null?kpiFmt(r.roas):'—'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="kpi-empty">Nessun dato acquisti disponibile.</div>';
+}
+function kpiRenderMargine(){
+  const cfg=kpiGetMarginCfg();
+  return `<div class="kpi-msec"><div class="kpi-msec-t">Configurazione costi <span class="kpi-msaved" id="km-saved" style="display:none">Salvato ✓</span></div>
+    <div class="kpi-mcg">
+      <div class="kpi-mig"><label>Prezzo vendita (IVA incl.)</label><div class="kpi-miw"><span class="kpi-mc">€</span><input type="number" id="km-price" value="${cfg.price||''}" placeholder="0.00" step="0.01" oninput="kpiUpdateMargin()"></div></div>
+      <div class="kpi-mig"><label>COGS (costo prodotto)</label><div class="kpi-miw"><span class="kpi-mc">€</span><input type="number" id="km-cogs" value="${cfg.cogs||''}" placeholder="0.00" step="0.01" oninput="kpiUpdateMargin()"></div></div>
+      <div class="kpi-mig"><label>Materiali customizzazione</label><div class="kpi-miw"><span class="kpi-mc">€</span><input type="number" id="km-mat" value="${cfg.mat||''}" placeholder="0.00" step="0.01" oninput="kpiUpdateMargin()"></div></div>
+      <div class="kpi-mig"><label>Costi fissi mensili</label><div class="kpi-miw"><span class="kpi-mc">€</span><input type="number" id="km-fix" value="${cfg.fix||''}" placeholder="0.00" step="1" oninput="kpiUpdateMargin()"></div></div>
+      <div class="kpi-mig"><label>Ordini medi/mese</label><div class="kpi-miw"><span class="kpi-mc">#</span><input type="number" id="km-ord" value="${cfg.ord||1}" placeholder="1" step="1" oninput="kpiUpdateMargin()"></div></div>
+      <div class="kpi-mig"><label>IVA %</label><div class="kpi-miw"><span class="kpi-mc">%</span><input type="number" id="km-vat" value="${cfg.vat||22}" step="0.5" oninput="kpiUpdateMargin()"></div></div>
+    </div>
+    <button class="btn btn-p btn-s" onclick="kpiSaveMarginCfg()">Salva configurazione</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="kpi-msec"><div class="kpi-msec-t">Margine per ordine</div><div id="km-breakdown"><div style="font-size:13px;color:var(--g400)">Inserisci il prezzo per calcolare.</div></div></div>
+    <div class="kpi-msec"><div class="kpi-msec-t">Break-even ROAS</div><div id="km-breakeven"><div style="font-size:13px;color:var(--g400)">Inserisci i costi per calcolare.</div></div></div>
+  </div>
+  <div class="kpi-msec"><div class="kpi-msec-t">Margine per campagna <span style="font-weight:400;font-size:12px;color:var(--g400)">Live da Meta</span></div><div id="km-camps"><div class="kpi-empty">Carica i dati Meta per vedere il margine.</div></div></div>`;
+}
+
+// ── ROAS Reale (leadgen) ──────────────────────────────────────────────────────
+const KPI_LGSTOR='kpi_leadgen_v1';
+function kpiLoadRoasData(){ const k=KPI_LGSTOR+'_'+activeProject.id; try{ const s=localStorage.getItem(k); return s?JSON.parse(s):{contracts:0,value:0,called:0,nr:0,notint:0}; }catch(e){return{contracts:0,value:0,called:0,nr:0,notint:0};} }
+function kpiSaveRoasData(){ const d={contracts:parseInt(document.getElementById('klg-contracts').value)||0,value:parseFloat(document.getElementById('klg-value').value)||0,called:parseInt(document.getElementById('klg-called').value)||0,nr:parseInt(document.getElementById('klg-nr').value)||0,notint:parseInt(document.getElementById('klg-notint').value)||0}; localStorage.setItem(KPI_LGSTOR+'_'+activeProject.id,JSON.stringify(d)); toast('ROAS Reale salvato ✓'); kpiRenderContent(); }
+function kpiRenderRoasReale(insData){
+  const m=kpiAggLeads(insData); const saved=kpiLoadRoasData();
+  const contracts=saved.contracts||0,value=saved.value||0,called=saved.called||0,nr=saved.nr||0,notint=saved.notint||0;
+  const revenue=contracts*value;
+  const roasR=m.spend>0&&revenue>0?revenue/m.spend:null;
+  const cpc2=contracts>0?m.spend/contracts:null;
+  return `<div class="kpi-card"><div class="kpi-msec-t">Inserisci i tuoi dati offline</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
+      <div class="kpi-mig"><label>Contratti chiusi</label><div class="kpi-miw"><span class="kpi-mc">#</span><input type="number" id="klg-contracts" value="${contracts}" step="1"></div></div>
+      <div class="kpi-mig"><label>Valore medio contratto</label><div class="kpi-miw"><span class="kpi-mc">€</span><input type="number" id="klg-value" value="${value}" step="1"></div></div>
+      <div class="kpi-mig"><label>Contatti chiamati</label><div class="kpi-miw"><span class="kpi-mc">#</span><input type="number" id="klg-called" value="${called}" step="1"></div></div>
+      <div class="kpi-mig"><label>NR (non risponde)</label><div class="kpi-miw"><span class="kpi-mc">#</span><input type="number" id="klg-nr" value="${nr}" step="1"></div></div>
+      <div class="kpi-mig"><label>Non interessati</label><div class="kpi-miw"><span class="kpi-mc">#</span><input type="number" id="klg-notint" value="${notint}" step="1"></div></div>
+    </div>
+    <button class="btn btn-p btn-s" onclick="kpiSaveRoasData()">Salva</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px">
+    <div class="kpi-metric"><div class="ml">ROAS reale</div><div class="mv ${kpiRc(roasR,3)}">${roasR!==null?kpiFmt(roasR):'—'}</div><div class="ms">revenue / spesa Meta</div></div>
+    <div class="kpi-metric"><div class="ml">Revenue generata</div><div class="mv" style="color:var(--green)">€${kpiFmt(revenue)}</div><div class="ms">${contracts} contratti × €${kpiFmt(value)}</div></div>
+    <div class="kpi-metric"><div class="ml">Costo/contratto</div><div class="mv">${cpc2!==null?'€'+kpiFmt(cpc2):'—'}</div><div class="ms">spesa Meta / contratti</div></div>
+    <div class="kpi-metric"><div class="ml">Tasso chiusura</div><div class="mv">${called>0?kpiFmt(contracts/called*100,1)+'%':'—'}</div><div class="ms">contratti / chiamate</div></div>
+  </div>
+  <div class="kpi-card"><div class="kpi-sec">Funnel</div>
+    <div id="kpi-funnel-wrap">${kpiBuildFunnel(m,saved)}</div>
+  </div>`;
+}
+function kpiBuildFunnel(m,saved){
+  const steps=[
+    {label:'Impressioni',val:m.impr,color:'#B5D4F4',tc:'#0C447C',meta:null},
+    {label:'Click',val:m.clicks,color:'#85B7EB',tc:'#0C447C',meta:'CTR '+kpiFmt(m.ctr)+'%'},
+    {label:'Lead generati',val:m.leads,color:'#9FE1CB',tc:'#085041',meta:m.cpl!==null?'CPL €'+kpiFmt(m.cpl):null},
+    {label:'Contatti chiamati',val:saved.called||0,color:'#FAC775',tc:'#633806',meta:saved.called&&m.leads?kpiFmt(saved.called/m.leads*100,1)+'%':null},
+    {label:'Contratti chiusi',val:saved.contracts||0,color:'#97C459',tc:'#27500A',meta:saved.contracts&&saved.called?kpiFmt(saved.contracts/saved.called*100,1)+'%':null}
+  ];
+  const maxVal=Math.max(...steps.map(s=>s.val||0));
+  return steps.map(s=>{ const pct=maxVal>0?Math.max(8,(s.val||0)/maxVal*100):8; return `<div class="kpi-frow"><div class="kpi-frow-label">${s.label}</div><div class="kpi-fbar-outer"><div class="kpi-fbar-inner" style="width:${pct}%;background:${s.color}"><span class="kpi-fbar-val" style="color:${s.tc}">${(s.val||0)>0?(s.val).toLocaleString('it-IT'):'—'}</span></div></div><div class="kpi-frow-meta">${s.meta||''}</div></div>`; }).join('');
+}
+
+// ── Creatività ────────────────────────────────────────────────────────────────
+async function kpiFetchCreative(){
+  const integ=getInteg(activeProject.id,'meta'); if(!integ) return;
+  const el=document.getElementById('kpi-creative-area'); if(!el) return;
+  el.innerHTML='<div class="kpi-lds"><span class="kpi-spin"></span>Caricamento creatività...</div>';
+  try{
+    const fields='ad_name,adset_name,campaign_name,ad_id,spend,impressions,clicks,ctr,cpm,frequency,purchase_roas,actions,action_values';
+    const res=await metaApiFetch(integ.adAccountId+'/insights?fields='+fields+'&date_preset='+_kpiPreset+'&level=ad&limit=50',integ.accessToken);
+    const dashType=integ.dashboardType||'ecommerce';
+    _kpiCrData=(res.data||[]).map(ad=>{
+      const spend=parseFloat(ad.spend||0),roas=kpiGetRoas(ad),ctr=parseFloat(ad.ctr||0),cpm=parseFloat(ad.cpm||0),freq=parseFloat(ad.frequency||0);
+      const name=(ad.ad_name||'').toLowerCase();
+      const format=name.includes('video')||name.includes('reel')?'video':name.includes('caros')||name.includes('carousel')?'carousel':'image';
+      const leads=kpiGetLeads(ad),pur=kpiGetAct(ad,'omni_purchase');
+      const metric=dashType==='app_installs'?leads:pur;
+      const cpl=dashType==='app_installs'&&leads>0?spend/leads:null;
+      return {id:ad.ad_id,name:ad.ad_name||'N/D',adset:ad.adset_name||'',spend,roas,ctr,cpm,freq,purchases:pur,leads,metric,cpl,format};
+    });
+    el.innerHTML=kpiRenderCreativeHtml(dashType);
+    // Fetch demographics in background
+    kpiFetchDemo(integ,el);
+  }catch(e){ el.innerHTML=`<div class="kpi-msg-err">Errore: ${e.message}</div>`; }
+}
+function kpiRenderCreativeHtml(dashType){
+  const sorted=[..._kpiCrData].sort((a,b)=>dashType==='app_installs'?(b.metric||0)-(a.metric||0):(b.roas||0)-(a.roas||0));
+  const top3=sorted.slice(0,3), bot3=sorted.slice(-3).reverse();
+  const topHtml=top3.map(a=>`<div class="kpi-tbr"><div class="tbn">${a.name}</div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
+  const botHtml=bot3.map(a=>`<div class="kpi-tbr"><div class="tbn">${a.name}</div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
+  const tableRows=_kpiCrData.map(a=>`<tr><td class="kpi-tn" title="${a.name}">${a.name}</td><td><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span></td><td>€${kpiFmt(a.spend)}</td><td class="${dashType==='app_installs'?kpiCplClass(a.cpl):kpiRc(a.roas)}">${dashType==='app_installs'?a.metric+' lead':(a.roas?kpiFmt(a.roas):'—')}</td><td>${kpiFmt(a.ctr)}%</td><td>€${kpiFmt(a.cpm)}</td><td class="${a.freq>3.5?'kpi-red':a.freq>2.5?'kpi-amber':''}">${kpiFmt(a.freq,2)}</td><td>${a.adset}</td></tr>`).join('');
+  return `<div class="kpi-tbg"><div class="kpi-tbc top"><div class="tbt">Top 3 inserzioni</div>${topHtml}</div><div class="kpi-tbc bot"><div class="tbt">Bottom 3 inserzioni</div>${botHtml}</div></div>
+  <div class="kpi-crtw"><table class="kpi-crt"><thead><tr><th>Inserzione</th><th>Formato</th><th>Spesa</th><th>${dashType==='app_installs'?'Lead':'ROAS'}</th><th>CTR</th><th>CPM</th><th>Freq.</th><th>Adset</th></tr></thead><tbody>${tableRows}</tbody></table></div>
+  <div class="kpi-demog"><div class="kpi-demc"><div class="dt">Breakdown per età</div><div id="kpi-demo-age"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div><div class="kpi-demc"><div class="dt">Breakdown per genere</div><div id="kpi-demo-gen"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div></div>`;
+}
+async function kpiFetchDemo(integ,container){
+  try{
+    const r1=await metaApiFetch(integ.adAccountId+'/insights?fields=impressions,clicks,spend&date_preset='+_kpiPreset+'&breakdowns=age&level=account&limit=20',integ.accessToken);
+    const r2=await metaApiFetch(integ.adAccountId+'/insights?fields=impressions,clicks,spend&date_preset='+_kpiPreset+'&breakdowns=gender&level=account&limit=10',integ.accessToken);
+    const ageEl=document.getElementById('kpi-demo-age'); const genEl=document.getElementById('kpi-demo-gen');
+    if(ageEl){ const data=r1.data||[]; const maxI=Math.max(...data.map(d=>parseInt(d.impressions||0)));
+      ageEl.innerHTML=data.map(d=>{ const pct=maxI>0?parseInt(d.impressions||0)/maxI*100:0; return `<div class="kpi-dr"><div class="kpi-drl">${d.age||'?'}</div><div class="kpi-drb"><div class="kpi-drf" style="width:${pct}%;background:var(--accent)"></div></div><div class="kpi-drv">${kpiFmtI(d.impressions)}</div></div>`; }).join(''); }
+    if(genEl){ const data=r2.data||[]; const maxI=Math.max(...data.map(d=>parseInt(d.impressions||0)));
+      genEl.innerHTML=data.map(d=>{ const pct=maxI>0?parseInt(d.impressions||0)/maxI*100:0; return `<div class="kpi-dr"><div class="kpi-drl">${d.gender||'?'}</div><div class="kpi-drb"><div class="kpi-drf" style="width:${pct}%;background:var(--blue)"></div></div><div class="kpi-drv">${kpiFmtI(d.impressions)}</div></div>`; }).join(''); }
+  }catch(e){ const el=document.getElementById('kpi-demo-age'); if(el) el.innerHTML='<div style="font-size:12px;color:var(--g400)">Dati demografici non disponibili.</div>'; }
+}
+
+// ── Spend Chart ───────────────────────────────────────────────────────────────
+function kpiRenderSpendChart(campData,insData){
+  const el=document.getElementById('kpi-spend-chart'); if(!el||typeof Chart==='undefined') return;
+  if(_kpiSpChart){ _kpiSpChart.destroy(); _kpiSpChart=null; }
+  const pairs=campData.map(c=>{ const ins=insData.find(i=>i.campaign_id===c.id); return {name:c.name.replace(/fb_[a-z]+_/i,'').substring(0,20),spend:ins?parseFloat(ins.spend||0):0}; }).filter(p=>p.spend>0).sort((a,b)=>b.spend-a.spend).slice(0,12);
+  _kpiSpChart=new Chart(el,{type:'bar',data:{labels:pairs.map(p=>p.name),datasets:[{data:pairs.map(p=>p.spend),backgroundColor:'rgba(233,30,140,0.7)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'€'+c.parsed.y.toFixed(2)}}},scales:{x:{ticks:{font:{size:11},maxRotation:30}},y:{ticks:{callback:v=>'€'+v}}}}});
+}
+
+// ── Top-level KPI metrics bar ─────────────────────────────────────────────────
+function kpiRenderMetricsBar(campData,insData,dashType){
+  const m=kpiAggMetrics(insData,dashType);
+  const active=campData.filter(c=>c.status==='ACTIVE').length;
+  if(dashType==='app_installs'){
+    const cplCls=kpiCplClass(m.cpl);
+    return `<div class="kpi-metrics">
+      <div class="kpi-metric"><div class="ml">SPEND</div><div class="mv">€${kpiFmt(m.spend)}</div><div class="ms">periodo selezionato</div></div>
+      <div class="kpi-metric"><div class="ml">CPL</div><div class="mv ${cplCls}">${m.cpl!==null?'€'+kpiFmt(m.cpl):'—'}</div><div class="ms">target &lt; €10</div></div>
+      <div class="kpi-metric"><div class="ml">LEAD</div><div class="mv" style="color:var(--teal)">${m.leads||'—'}</div><div class="ms">installs periodo</div></div>
+      <div class="kpi-metric"><div class="ml">CAMPAGNE ATTIVE</div><div class="mv">${active} <span style="font-size:14px;color:var(--g400);font-weight:400">/ ${campData.length}</span></div><div class="ms">totali in account</div></div>
+    </div>`;
+  } else {
+    const roasCls=kpiRc(m.roas);
+    return `<div class="kpi-metrics">
+      <div class="kpi-metric"><div class="ml">SPEND</div><div class="mv">€${kpiFmt(m.spend)}</div><div class="ms">periodo selezionato</div></div>
+      <div class="kpi-metric"><div class="ml">ROAS</div><div class="mv ${roasCls}">${m.roas!==null?kpiFmt(m.roas):'—'}</div><div class="ms">target ≥ 4.5</div></div>
+      <div class="kpi-metric"><div class="ml">ACQUISTI</div><div class="mv">${m.purchases||'—'}</div><div class="ms">periodo selezionato</div></div>
+      <div class="kpi-metric"><div class="ml">CAMPAGNE ATTIVE</div><div class="mv">${active} <span style="font-size:14px;color:var(--g400);font-weight:400">/ ${campData.length}</span></div><div class="ms">totali in account</div></div>
+    </div>`;
+  }
+}
+
+// ── Main KPI page orchestrator ────────────────────────────────────────────────
 function renderKpiPage(){
   const container=document.getElementById('kpi-body');
   if(!container) return;
   const integ=getInteg(activeProject.id,'meta');
   document.getElementById('kpi-sub').textContent=activeProject.name+' · Meta Ads';
 
-  // No credentials yet → show setup prompt
   if(!integ?.adAccountId||!integ?.accessToken){
     container.innerHTML=`<div style="text-align:center;padding:60px 24px;background:var(--g50);border-radius:var(--r);border:1px dashed var(--g200)">
       <div style="font-size:32px;margin-bottom:12px">🔑</div>
       <div style="font-size:16px;font-weight:700;color:var(--g700);margin-bottom:8px">Configura le credenziali Meta Ads</div>
-      <div style="font-size:13px;color:var(--g400);max-width:380px;margin:0 auto 20px">Inserisci Ad Account ID e Access Token per vedere i dati live delle campagne.</div>
+      <div style="font-size:13px;color:var(--g400);max-width:380px;margin:0 auto 20px">Inserisci Ad Account ID e Access Token per vedere i dati live.</div>
       <button class="btn btn-p" onclick="openIntegModal()">⚙ Configura Meta Ads</button>
     </div>`; return;
   }
 
-  // Platform tabs header + optional Google Ads stub
-  const dashType=integ.dashboardType||'ecommerce';
-  const tabsHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+  const headerHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
     <div style="display:flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden;background:white">
       <button onclick="switchKpiPlatform('meta')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='meta'?'var(--accent)':'white'};color:${_kpiPlatform==='meta'?'white':'var(--g400)'}">Meta Ads</button>
       <button onclick="switchKpiPlatform('gads')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='gads'?'var(--accent)':'white'};color:${_kpiPlatform==='gads'?'white':'var(--g400)'}">Google Ads</button>
     </div>
+    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" style="padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:white;${_kpiPlatform==='gads'?'display:none':''}">
+      ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
+    </select>
+    <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn" ${_kpiPlatform==='gads'?'disabled':''}>↻ Aggiorna</button>
     <button onclick="openIntegModal()" class="btn btn-s" style="margin-left:auto">⚙ Configura Meta</button>
   </div>`;
 
-  if(_kpiPlatform==='gads'){ container.innerHTML=tabsHtml+kpiGadsStubHtml(); return; }
+  if(_kpiPlatform==='gads'){ container.innerHTML=headerHtml+kpiGadsStubHtml(); return; }
 
-  // Choose dashboard file based on project type
-  const dashFile=dashType==='app_installs'?'dashboard-leadgen.html':'dashboard.html';
-  const iframeUrl=`${KPI_DASH_BASE}/${dashFile}`;
-
-  container.innerHTML=tabsHtml+`
-    <iframe
-      id="kpi-iframe"
-      src="${iframeUrl}"
-      style="width:100%;height:calc(100vh - 220px);min-height:600px;border:none;border-radius:var(--r);background:white;display:block"
-      onload="sendKpiCredentials()"
-    ></iframe>`;
+  if(!_kpiData){
+    container.innerHTML=headerHtml+`<div class="kpi-lds"><span class="kpi-spin"></span>Caricamento Meta Ads...</div>`;
+    const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=true;
+    loadMetaCampaigns(integ.adAccountId,integ.accessToken,_kpiPreset).then(data=>{
+      _kpiData=data; kpiRenderContent();
+    }).catch(e=>{
+      container.innerHTML=headerHtml+`<div class="kpi-msg-err">⚠ ${metaErrMsg(e)}</div>`;
+    }).finally(()=>{ const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=false; });
+    return;
+  }
+  kpiRenderContent();
 }
 
-function sendKpiCredentials(){
-  const integ=getInteg(activeProject.id,'meta');
-  const iframe=document.getElementById('kpi-iframe');
-  if(!iframe||!integ) return;
-  iframe.contentWindow.postMessage({
-    type:'mp_init',
-    account:integ.adAccountId,
-    token:integ.accessToken,
-    name:activeProject.name,
-    roasTarget:4.5,
-    cplTarget:10
-  }, KPI_DASH_BASE);
+function kpiRenderContent(){
+  const container=document.getElementById('kpi-body'); if(!container) return;
+  const integ=getInteg(activeProject.id,'meta'); if(!integ||!_kpiData) return;
+  const {campData,insData,ltData,dashType}=_kpiData;
+  const m=kpiAggMetrics(insData,dashType);
+  const headerHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <div style="display:flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden;background:white">
+      <button onclick="switchKpiPlatform('meta')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:var(--accent);color:white">Meta Ads</button>
+      <button onclick="switchKpiPlatform('gads')" style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:white;color:var(--g400)">Google Ads</button>
+    </div>
+    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" style="padding:6px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:white">
+      ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
+    </select>
+    <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn">↻ Aggiorna</button>
+    <button onclick="openIntegModal()" class="btn btn-s" style="margin-left:auto">⚙ Configura Meta</button>
+  </div>`;
+
+  let tabContent='';
+  if(_kpiTab==='overview') tabContent=kpiRenderOverview(campData,insData,ltData,dashType,m);
+  else if(_kpiTab==='campaigns') tabContent=kpiRenderCampaigns(campData,insData,ltData,dashType);
+  else if(_kpiTab==='advanced') tabContent=kpiRenderAdvanced(campData,insData,ltData,dashType);
+  else if(_kpiTab==='optimize') tabContent=kpiRenderOptimize(campData,insData,dashType);
+  else if(_kpiTab==='margin') tabContent=kpiRenderMargine();
+  else if(_kpiTab==='roasreale') tabContent=kpiRenderRoasReale(insData);
+  else if(_kpiTab==='creative'){ tabContent=`<div id="kpi-creative-area"><div class="kpi-lds"><span class="kpi-spin"></span>Caricamento creatività...</div></div>`; }
+
+  container.innerHTML=headerHtml+kpiRenderMetricsBar(campData,insData,dashType)+kpiTabsHtml(dashType)+tabContent;
+
+  // Post-render
+  if(_kpiTab==='overview') requestAnimationFrame(()=>kpiRenderSpendChart(campData,insData));
+  if(_kpiTab==='margin') requestAnimationFrame(()=>kpiUpdateMargin());
+  if(_kpiTab==='creative') kpiFetchCreative();
 }
 
-function refreshKpiData(){ renderKpiPage(); }
+function refreshKpiData(){ _kpiData=null; _kpiCampExp=new Set(); if(_kpiSpChart){_kpiSpChart.destroy();_kpiSpChart=null;} renderKpiPage(); }
 
 // ─── T-05: RETENTION COHORTS ─────────────────────────────────────────────────
 const RET_BENCHMARKS={W1:{good:40,bad:25},W2:{good:25,bad:15},W3:{good:20,bad:10},W4:{good:15,bad:8},W8:{good:10,bad:5},W12:{good:8,bad:3}};
