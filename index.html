@@ -2230,6 +2230,7 @@ let _kpiCrData=[];
 let _kpiCrSort='roas'; let _kpiCrDir=-1;
 let _kpiAllProps=[];
 let _kpiSpChart=null; let _kpiRoasChart=null;
+let _kpiProjectId=null; // tracks which project the cached data belongs to
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function kpiGetAct(ins,type){
@@ -2601,8 +2602,10 @@ async function kpiFetchCreative(){
   }catch(e){ el.innerHTML=`<div class="kpi-msg-err">Errore: ${e.message}</div>`; }
 }
 function kpiThumbHtml(a){
-  if(a.thumb) return `<img class="kpi-cr-thumb" data-ad-thumb="${a.id}" src="${a.thumb}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><div class="kpi-cr-thumb-ph" style="display:none">${a.format==='video'?'▶':'🖼'}</div>`;
-  return `<div class="kpi-cr-thumb-ph" data-ad-thumb="${a.id}">${a.format==='video'?'▶':'🖼'}</div>`;
+  // Always render <img> (hidden until loaded) + placeholder so kpiUpdateThumb can target img[data-ad-thumb]
+  const imgStyle=a.thumb?'':'display:none';
+  const phStyle=a.thumb?'display:none':'';
+  return `<img class="kpi-cr-thumb" data-ad-thumb="${a.id}" src="${a.thumb||''}" style="${imgStyle}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="kpi-cr-thumb-ph" style="${phStyle}">${a.format==='video'?'▶':'🖼'}</div>`;
 }
 function kpiRenderCreativeHtml(dashType){
   const sorted=[..._kpiCrData].sort((a,b)=>dashType==='app_installs'?(b.metric||0)-(a.metric||0):(b.roas||0)-(a.roas||0));
@@ -2630,10 +2633,10 @@ async function kpiFetchAdThumbs(token){
   }
 }
 function kpiUpdateThumb(adId,url){
-  // Update thumb images in DOM without full re-render
-  document.querySelectorAll(`[data-ad-thumb="${adId}"]`).forEach(el=>{
-    el.src=url; el.style.display='';
-    const ph=el.nextSibling; if(ph) ph.style.display='none';
+  // Target only <img> elements (never the placeholder div)
+  document.querySelectorAll(`img[data-ad-thumb="${adId}"]`).forEach(img=>{
+    img.src=url; img.style.display='';
+    const ph=img.nextElementSibling; if(ph) ph.style.display='none';
   });
 }
 async function kpiFetchDemo(integ,container){
@@ -2683,6 +2686,14 @@ function kpiRenderMetricsBar(campData,insData,dashType){
 function renderKpiPage(){
   const container=document.getElementById('kpi-body');
   if(!container) return;
+  // Reset all cached state when switching between projects
+  if(_kpiProjectId!==activeProject.id){
+    _kpiData=null; _kpiTab='overview'; _kpiCrData=[]; _kpiCampExp=new Set(); _kpiAdvSel='__all__';
+    _kpiCrSort='roas'; _kpiCrDir=-1; _kpiAllProps=[];
+    if(_kpiSpChart){_kpiSpChart.destroy();_kpiSpChart=null;}
+    if(_kpiRoasChart){_kpiRoasChart.destroy();_kpiRoasChart=null;}
+    _kpiProjectId=activeProject.id;
+  }
   const integ=getInteg(activeProject.id,'meta');
   document.getElementById('kpi-sub').textContent=activeProject.name+' · Meta Ads';
 
