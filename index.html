@@ -2457,7 +2457,7 @@ function kpiRenderOverview(campData,insData,ltData,dashType,m){
 // ── Campagne table ────────────────────────────────────────────────────────────
 function kpiRenderCampaigns(campData,insData,ltData,dashType){
   const integ=getInteg(activeProject.id,'meta');
-  const roasTgt=4.5;
+  const roasTgt=kpiGetRoasTgt();
   const cplTgt=10;
   let rows='';
   campData.forEach((c,idx)=>{
@@ -2541,7 +2541,7 @@ function kpiToggleCamp(id){ if(_kpiCampExp.has(id)) _kpiCampExp.delete(id); else
 
 // ── Avanzate ──────────────────────────────────────────────────────────────────
 function kpiRenderAdvanced(campData,insData,ltData,dashType){
-  const roasTgt=4.5; const cplTgt=10;
+  const roasTgt=kpiGetRoasTgt(); const cplTgt=10;
   const sel=_kpiAdvSel;
   let src=insData;
   if(sel!=='__all__'){ const f=insData.find(i=>i.campaign_id===sel)||ltData[sel]; src=f?[f]:[]; }
@@ -2565,7 +2565,7 @@ function kpiRenderAdvanced(campData,insData,ltData,dashType){
     html+=`<div class="kpi-adv-grid">${cards.map(c=>`<div class="kpi-advc"><div class="al">${c.l}</div><div class="av">${c.v}</div><div class="as">${c.s}</div>${c.b?`<div class="ab ${c.b}">${c.bl}</div>`:''}</div>`).join('')}</div>`;
   } else {
     const cards=[
-      {l:'ROAS medio',v:m.roas!==null?kpiFmt(m.roas):'—',s:'target 4.5',b:m.roas!==null?(m.roas>=roasTgt?'kpi-ab-g':m.roas>=3?'kpi-ab-a':'kpi-ab-r'):null,bl:m.roas!==null?(m.roas>=roasTgt?'Sopra target':m.roas>=3?'Nella norma':'Sotto target'):null},
+      {l:'ROAS medio',v:m.roas!==null?kpiFmt(m.roas):'—',s:`target ${kpiFmt(roasTgt)}`,b:m.roas!==null?(m.roas>=roasTgt?'kpi-ab-g':m.roas>=3?'kpi-ab-a':'kpi-ab-r'):null,bl:m.roas!==null?(m.roas>=roasTgt?'Sopra target':m.roas>=3?'Nella norma':'Sotto target'):null},
       {l:'Acquisti',v:m.purchases>0?kpiFmtI(m.purchases):'—',s:'periodo selezionato',b:null,bl:null},
       {l:'AOV',v:m.aov?'€'+kpiFmt(m.aov):'—',s:'valore medio ordine',b:null,bl:null},
       {l:'CPM medio',v:m.cpm>0?'€'+kpiFmt(m.cpm):'—',s:kpiFmtI(m.impr)+' impressioni',b:m.cpm>0?(m.cpm<10?'kpi-ab-g':m.cpm<20?'kpi-ab-a':'kpi-ab-r'):null,bl:m.cpm>0?(m.cpm<10?'Basso':'Nella norma'):null},
@@ -2591,7 +2591,7 @@ function kpiAggLeads(insData){
 
 // ── Ottimizzazioni (ecommerce) ────────────────────────────────────────────────
 function kpiRenderOptimize(campData,insData,dashType){
-  const roasTgt=4.5;
+  const roasTgt=kpiGetRoasTgt();
   // Strategic analysis of top campaign
   let stratHtml='';
   let maxSpend=0,fi=null;
@@ -2629,7 +2629,7 @@ function kpiRenderOptimize(campData,insData,dashType){
   if(allM.freq>2.5&&allM.freq<=3.5) smart.push({ico:'↻',t:'Monitora la frequenza',b:`Frequenza media account: <strong>${kpiFmt(allM.freq,2)}</strong>. Si avvicina alla soglia di saturazione (3.5). Prepara nuove creatività da lanciare nei prossimi giorni.`,tag:{c:'bok',l:'Attenzione'}});
   if(allM.ctr<1&&allM.spend>20) smart.push({ico:'↓',t:'CTR basso — testa nuovi hook',b:`CTR medio: <strong>${kpiFmt(allM.ctr)}%</strong>. Sotto la media di settore (1%). Considera hook più diretti, UGC o creatività con testo sovrapposto per migliorare il click-through.`,tag:{c:'bb',l:'Da migliorare'}});
   if(allM.cpm>15) smart.push({ico:'↑',t:'CPM elevato — allarga il pubblico',b:`CPM medio: <strong>€${kpiFmt(allM.cpm)}</strong>. Pubblico potenzialmente saturo o troppo ristretto. Valuta di aggiungere un lookalike broadened o espandere gli interessi.`,tag:{c:'bb',l:'Attenzione'}});
-  if(allM.roas!==null&&allM.roas>4.5&&allM.spend>0) smart.push({ico:'↑',t:'ROAS sopra target — momento per scalare',b:`ROAS medio account: <strong>${kpiFmt(allM.roas)}</strong> (target 4.5). Considera un incremento graduale del budget (+15-20%) mantenendo la struttura creativa attuale.`,tag:{c:'bg',l:'Opportunità'}});
+  if(allM.roas!==null&&allM.roas>roasTgt&&allM.spend>0) smart.push({ico:'↑',t:'ROAS sopra target — momento per scalare',b:`ROAS medio account: <strong>${kpiFmt(allM.roas)}</strong> (target ${kpiFmt(roasTgt)}). Considera un incremento graduale del budget (+15-20%) mantenendo la struttura creativa attuale.`,tag:{c:'bg',l:'Opportunità'}});
   if(campData.filter(c=>c.status==='ACTIVE').length===0) smart.push({ico:'!',t:'Nessuna campagna attiva',b:'Tutte le campagne risultano in pausa. Attiva almeno una campagna o controlla lo stato dell\'account Meta.',tag:{c:'bb',l:'Urgente'}});
   const renderProp=(p,i)=>`<div class="kpi-prop" id="kpi-prop-${i}">
     <div class="kpi-ph"><div class="kpi-pi ${p.icon}">${p.ch}</div><div class="kpi-pt">${p.t}</div><span class="kpi-prisk kpi-${p.risk==='low'?'rlow':p.risk==='med'?'rmed':'rhigh'}">Rischio ${p.risk==='low'?'Basso':p.risk==='med'?'Medio':'Alto'}</span></div>
@@ -2656,8 +2656,27 @@ async function kpiScaleBudget(id,budget,e){ e.stopPropagation(); const nb=Math.r
 
 // ── Margine (ecommerce) ───────────────────────────────────────────────────────
 const KPI_MSTOR='kpi_margin_v1';
-function kpiGetMarginCfg(){ const s=localStorage.getItem(KPI_MSTOR+'_'+activeProject.id); try{ return s?JSON.parse(s):{price:0,cogs:0,mat:0,fix:0,ord:1,vat:22}; }catch(e){ return {price:0,cogs:0,mat:0,fix:0,ord:1,vat:22}; } }
-function kpiSaveMarginCfg(){ const cfg={price:parseFloat(document.getElementById('km-price').value)||0,cogs:parseFloat(document.getElementById('km-cogs').value)||0,mat:parseFloat(document.getElementById('km-mat').value)||0,fix:parseFloat(document.getElementById('km-fix').value)||0,ord:parseFloat(document.getElementById('km-ord').value)||1,vat:parseFloat(document.getElementById('km-vat').value)||22}; localStorage.setItem(KPI_MSTOR+'_'+activeProject.id,JSON.stringify(cfg)); kpiUpdateMargin(); const b=document.getElementById('km-saved'); if(b){b.style.display='inline-block';setTimeout(()=>b.style.display='none',2000);} }
+function kpiGetMarginCfg(){ const s=localStorage.getItem(KPI_MSTOR+'_'+activeProject.id); try{ return s?JSON.parse(s):{price:0,cogs:0,mat:0,fix:0,ord:1,vat:22,margin_target:20}; }catch(e){ return {price:0,cogs:0,mat:0,fix:0,ord:1,vat:22,margin_target:20}; } }
+function kpiSaveMarginCfg(){ const cfg={price:parseFloat(document.getElementById('km-price').value)||0,cogs:parseFloat(document.getElementById('km-cogs').value)||0,mat:parseFloat(document.getElementById('km-mat').value)||0,fix:parseFloat(document.getElementById('km-fix').value)||0,ord:parseFloat(document.getElementById('km-ord').value)||1,vat:parseFloat(document.getElementById('km-vat').value)||22,margin_target:parseFloat(document.getElementById('km-margin-target').value)||20}; localStorage.setItem(KPI_MSTOR+'_'+activeProject.id,JSON.stringify(cfg)); kpiUpdateMargin(); const b=document.getElementById('km-saved'); if(b){b.style.display='inline-block';setTimeout(()=>b.style.display='none',2000);} }
+
+// ── Dynamic ROAS target from margin config ────────────────────────────────────
+// Formula: target ROAS = price / (net − cogs − mat − fixOrd − price × targetMarginPct)
+// where net = price − VAT and fixOrd = fixed_costs / orders_per_month
+// This gives the ROAS at which the implied CAC still leaves the desired margin.
+// Falls back to BE_ROAS × 1.2 if margin_target makes CAC negative, then 4.5 if no config.
+function kpiGetRoasTgt(){
+  const cfg=kpiGetMarginCfg();
+  if(!cfg.price) return 4.5;
+  const m=kpiCompMargin(cfg);
+  const targetPct=(cfg.margin_target||20)/100;
+  // Max affordable CAC at the desired margin:
+  // net_margin = (net − cogs − mat − fixOrd − cac) / price = targetPct
+  // => cac = net − cogs − mat − fixOrd − price × targetPct
+  const maxCac=m.net-cfg.cogs-cfg.mat-m.fixOrd-cfg.price*targetPct;
+  if(maxCac>0) return cfg.price/maxCac;
+  // Target margin isn't achievable with any positive CAC — use 20% above break-even
+  return m.beRoas?Math.round((m.beRoas*1.2)*10)/10:4.5;
+}
 function kpiCompMargin(cfg,cacOvr){ const vat=cfg.price*(cfg.vat/(100+cfg.vat)),net=cfg.price-vat,fixOrd=cfg.ord>0?cfg.fix/cfg.ord:0,cac=cacOvr!==undefined?cacOvr:kpiGetAvgCac(),costs=cfg.cogs+cfg.mat+fixOrd+cac,mEur=net-costs,mPct=net>0?mEur/net*100:0,beRoas=(net-cfg.cogs-cfg.mat-fixOrd)>0?cfg.price/(net-cfg.cogs-cfg.mat-fixOrd):null; return {price:cfg.price,vat,net,cogs:cfg.cogs,mat:cfg.mat,fixOrd,cac,costs,mEur,mPct,beRoas}; }
 function kpiGetAvgCac(){ let tot=0,pur=0; (_kpiData?.insData||[]).forEach(i=>{ const p=kpiGetAct(i,'omni_purchase'); if(p>0){tot+=parseFloat(i.spend||0);pur+=p;} }); return pur>0?tot/pur:0; }
 function kpiUpdateMargin(){
@@ -2676,10 +2695,22 @@ function kpiUpdateMargin(){
     <div class="kpi-mpl">${m.mPct>=30?'Margine sano':m.mPct>=15?'Margine accettabile':'Margine sotto soglia'}</div>`;
   if(m.beRoas){
     const curRoas=(()=>{ let s=0,r=0; (_kpiData?.insData||[]).forEach(i=>{ s+=parseFloat(i.spend||0); r+=kpiGetActVal(i,'omni_purchase'); }); return s>0&&r>0?r/s:null; })();
-    const gap=curRoas!==null?curRoas-m.beRoas:null;
+    const tgtRoas=kpiGetRoasTgt();
+    const gapBe=curRoas!==null?curRoas-m.beRoas:null;
+    const gapTgt=curRoas!==null?curRoas-tgtRoas:null;
     const beC=m.beRoas<=2?'kpi-green':m.beRoas<=3.5?'kpi-amber':'kpi-red';
-    document.getElementById('km-breakeven').innerHTML=`<div class="kpi-bed"><div class="kpi-ben ${beC}">ROAS ${kpiFmt(m.beRoas)}</div><div class="kpi-bes">Soglia minima per non perdere</div></div>
-      <div class="kpi-bec"><div class="kpi-ber"><span style="color:var(--g400)">Break-even ROAS</span><span style="font-weight:600">${kpiFmt(m.beRoas)}</span></div><div class="kpi-ber"><span style="color:var(--g400)">ROAS attuale</span><span style="font-weight:600;color:var(${curRoas!==null&&curRoas>=m.beRoas?'--green':'--red'})">${curRoas!==null?kpiFmt(curRoas):'—'}</span></div>${gap!==null?`<div class="kpi-ber"><span style="color:var(--g400)">Margine sul BE</span><span style="font-weight:600;color:var(${gap>=0?'--green':'--red'})">${gap>=0?'+':''}${kpiFmt(gap)}</span></div>`:''}</div>`;
+    const tgtC=tgtRoas<=3?'kpi-green':tgtRoas<=5?'kpi-amber':'kpi-red';
+    document.getElementById('km-breakeven').innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div class="kpi-bed"><div class="kpi-ben ${beC}">ROAS ${kpiFmt(m.beRoas)}</div><div class="kpi-bes">Break-even (pareggio)</div></div>
+        <div class="kpi-bed" style="border-color:var(--accent)"><div class="kpi-ben" style="background:var(--accent);color:white">ROAS ${kpiFmt(tgtRoas)}</div><div class="kpi-bes">Target (margine ${cfg.margin_target||20}%)</div></div>
+      </div>
+      <div class="kpi-bec">
+        <div class="kpi-ber"><span style="color:var(--g400)">Break-even ROAS</span><span style="font-weight:600">${kpiFmt(m.beRoas)}</span></div>
+        <div class="kpi-ber"><span style="color:var(--g400)">🎯 Target ROAS</span><span style="font-weight:700;color:var(--accent)">${kpiFmt(tgtRoas)}</span></div>
+        <div class="kpi-ber"><span style="color:var(--g400)">ROAS attuale</span><span style="font-weight:600;color:var(${curRoas!==null&&curRoas>=tgtRoas?'--green':curRoas!==null&&curRoas>=m.beRoas?'--amber':'--red'})">${curRoas!==null?kpiFmt(curRoas):'—'}</span></div>
+        ${gapTgt!==null?`<div class="kpi-ber"><span style="color:var(--g400)">Gap vs target</span><span style="font-weight:600;color:var(${gapTgt>=0?'--green':'--red'})">${gapTgt>=0?'+':''}${kpiFmt(gapTgt)}</span></div>`:''}
+      </div>`;
   } else { document.getElementById('km-breakeven').innerHTML='<div style="font-size:13px;color:var(--g400)">Inserisci tutti i costi per calcolare il break-even ROAS.</div>'; }
   // Per-campaign margin table
   const campData=_kpiData?.campData||[], insData=_kpiData?.insData||[];
@@ -2699,6 +2730,7 @@ function kpiRenderMargine(){
       <div class="kpi-mig"><label>Costi fissi mensili</label><div class="kpi-miw"><span class="kpi-mc">€</span><input type="number" id="km-fix" value="${cfg.fix||''}" placeholder="0.00" step="1" oninput="kpiUpdateMargin()"></div></div>
       <div class="kpi-mig"><label>Ordini medi/mese</label><div class="kpi-miw"><span class="kpi-mc">#</span><input type="number" id="km-ord" value="${cfg.ord||1}" placeholder="1" step="1" oninput="kpiUpdateMargin()"></div></div>
       <div class="kpi-mig"><label>IVA %</label><div class="kpi-miw"><span class="kpi-mc">%</span><input type="number" id="km-vat" value="${cfg.vat||22}" step="0.5" oninput="kpiUpdateMargin()"></div></div>
+      <div class="kpi-mig" style="grid-column:1/-1;border-top:1px solid var(--g200);padding-top:10px;margin-top:2px"><label style="font-weight:600;color:var(--g700)">🎯 Margine target % <span style="font-weight:400;color:var(--g400);font-size:11px">— determina il ROAS target</span></label><div class="kpi-miw" style="max-width:160px"><span class="kpi-mc">%</span><input type="number" id="km-margin-target" value="${cfg.margin_target||20}" min="1" max="80" step="1" oninput="kpiUpdateMargin()"></div></div>
     </div>
     <button class="btn btn-p btn-s" onclick="kpiSaveMarginCfg()">Salva configurazione</button>
   </div>
@@ -2941,6 +2973,7 @@ function kpiRenderSpendChart(campData,insData){
 function kpiRenderMetricsBar(campData,insData,dashType){
   const m=kpiAggMetrics(insData,dashType);
   const active=campData.filter(c=>c.status==='ACTIVE').length;
+  const roasTgt=kpiGetRoasTgt();
   if(dashType==='app_installs'){
     const cplCls=kpiCplClass(m.cpl);
     return `<div class="kpi-metrics">
@@ -2950,10 +2983,10 @@ function kpiRenderMetricsBar(campData,insData,dashType){
       <div class="kpi-metric"><div class="ml">CAMPAGNE ATTIVE</div><div class="mv">${active} <span style="font-size:14px;color:var(--g400);font-weight:400">/ ${campData.length}</span></div><div class="ms">totali in account</div></div>
     </div>`;
   } else {
-    const roasCls=kpiRc(m.roas);
+    const roasCls=kpiRc(m.roas,roasTgt);
     return `<div class="kpi-metrics">
       <div class="kpi-metric"><div class="ml">SPEND</div><div class="mv">€${kpiFmt(m.spend)}</div><div class="ms">periodo selezionato</div></div>
-      <div class="kpi-metric"><div class="ml">ROAS</div><div class="mv ${roasCls}">${m.roas!==null?kpiFmt(m.roas):'—'}</div><div class="ms">target ≥ 4.5</div></div>
+      <div class="kpi-metric"><div class="ml">ROAS</div><div class="mv ${roasCls}">${m.roas!==null?kpiFmt(m.roas):'—'}</div><div class="ms">target ≥ ${kpiFmt(roasTgt)}</div></div>
       <div class="kpi-metric"><div class="ml">ACQUISTI</div><div class="mv">${m.purchases||'—'}</div><div class="ms">periodo selezionato</div></div>
       <div class="kpi-metric"><div class="ml">CAMPAGNE ATTIVE</div><div class="mv">${active} <span style="font-size:14px;color:var(--g400);font-weight:400">/ ${campData.length}</span></div><div class="ms">totali in account</div></div>
     </div>`;
