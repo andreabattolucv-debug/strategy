@@ -661,11 +661,12 @@ input[type=range]{accent-color:var(--accent)}
             <option value="">All statuses</option><option value="testing">Testing</option><option value="win">Winner</option><option value="lose">Loser</option><option value="neg">Negative</option>
           </select>
           <button class="btn btn-g btn-sm" onclick="exportKwCSV()">Export CSV</button>
+          <button class="btn btn-d btn-sm" id="kw-del-sel-btn" style="display:none" onclick="kwDeleteSelected()">🗑 Elimina selezionati (<span id="kw-sel-count">0</span>)</button>
           <button class="btn btn-p btn-sm" onclick="openModal('modal-kw')">+ Add keyword</button>
         </div>
         <div class="card" style="padding:0;overflow:hidden">
           <div class="kw-wrap"><table class="kw-tbl">
-            <thead><tr><th>Keyword</th><th>Market</th><th>Funnel</th><th>CPC</th><th>Clicks</th><th>Leads</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+            <thead><tr><th style="width:36px"><input type="checkbox" id="kw-check-all" onchange="kwToggleAll(this.checked)" style="cursor:pointer;accent-color:var(--accent)"></th><th>Keyword</th><th>Market</th><th>Funnel</th><th>CPC</th><th>Clicks</th><th>Leads</th><th>Status</th><th>Notes</th><th></th></tr></thead>
             <tbody id="kw-tbody"></tbody>
           </table></div>
         </div>
@@ -1607,6 +1608,43 @@ function closeModal(id){ document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); }));
 
 // KEYWORD TABLE
+let _kwSelected=new Set();
+function kwToggleAll(checked){
+  const vis=_kwGetVisible();
+  if(checked) vis.forEach(k=>_kwSelected.add(k.id));
+  else vis.forEach(k=>_kwSelected.delete(k.id));
+  renderKw();
+}
+function kwToggleSel(id,checked){ if(checked) _kwSelected.add(id); else _kwSelected.delete(id); kwUpdateBulkBar(); }
+function kwUpdateBulkBar(){
+  const n=_kwSelected.size;
+  const btn=document.getElementById('kw-del-sel-btn');
+  const cnt=document.getElementById('kw-sel-count');
+  if(btn){ btn.style.display=n?'':'none'; }
+  if(cnt){ cnt.textContent=n; }
+  const allChk=document.getElementById('kw-check-all');
+  if(allChk){ const vis=_kwGetVisible(); allChk.checked=vis.length>0&&vis.every(k=>_kwSelected.has(k.id)); allChk.indeterminate=vis.some(k=>_kwSelected.has(k.id))&&!allChk.checked; }
+}
+function _kwGetVisible(){
+  const s=document.getElementById('kw-search')?.value.toLowerCase()||'';
+  const m=document.getElementById('kw-mkt')?.value||'';
+  const f=document.getElementById('kw-fun')?.value||'';
+  const st=document.getElementById('kw-sts')?.value||'';
+  return S.keywords.filter(k=>{
+    if(s&&!k.text.toLowerCase().includes(s)&&!(k.notes||'').toLowerCase().includes(s)) return false;
+    if(m&&k.market!==m) return false;
+    if(f&&k.funnel!==f) return false;
+    if(st&&k.status!==st) return false;
+    return true;
+  });
+}
+function kwDeleteSelected(){
+  if(!_kwSelected.size) return;
+  if(!confirm(`Eliminare ${_kwSelected.size} keyword selezionate?`)) return;
+  S.keywords=S.keywords.filter(k=>!_kwSelected.has(k.id));
+  _kwSelected.clear();
+  save(); renderAll(); toast('Keyword eliminate');
+}
 function renderKw(){
   const s=document.getElementById('kw-search').value.toLowerCase();
   const m=document.getElementById('kw-mkt').value;
@@ -1620,12 +1658,19 @@ function renderKw(){
     return true;
   });
   document.getElementById('kw-cnt').textContent=`${kws.length} keyword${kws.length!==1?'s':''} shown`;
+  kwUpdateBulkBar();
   const tb=document.getElementById('kw-tbody');
-  if(!kws.length){ tb.innerHTML=`<tr><td colspan="9"><div style="text-align:center;padding:32px;color:var(--g400)">No keywords match filters</div></td></tr>`; return; }
+  if(!kws.length){ tb.innerHTML=`<tr><td colspan="10"><div style="text-align:center;padding:32px;color:var(--g400)">No keywords match filters</div></td></tr>`; return; }
   const MK={IT:'🇮🇹',ME:'🇲🇪',LV:'🇱🇻'};
+  const allChecked=kws.length>0&&kws.every(k=>_kwSelected.has(k.id));
+  const anyChecked=kws.some(k=>_kwSelected.has(k.id));
+  const allChk=document.getElementById('kw-check-all');
+  if(allChk){ allChk.checked=allChecked; allChk.indeterminate=anyChecked&&!allChecked; }
   tb.innerHTML=kws.map(k=>{
     const sc={testing:'',win:'win',lose:'lose',neg:'neg'}[k.status]||'';
-    return `<tr>
+    const chk=_kwSelected.has(k.id);
+    return `<tr${chk?' style="background:var(--accent-l)"':''}>
+      <td><input type="checkbox" ${chk?'checked':''} onchange="kwToggleSel('${k.id}',this.checked)" style="cursor:pointer;accent-color:var(--accent)"></td>
       <td><span class="kwt ${sc}">${k.text}</span></td>
       <td><span class="badge ${{IT:'b-it',ME:'b-me',LV:'b-lv'}[k.market]||''}">${MK[k.market]||''} ${k.market}</span></td>
       <td><span class="badge ${FBADGE[k.funnel]||''}">${FLAB[k.funnel]||k.funnel}</span></td>
@@ -1725,7 +1770,20 @@ function parseCSV(text){
   }
   const prev=document.getElementById('csv-prev');
   prev.style.display='block';
-  prev.innerHTML=`<strong>${csvQ.length} keywords</strong> ready${skip?` · ${skip} lines skipped`:''}<br><span style="font-size:11px;color:var(--g400)">All set to Market: IT, Funnel: Ispirazione by default — edit individually after import</span><br><br><span style="font-family:monospace;font-size:11px">${csvQ.slice(0,5).map(k=>k.text).join('<br>')}${csvQ.length>5?`<br>...+${csvQ.length-5} more`:''}</span>`;
+  prev.innerHTML=`<strong>${csvQ.length} keywords</strong> pronte${skip?` · ${skip} righe saltate`:''}<br>
+    <div style="display:flex;gap:12px;align-items:center;margin:10px 0;flex-wrap:wrap">
+      <div><label style="font-size:11px;color:var(--g400);display:block;margin-bottom:3px">Mercato</label>
+        <select id="csv-import-mkt" style="padding:5px 9px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:var(--g50)">
+          <option value="IT">🇮🇹 Italy</option><option value="ME">🇲🇪 Montenegro</option><option value="LV">🇱🇻 Latvia</option>
+        </select>
+      </div>
+      <div><label style="font-size:11px;color:var(--g400);display:block;margin-bottom:3px">Funnel</label>
+        <select id="csv-import-fun" style="padding:5px 9px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:var(--g50)">
+          <option value="ispirazione">Ispirazione</option><option value="planning">Planning</option><option value="transazionale">Transazionale</option><option value="decisionale">Decisionale</option>
+        </select>
+      </div>
+    </div>
+    <span style="font-family:monospace;font-size:11px;color:var(--g400)">${csvQ.slice(0,5).map(k=>k.text).join('<br>')}${csvQ.length>5?`<br>...+${csvQ.length-5} more`:''}</span>`;
   const acts=document.getElementById('csv-acts');
   acts.style.display='flex';
   toast(`${csvQ.length} keywords parsed`);
@@ -1733,6 +1791,9 @@ function parseCSV(text){
 function cancelCSV(){ csvQ=[]; document.getElementById('csv-prev').style.display='none'; document.getElementById('csv-acts').style.display='none'; }
 function importCSV(){
   if(!csvQ.length) return;
+  const mkt=document.getElementById('csv-import-mkt')?.value||'IT';
+  const fun=document.getElementById('csv-import-fun')?.value||'ispirazione';
+  csvQ.forEach(k=>{ k.market=mkt; k.funnel=fun; });
   const ex=new Set(S.keywords.map(k=>k.text));
   const nw=csvQ.filter(k=>!ex.has(k.text));
   S.keywords.unshift(...nw);
