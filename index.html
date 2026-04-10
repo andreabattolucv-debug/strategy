@@ -216,6 +216,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ov-ch{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--g100);color:var(--g600);font-weight:500}
 .ov-proj-cta{width:100%;padding:8px;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-align:center}
 .ov-dec-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r);margin-bottom:6px;border:1px solid var(--g100);background:var(--g50)}
+.ov-dec-manual{border-style:dashed;border-color:var(--amber-l);background:var(--amber-l)}
+.ov-dec-manual .ov-dec-meta{color:var(--amber)}
+#ov-dec-addform input:focus,#ov-dec-addform select:focus{border-color:var(--accent);outline:none}
 .ov-dec-item:last-child{margin-bottom:0}
 .ov-dec-proj{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;flex-shrink:0}
 .ov-dec-name{font-size:13px;font-weight:600;color:var(--dark);flex:1}
@@ -581,7 +584,28 @@ input[type=range]{accent-color:var(--accent)}
         <div class="card" id="ov-decisions-card">
           <div class="card-hd">
             <div class="card-title">⚡ Decisioni in sospeso</div>
-            <span class="badge b-test" id="ov-decisions-count">0</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="badge b-test" id="ov-decisions-count">0</span>
+              <button class="btn btn-p btn-sm" onclick="ovDecToggleAdd()" title="Aggiungi decisione manuale" style="padding:3px 10px;font-size:12px">+ Aggiungi</button>
+            </div>
+          </div>
+          <!-- Inline add form (hidden by default) -->
+          <div id="ov-dec-addform" style="display:none;background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:10px 12px;margin-bottom:10px;display:none">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+              <div style="flex:1;min-width:180px"><label style="font-size:11px;color:var(--g400);display:block;margin-bottom:3px">Decisione</label><input id="ov-dec-input" type="text" placeholder="Es: Valida creatività video Q2…" style="width:100%;padding:6px 9px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:var(--g50)"></div>
+              <div><label style="font-size:11px;color:var(--g400);display:block;margin-bottom:3px">Progetto</label>
+                <select id="ov-dec-proj" style="padding:6px 8px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;outline:none;background:var(--g50)">
+                  <option value="tutti">Tutti</option><option value="PN">PN</option><option value="MC">MC</option>
+                </select>
+              </div>
+              <div><label style="font-size:11px;color:var(--g400);display:block;margin-bottom:3px">Urgenza</label>
+                <select id="ov-dec-urgency" style="padding:6px 8px;border:1px solid var(--g200);border-radius:var(--r);font-size:12px;outline:none;background:var(--g50)">
+                  <option value="alta">Alta</option><option value="media">Media</option><option value="bassa">Bassa</option>
+                </select>
+              </div>
+              <button class="btn btn-p btn-sm" onclick="ovDecSave()" style="font-size:12px">Salva</button>
+              <button class="btn btn-g btn-sm" onclick="ovDecToggleAdd()" style="font-size:12px">Annulla</button>
+            </div>
           </div>
           <div id="ov-decisions"></div>
         </div>
@@ -593,17 +617,20 @@ input[type=range]{accent-color:var(--accent)}
             <div class="card-hd"><div class="card-title">📋 Funnel & Dev</div></div>
             <div id="ov-funnel-widget"></div>
           </div>
-          <!-- Focus settimana -->
+          <!-- Focus settimana — in-progress todos -->
           <div class="card" style="margin:0">
             <div class="card-hd">
               <div class="card-title">🎯 Focus settimana</div>
-              <button class="btn btn-g btn-sm" id="focus-save-btn" onclick="saveFocusNote()" style="display:none">Salva</button>
+              <span style="font-size:11px;color:var(--g400)">In corso ora</span>
             </div>
-            <textarea id="focus-note" placeholder="Scrivi le priorità della settimana per il team…" style="width:100%;min-height:110px;padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;color:var(--g600);resize:vertical;outline:none;line-height:1.6;background:var(--g50)" oninput="document.getElementById('focus-save-btn').style.display=''" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--g200)'"></textarea>
+            <div id="ov-focus-widget"></div>
           </div>
           <!-- KPI snapshot -->
           <div class="card" style="margin:0">
-            <div class="card-hd"><div class="card-title">📊 KPI Snapshot</div></div>
+            <div class="card-hd">
+              <div class="card-title">📊 KPI Snapshot</div>
+              <span style="font-size:11px;color:var(--g400)">Campagne attive</span>
+            </div>
             <div id="ov-kpi-widget"></div>
           </div>
         </div>
@@ -1322,19 +1349,8 @@ function renderOverview(){
   renderOvProjects();
   renderOvDecisions();
   renderOvFunnel();
+  renderOvFocus();
   renderOvKpi();
-  // Restore focus note
-  const saved=localStorage.getItem('mp_focus_note')||'';
-  document.getElementById('focus-note').value=saved;
-  document.getElementById('focus-save-btn').style.display='none';
-}
-
-function saveFocusNote(){
-  const content=document.getElementById('focus-note').value;
-  localStorage.setItem('mp_focus_note',content);
-  document.getElementById('focus-save-btn').style.display='none';
-  toast('Focus salvato');
-  sbRun(()=>sb.from('focus_notes').upsert({project_id:'all',content},{onConflict:'project_id'}));
 }
 
 // Widget 1 — Project cards
@@ -1370,23 +1386,61 @@ function renderOvProjects(){
   document.getElementById('ov-projects').innerHTML=cards;
 }
 
-// Widget 2 — Decisioni urgenti (testing da > 7gg)
+// Widget 2 — Decisioni urgenti (testing da > 7gg + manuali)
+const OV_DEC_KEY='mp_ov_decisions';
+function loadCustomDec(){ try{ return JSON.parse(localStorage.getItem(OV_DEC_KEY)||'[]'); }catch(e){ return []; } }
+function saveCustomDec(arr){ localStorage.setItem(OV_DEC_KEY,JSON.stringify(arr)); }
+function ovDecToggleAdd(){
+  const f=document.getElementById('ov-dec-addform');
+  const visible=f.style.display==='block';
+  f.style.display=visible?'none':'block';
+  if(!visible) setTimeout(()=>document.getElementById('ov-dec-input')?.focus(),50);
+}
+function ovDecSave(){
+  const title=document.getElementById('ov-dec-input').value.trim();
+  if(!title){ toast('Inserisci una descrizione'); return; }
+  const proj=document.getElementById('ov-dec-proj').value;
+  const urgency=document.getElementById('ov-dec-urgency').value;
+  const arr=loadCustomDec();
+  arr.push({id:Date.now()+'',title,proj,urgency,ts:Date.now()});
+  saveCustomDec(arr);
+  document.getElementById('ov-dec-input').value='';
+  ovDecToggleAdd();
+  renderOvDecisions();
+}
+function ovDecResolve(id){
+  saveCustomDec(loadCustomDec().filter(d=>d.id!==id));
+  renderOvDecisions();
+}
 function renderOvDecisions(){
   const DAYS_THRESHOLD=7;
   const now=Date.now();
   const decisions=[];
-  // PN strategies
+  // PN strategies auto-detected
   S.strategies.filter(s=>s.status==='testing'&&s.startDate).forEach(s=>{
     const age=Math.round((now-new Date(s.startDate))/864e5);
-    if(age>=DAYS_THRESHOLD) decisions.push({proj:'PN',color:'#E91E8C',colorL:'#FBEAF0',name:s.title,meta:mktLabel(s.market)+' · '+platLabel(s.platform),age,type:'strategy',id:s.id});
+    if(age>=DAYS_THRESHOLD) decisions.push({proj:'PN',color:'#E91E8C',colorL:'#FBEAF0',name:s.title,meta:mktLabel(s.market)+' · '+platLabel(s.platform),age,type:'strategy',id:s.id,manual:false});
   });
-  // MC audiences
+  // MC audiences auto-detected
   loadAudiences().filter(a=>a.status==='testing').forEach(a=>{
-    const age=a.kpi.cpd!=null?14:7; // mock: se ha KPI assume 14gg, altrimenti 7
+    const age=a.kpi.cpd!=null?14:7;
     const kpiStr=a.kpi.cpd!=null?`CPD $${a.kpi.cpd} · CPAU $${a.kpi.cpau} · W4 ${a.kpi.w4ret}%`:'KPI non ancora inseriti';
-    if(age>=DAYS_THRESHOLD) decisions.push({proj:'MC',color:'#6B4FE0',colorL:'#EEEDFE',name:a.name,meta:kpiStr,age,type:'audience',id:a.id});
+    if(age>=DAYS_THRESHOLD) decisions.push({proj:'MC',color:'#6B4FE0',colorL:'#EEEDFE',name:a.name,meta:kpiStr,age,type:'audience',id:a.id,manual:false});
   });
-  decisions.sort((a,b)=>b.age-a.age);
+  // Manual decisions
+  const urgColors={alta:'var(--red)',media:'var(--amber)',bassa:'var(--green)'};
+  loadCustomDec().forEach(d=>{
+    const proj=d.proj==='tutti'?'ALL':d.proj;
+    const pColor=d.proj==='PN'?'#E91E8C':d.proj==='MC'?'#6B4FE0':'#666';
+    const pColorL=d.proj==='PN'?'#FBEAF0':d.proj==='MC'?'#EEEDFE':'#f0f0f0';
+    const ageDays=Math.round((now-d.ts)/864e5);
+    decisions.push({proj,color:pColor,colorL:pColorL,name:d.title,meta:'Aggiunta manualmente · urgenza '+d.urgency,age:ageDays,type:'manual',id:d.id,manual:true,urgency:d.urgency});
+  });
+  decisions.sort((a,b)=>{
+    const uOrd={alta:0,media:1,bassa:2};
+    if(a.manual!==b.manual) return a.manual?0:0; // mix, sort by age
+    return b.age-a.age;
+  });
   const el=document.getElementById('ov-decisions');
   const countEl=document.getElementById('ov-decisions-count');
   countEl.textContent=decisions.length;
@@ -1394,22 +1448,44 @@ function renderOvDecisions(){
     el.innerHTML='<div style="text-align:center;padding:16px;color:var(--g400);font-size:13px">Nessuna decisione urgente 🎉</div>';
     return;
   }
-  el.innerHTML=decisions.map(d=>`
-    <div class="ov-dec-item">
+  el.innerHTML=decisions.map(d=>{
+    const ageColor=d.age>14?'var(--red)':d.age>7?'var(--amber)':'var(--g400)';
+    const resolveBtn=d.manual
+      ?`<button class="sc-btn fail" title="Segna come risolta" onclick="ovDecResolve('${d.id}')">✓ Fatto</button>`
+      :(d.type==='strategy'
+        ?`<button class="sc-btn val" onclick="setSts('${d.id}','validated');renderOverview()">✓</button><button class="sc-btn fail" onclick="setSts('${d.id}','failed');renderOverview()">✗</button>`
+        :`<button class="sc-btn val" onclick="setAudSts('${d.id}','validated');renderOverview()">✓</button><button class="sc-btn fail" onclick="setAudSts('${d.id}','failed');renderOverview()">✗</button>`);
+    return `<div class="ov-dec-item${d.manual?' ov-dec-manual':''}">
       <span class="ov-dec-proj" style="background:${d.colorL};color:${d.color}">${d.proj}</span>
       <div style="flex:1;min-width:0">
         <div class="ov-dec-name">${d.name}</div>
         <div class="ov-dec-meta">${d.meta}</div>
       </div>
-      <span class="ov-dec-age" style="color:${d.age>14?'var(--red)':'var(--amber)'}">${d.age}gg</span>
-      <div class="ov-dec-btns">
-        ${d.type==='strategy'
-          ?`<button class="sc-btn val" onclick="setSts('${d.id}','validated');renderOverview()">✓</button>
-             <button class="sc-btn fail" onclick="setSts('${d.id}','failed');renderOverview()">✗</button>`
-          :`<button class="sc-btn val" onclick="setAudSts('${d.id}','validated');renderOverview()">✓</button>
-             <button class="sc-btn fail" onclick="setAudSts('${d.id}','failed');renderOverview()">✗</button>`
-        }
+      <span class="ov-dec-age" style="color:${ageColor}">${d.age}gg</span>
+      <div class="ov-dec-btns">${resolveBtn}</div>
+    </div>`;
+  }).join('');
+}
+
+// Widget — Focus settimana (in-progress todos da tutti i progetti)
+function renderOvFocus(){
+  const el=document.getElementById('ov-focus-widget'); if(!el) return;
+  const items=[
+    ...loadTodos('pn').filter(t=>t.status==='inprogress').map(t=>({...t,proj:'PN',color:'#E91E8C',colorL:'#FBEAF0'})),
+    ...loadTodos('mc').filter(t=>t.status==='inprogress').map(t=>({...t,proj:'MC',color:'#6B4FE0',colorL:'#EEEDFE'}))
+  ];
+  if(!items.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--g400);font-size:13px">Nessun task in corso 🎯<br><span style="font-size:11px">Imposta dei task su "In corso" nel Funnel Board</span></div>';
+    return;
+  }
+  el.innerHTML=items.map(t=>`
+    <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--g100)">
+      <span class="ov-dec-proj" style="background:${t.colorL};color:${t.color};flex-shrink:0">${t.proj}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:500;color:var(--g700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.title}</div>
+        ${t.category||t.assignee?`<div style="font-size:11px;color:var(--g400);margin-top:1px">${[t.category,t.assignee&&t.assignee!=='team'?t.assignee:null].filter(Boolean).join(' · ')}</div>`:''}
       </div>
+      <span style="font-size:10px;color:var(--blue);background:var(--blue-l);padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0">▶ In corso</span>
     </div>`).join('');
 }
 
@@ -1438,21 +1514,58 @@ function renderOvFunnel(){
   }).join('')+`<div style="font-size:11px;color:var(--g400);margin-top:8px;text-align:center">${totalOpen} task aperti in totale</div>`;
 }
 
-// Widget 4 — KPI Snapshot (ultimi dati inseriti per progetto)
+// Per-project Meta data cache — populated whenever KPI data loads for any project
+const _kpiProjectCache={};
+
+// Widget 4 — KPI Snapshot (ROAS campagne attive da Meta API)
 function renderOvKpi(){
-  const el=document.getElementById('ov-kpi-widget');
+  const el=document.getElementById('ov-kpi-widget'); if(!el) return;
   let html='';
   PROJECTS.forEach(p=>{
-    const saved=JSON.parse(localStorage.getItem('mp_kpi_'+p.id)||'{}');
-    const rows=Object.entries(saved);
-    if(!rows.length){ html+=`<div class="ov-kpi-row"><div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div><div style="font-size:12px;color:var(--g300)">Nessun dato ancora</div></div>`; return; }
-    // Prendi prima riga con almeno un valore
-    const firstRow=rows.find(([,vals])=>Object.keys(vals).length>0);
-    if(!firstRow){ html+=`<div class="ov-kpi-row"><div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div><div style="font-size:12px;color:var(--g300)">Nessun dato ancora</div></div>`; return; }
-    const [,vals]=firstRow;
-    const items=Object.entries(vals).filter(([,v])=>v).slice(0,4).map(([k,v])=>
-      `<span class="ov-kpi-item"><strong>${k}</strong> ${v}</span>`).join('');
-    html+=`<div class="ov-kpi-row"><div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div><div class="ov-kpi-vals">${items||'<span style="color:var(--g300);font-size:12px">—</span>'}</div></div>`;
+    const cached=_kpiProjectCache[p.id];
+    if(!cached){
+      html+=`<div class="ov-kpi-row">
+        <div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div>
+        <div style="font-size:12px;color:var(--g400)">Vai al tab KPI per caricare i dati <span style="opacity:.5">→</span></div>
+      </div>`;
+      return;
+    }
+    const {campData,insData,dashType}=cached;
+    const activeCamps=campData.filter(c=>c.status==='ACTIVE');
+    const activeIns=activeCamps.map(c=>insData.find(i=>i.campaign_id===c.id)).filter(Boolean);
+    // Aggregate spend + revenue only from active campaigns
+    let spend=0,rev=0,leads=0;
+    activeIns.forEach(ins=>{
+      spend+=parseFloat(ins.spend||0);
+      rev+=kpiGetActVal(ins,'omni_purchase');
+      leads+=kpiGetLeads(ins);
+    });
+    const roas=spend>0&&rev>0?rev/spend:null;
+    const cpl=spend>0&&leads>0?spend/leads:null;
+    const roasTgt=kpiGetRoasTgt();
+    if(dashType==='app_installs'){
+      const cplC=kpiCplClass(cpl);
+      html+=`<div class="ov-kpi-row">
+        <div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div>
+        <div class="ov-kpi-vals">
+          <span class="ov-kpi-item"><strong style="color:var(--teal)">${leads||'—'}</strong><span style="color:var(--g400)"> lead</span></span>
+          <span class="ov-kpi-item"><strong class="${cplC}">${cpl!==null?'€'+kpiFmt(cpl):'—'}</strong><span style="color:var(--g400)"> CPL</span></span>
+          <span class="ov-kpi-item"><strong style="color:var(--g400)">€${kpiFmt(spend)}</strong><span style="color:var(--g400)"> spesa</span></span>
+          <span class="ov-kpi-item" style="color:var(--g400)">${activeCamps.length} att.</span>
+        </div>
+      </div>`;
+    } else {
+      const roasCls=kpiRc(roas,roasTgt);
+      html+=`<div class="ov-kpi-row">
+        <div class="ov-kpi-proj" style="color:${p.color}">${p.logo} ${p.name}</div>
+        <div class="ov-kpi-vals">
+          <span class="ov-kpi-item"><strong class="${roasCls}">${roas!==null?kpiFmt(roas):'—'}</strong><span style="color:var(--g400)"> ROAS</span></span>
+          <span class="ov-kpi-item"><strong style="color:var(--g400)">€${kpiFmt(spend)}</strong><span style="color:var(--g400)"> spesa</span></span>
+          <span class="ov-kpi-item"><strong style="color:var(--g400)">${rev>0?'€'+kpiFmt(rev):'—'}</strong><span style="color:var(--g400)"> rev</span></span>
+          <span class="ov-kpi-item" style="color:var(--g400)">${activeCamps.length} att.</span>
+        </div>
+      </div>`;
+    }
   });
   el.innerHTML=html;
 }
@@ -3047,7 +3160,9 @@ function renderKpiPage(){
     const _loadProj=activeProject.id;
     loadMetaCampaigns(integ.adAccountId,integ.accessToken,_kpiPreset).then(data=>{
       if(activeProject.id!==_loadProj) return; // stale: project switched while loading
-      _kpiData={...data,_projectId:_loadProj}; kpiRenderContent();
+      _kpiData={...data,_projectId:_loadProj};
+      _kpiProjectCache[_loadProj]=_kpiData; // update overview KPI snapshot
+      kpiRenderContent();
     }).catch(e=>{
       if(activeProject.id!==_loadProj) return;
       container.innerHTML=headerHtml+`<div class="kpi-msg-err">⚠ ${metaErrMsg(e)}</div>`; kpiApplyTheme();
