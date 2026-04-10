@@ -655,6 +655,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="modal-foot">
       <button class="btn btn-s" onclick="closeModal('modal-integ')">Annulla</button>
+      <button class="btn btn-s" style="color:var(--red)" id="integ-del-btn" onclick="deleteInteg()" style="display:none">Rimuovi integrazione</button>
       <button class="btn btn-p" onclick="saveInteg()">Salva credenziali</button>
     </div>
   </div>
@@ -2098,7 +2099,16 @@ function openIntegModal(){
   const row=document.getElementById('integ-status-row');
   if(ex?.updatedAt){ row.style.display=''; document.getElementById('integ-updated').textContent=new Date(ex.updatedAt).toLocaleDateString('it-IT'); }
   else row.style.display='none';
+  document.getElementById('integ-del-btn').style.display=ex?'':'none';
   openModal('modal-integ');
+}
+function deleteInteg(){
+  if(!confirm('Rimuovere le credenziali Meta per '+activeProject.name+'?')) return;
+  const projId=activeProject.id;
+  delete _integrations[integKey(projId,'meta')];
+  localStorage.setItem('mp_integrations',JSON.stringify(_integrations));
+  sbRun(()=>sb.from('project_integrations').delete().eq('project_id',projId).eq('platform','meta'));
+  closeModal('modal-integ'); toast('Integrazione rimossa'); _kpiData=null; renderKpiPage();
 }
 function toggleTokenVis(){ const i=document.getElementById('integ-token'); const b=document.getElementById('tok-vis-btn'); if(i.type==='password'){i.type='text';b.textContent='Nascondi';}else{i.type='password';b.textContent='Mostra';} }
 function saveInteg(){
