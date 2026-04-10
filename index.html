@@ -2177,7 +2177,17 @@ function saveCampaignLinksLocal(projectId,links){ localStorage.setItem('mp_campa
 
 // ── T-003: Meta API fetch layer ───────────────────────────────────────────────
 const META_API='https://graph.facebook.com/v25.0/';
-const META_PRESETS=[{value:'last_7d',label:'Ultimi 7gg'},{value:'last_14d',label:'Ultimi 14gg'},{value:'last_30d',label:'Ultimi 30gg'},{value:'last_90d',label:'Ultimi 90gg'}];
+const META_PRESETS=[
+  {value:'today',label:'Oggi'},
+  {value:'yesterday',label:'Ieri'},
+  {value:'last_7d',label:'Ultimi 7 giorni'},
+  {value:'last_14d',label:'Ultimi 14 giorni'},
+  {value:'last_30d',label:'Ultimi 30 giorni'},
+  {value:'this_month',label:'Questo mese'},
+  {value:'last_month',label:'Mese scorso'},
+  {value:'last_90d',label:'Ultimi 90 giorni'},
+  {value:'lifetime',label:'Lifetime'},
+];
 let _kpiPreset='last_30d';
 let _kpiPlatform='meta';
 let _kpiData=null;
@@ -2231,7 +2241,7 @@ function kpiGadsStubHtml(){
     <div style="margin-top:20px"><span class="badge b-neg" style="font-size:12px">Previsto Q3 2026</span></div>
   </div>`;
 }
-function switchKpiPlatform(platform){ _kpiPlatform=platform; renderKpiPage(); }
+function switchKpiPlatform(platform){ _kpiPlatform=platform; _kpiSaveState(); renderKpiPage(); }
 
 // ── T-007: Campaign ↔ Strategy linking ────────────────────────────────────────
 let _pendingLinkCampId=null, _pendingLinkCampName=null;
@@ -2319,9 +2329,22 @@ let _kpiSpChart=null; let _kpiRoasChart=null;
 let _kpiProjectId=null; // tracks which project the cached data belongs to
 let _kpiTheme=localStorage.getItem('kpi_theme')||'dark';
 let _kpiDashTypeOverride=null; // 'ecommerce' | 'app_installs' | null
+// ── Per-project state (preset, platform, dashTypeOverride) ────────────────────
+// Each project remembers its own settings so switching PN↔MC is fully isolated.
+const _kpiProjState={};
+function _kpiSaveState(){
+  if(!_kpiProjectId) return;
+  _kpiProjState[_kpiProjectId]={preset:_kpiPreset,platform:_kpiPlatform,dtOvr:_kpiDashTypeOverride};
+}
+function _kpiLoadState(){
+  const s=_kpiProjState[activeProject.id];
+  _kpiPreset=s?.preset||'last_30d';
+  _kpiPlatform=s?.platform||'meta';
+  _kpiDashTypeOverride=s?.dtOvr||null;
+}
 function kpiApplyTheme(){ const el=document.getElementById('kpi-body'); if(el) el.classList.toggle('kpi-light',_kpiTheme==='light'); }
 function kpiToggleTheme(){ _kpiTheme=_kpiTheme==='dark'?'light':'dark'; localStorage.setItem('kpi_theme',_kpiTheme); kpiApplyTheme(); }
-function kpiSetDashType(t){ _kpiDashTypeOverride=t; refreshKpiData(); }
+function kpiSetDashType(t){ _kpiDashTypeOverride=t; _kpiSaveState(); refreshKpiData(); }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function kpiGetAct(ins,type){
@@ -2932,11 +2955,13 @@ function renderKpiPage(){
   if(!container) return;
   // Reset all cached state when switching between projects
   if(_kpiProjectId!==activeProject.id){
+    _kpiSaveState(); // persist current project's preset/platform/dashType
     _kpiData=null; _kpiTab='overview'; _kpiCrData=[]; _kpiCampExp=new Set(); _kpiAdvSel='__all__';
     _kpiCrSort='roas'; _kpiCrDir=-1; _kpiAllProps=[];
     if(_kpiSpChart){_kpiSpChart.destroy();_kpiSpChart=null;}
     if(_kpiRoasChart){_kpiRoasChart.destroy();_kpiRoasChart=null;}
     _kpiProjectId=activeProject.id;
+    _kpiLoadState(); // restore new project's preset/platform/dashType (or defaults)
   }
   const integ=getInteg(activeProject.id,'meta');
   document.getElementById('kpi-sub').textContent=activeProject.name+' · Meta Ads';
@@ -2960,7 +2985,7 @@ function renderKpiPage(){
       <button onclick="kpiSetDashType('ecommerce')" class="kpi-dsw-btn${effDT==='ecommerce'?' active':''}">🛒 Ecommerce</button>
       <button onclick="kpiSetDashType('app_installs')" class="kpi-dsw-btn${effDT==='app_installs'?' active':''}">📋 Lead Gen</button>
     </div>
-    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200);${_kpiPlatform==='gads'?'display:none':''}">
+    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;_kpiSaveState();refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200);${_kpiPlatform==='gads'?'display:none':''}">
       ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn" ${_kpiPlatform==='gads'?'disabled':''}>↻ Aggiorna</button>
@@ -2999,7 +3024,7 @@ function kpiRenderContent(){
       <button onclick="kpiSetDashType('ecommerce')" class="kpi-dsw-btn${effDT==='ecommerce'?' active':''}">🛒 Ecommerce</button>
       <button onclick="kpiSetDashType('app_installs')" class="kpi-dsw-btn${effDT==='app_installs'?' active':''}">📋 Lead Gen</button>
     </div>
-    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200)">
+    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;_kpiSaveState();refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200)">
       ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn">↻ Aggiorna</button>
