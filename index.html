@@ -305,8 +305,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kpi-revc .rm{font-size:28px;font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:4px}
 .kpi-revc.revenue .rm{color:var(--green)}.kpi-revc.cost .rm{color:var(--red)}.kpi-revc.profit .rm{color:var(--blue)}
 .kpi-revc .rs{font-size:11px;opacity:.75}
-.kpi-prop{background:white;border:1px solid var(--g200);border-radius:var(--r);padding:14px 18px;margin-bottom:10px;transition:opacity .2s}
+.kpi-prop{background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:14px 18px;margin-bottom:10px;transition:opacity .2s}
 .kpi-prop.dis{opacity:.35;pointer-events:none}
+.kpi-prop.kpi-prop-smart{background:var(--g50);border-style:dashed;border-color:var(--g200)}
 .kpi-ph{display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .kpi-pi{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
 .kpi-pi.scale{background:var(--green-l);color:var(--green)}
@@ -446,6 +447,51 @@ input[type=range]{accent-color:var(--accent)}
 #kpi-body .kpi-hdr-btn{background:#252523;color:#9a9993;border:none}
 #kpi-body .kpi-hdr-btn.active{background:var(--accent);color:white}
 #kpi-body .kpi-hdr-sel{background:#2e2e2b;border-color:rgba(255,255,255,.10);color:#f0ede8}
+/* simc needs lighter bg than parent msec to be visible */
+#kpi-body .kpi-simc{background:#333330!important}
+/* campaign expand row extras */
+.kpi-em .es{font-size:10px;color:var(--g400);margin-top:2px;line-height:1.3}
+.kpi-btag{display:inline-block;font-size:10px;font-weight:500;padding:2px 6px;border-radius:20px;margin-top:4px}
+.kpi-btag.bg{background:var(--green-l);color:var(--green)}.kpi-btag.bok{background:var(--amber-l);color:var(--amber)}.kpi-btag.bb{background:var(--red-l);color:var(--red)}
+.kpi-rowsum{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--g400);padding-top:8px;border-top:1px solid var(--g200)}
+.kpi-rowsum strong{color:var(--g900)}
+/* dashtype switch */
+.kpi-dsw{display:inline-flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden}
+.kpi-dsw-btn{font-size:12px;font-weight:500;padding:5px 12px;border:none;cursor:pointer;background:var(--g100);color:var(--g400)}
+.kpi-dsw-btn.active{background:var(--accent);color:white}
+/* theme toggle */
+.kpi-theme-btn{padding:5px 10px;border:1px solid var(--g200);border-radius:var(--r);background:var(--g100);color:var(--g400);font-size:13px;cursor:pointer;margin-left:auto}
+/* ── KPI light skin override ─────────────────────────────────────────────── */
+#kpi-body.kpi-light{
+  background:#f5f5f3;
+  --g50:#fff;--g100:#efefec;--g200:rgba(0,0,0,.10);
+  --g300:rgba(0,0,0,.18);--g400:#6b6b67;--g500:#4a4a47;
+  --g700:#4a4a47;--g900:#1a1a18;
+  --green:#27500A;--green-l:#EAF3DE;--green-d:#3B6D11;
+  --red:#791F1F;--red-l:#FCEBEB;--red-d:#A32D2D;
+  --amber:#634102;--amber-l:#FAEEDA;--amber-d:#854F0B;
+  --blue:#0C447C;--blue-l:#E6F1FB;--blue2:#378ADD;
+  color:#1a1a18;
+}
+#kpi-body.kpi-light .kpi-card,#kpi-body.kpi-light .kpi-metric,#kpi-body.kpi-light .kpi-demc,
+#kpi-body.kpi-light .kpi-acc,#kpi-body.kpi-light .kpi-tbc,#kpi-body.kpi-light .kpi-prop,
+#kpi-body.kpi-light .kpi-strat,#kpi-body.kpi-light .kpi-msec,#kpi-body.kpi-light .kpi-advc,
+#kpi-body.kpi-light .kpi-em,#kpi-body.kpi-light .kpi-tipc{background:white;border-color:rgba(0,0,0,.10)}
+#kpi-body.kpi-light .kpi-simc{background:#f5f5f3!important}
+#kpi-body.kpi-light .kpi-strat{border-color:#0C447C}
+#kpi-body.kpi-light .kpi-hdr-ctrl{background:white;border-color:rgba(0,0,0,.10)}
+#kpi-body.kpi-light .kpi-hdr-btn{background:white;color:#6b6b67}
+#kpi-body.kpi-light .kpi-hdr-sel,#kpi-body.kpi-light .kpi-cr-sort{background:white;border-color:rgba(0,0,0,.10);color:#1a1a18}
+#kpi-body.kpi-light .kpi-miw{background:white;border-color:rgba(0,0,0,.10)}
+#kpi-body.kpi-light .kpi-miw input{color:#1a1a18}
+#kpi-body.kpi-light .kpi-mc{background:#efefec;border-right-color:rgba(0,0,0,.10);color:#6b6b67}
+#kpi-body.kpi-light .kpi-pc{background:#efefec;color:#333}
+#kpi-body.kpi-light .kpi-erow td{background:#f5f5f3}
+#kpi-body.kpi-light .kpi-crow:hover td,#kpi-body.kpi-light .kpi-crt tr:hover td,
+#kpi-body.kpi-light .kpi-mct tr:hover td{background:#efefec}
+#kpi-body.kpi-light .kpi-spin{border-color:rgba(0,0,0,.15);border-top-color:#1a1a18}
+#kpi-body.kpi-light .kpi-theme-btn,#kpi-body.kpi-light .kpi-dsw-btn{background:white;border-color:rgba(0,0,0,.10);color:#6b6b67}
+#kpi-body.kpi-light .kpi-metric .mv{color:#1a1a18}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
@@ -2164,7 +2210,7 @@ const fmtN=v=>v!=null?Math.round(v).toLocaleString('it-IT'):'—';
 
 async function loadMetaCampaigns(adAccountId,token,preset='last_30d'){
   const integ=getInteg(activeProject.id,'meta');
-  const dashType=integ?.dashboardType||'ecommerce';
+  const dashType=_kpiDashTypeOverride||integ?.dashboardType||'ecommerce';
   const fields=dashType==='app_installs'?'campaign_name,campaign_id,spend,impressions,clicks,ctr,cpm,frequency,actions':'campaign_name,campaign_id,spend,purchase_roas,impressions,clicks,ctr,cpm,frequency,actions,action_values';
   const [r1,r2]=await Promise.all([
     metaApiFetch(adAccountId+'/campaigns?fields=id,name,status,daily_budget,lifetime_budget',token),
@@ -2271,6 +2317,11 @@ let _kpiCrSort='roas'; let _kpiCrDir=-1;
 let _kpiAllProps=[];
 let _kpiSpChart=null; let _kpiRoasChart=null;
 let _kpiProjectId=null; // tracks which project the cached data belongs to
+let _kpiTheme=localStorage.getItem('kpi_theme')||'dark';
+let _kpiDashTypeOverride=null; // 'ecommerce' | 'app_installs' | null
+function kpiApplyTheme(){ const el=document.getElementById('kpi-body'); if(el) el.classList.toggle('kpi-light',_kpiTheme==='light'); }
+function kpiToggleTheme(){ _kpiTheme=_kpiTheme==='dark'?'light':'dark'; localStorage.setItem('kpi_theme',_kpiTheme); kpiApplyTheme(); }
+function kpiSetDashType(t){ _kpiDashTypeOverride=t; refreshKpiData(); }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function kpiGetAct(ins,type){
@@ -2407,19 +2458,43 @@ function kpiRenderCampaigns(campData,insData,ltData,dashType){
     </tr>`;
     if(isExp){
       const cm=kpiCompMetrics(d);
-      rows+=`<tr class="kpi-erow"><td colspan="9"><div class="kpi-ei"><div class="kpi-eg">
-        ${dashType==='app_installs'?`
-          <div class="kpi-em"><div class="el">Lead</div><div class="ev" style="color:var(--teal)">${leads||'—'}</div></div>
-          <div class="kpi-em"><div class="el">CPM</div><div class="ev">€${kpiFmt(cm?.cpm||0)}</div></div>
-          <div class="kpi-em"><div class="el">Frequenza</div><div class="ev">${kpiFmt(cm?.freq||0,2)}</div></div>
-          <div class="kpi-em"><div class="el">Impressioni</div><div class="ev">${kpiFmtI(cm?.impr||0)}</div></div>
-        `:`
-          <div class="kpi-em"><div class="el">Acquisti</div><div class="ev">${cm?.purchases||'—'}</div></div>
-          <div class="kpi-em"><div class="el">AOV</div><div class="ev">${cm?.aov?'€'+kpiFmt(cm.aov):'—'}</div></div>
-          <div class="kpi-em"><div class="el">CPM</div><div class="ev">€${kpiFmt(cm?.cpm||0)}</div></div>
-          <div class="kpi-em"><div class="el">Frequenza</div><div class="ev ${cm?.freq>3.5?'kpi-red':cm?.freq>2.5?'kpi-amber':''}">${kpiFmt(cm?.freq||0,2)}</div></div>
-        `}
-      </div></div></td></tr>`;
+      if(dashType==='app_installs'){
+        const cplInline=leads>0&&cm?.spend>0?cm.spend/leads:null;
+        rows+=`<tr class="kpi-erow"><td colspan="9"><div class="kpi-ei"><div class="kpi-eg">
+          <div class="kpi-em"><div class="el">Lead</div><div class="ev" style="color:var(--teal)">${leads||'—'}</div><div class="es">contatti generati</div></div>
+          <div class="kpi-em"><div class="el">CPL</div><div class="ev">${cplInline?'€'+kpiFmt(cplInline):'—'}</div><div class="es">costo per lead</div></div>
+          <div class="kpi-em"><div class="el">CPM</div><div class="ev ${cm?.cpm>20?'kpi-red':cm?.cpm>12?'kpi-amber':''}">€${kpiFmt(cm?.cpm||0)}</div><div class="es">costo per 1000 impr.</div></div>
+          <div class="kpi-em"><div class="el">Frequenza</div><div class="ev ${cm?.freq>3.5?'kpi-red':cm?.freq>2.5?'kpi-amber':''}">${kpiFmt(cm?.freq||0,2)}</div><div class="es">imp/utente</div></div>
+          <div class="kpi-em"><div class="el">CTR</div><div class="ev ${cm?.ctr>=2?'kpi-green':cm?.ctr<1?'kpi-red':''}">${kpiFmt(cm?.ctr||0)}%</div><div class="es">click-through rate</div></div>
+          <div class="kpi-em"><div class="el">CPC</div><div class="ev">${cm?.cpc?'€'+kpiFmt(cm.cpc):'—'}</div><div class="es">costo per click</div></div>
+        </div>
+        <div class="kpi-rowsum">
+          <span>Spesa: <strong>€${kpiFmt(cm?.spend||0)}</strong></span>
+          <span>Impr: <strong>${kpiFmtI(cm?.impr||0)}</strong></span>
+          <span>Click: <strong>${kpiFmtI(cm?.clicks||0)}</strong></span>
+        </div></div></td></tr>`;
+      } else {
+        const aovTag=cm?.aov?(cm.aov>=80?{c:'bg',l:'Buono'}:cm.aov>=40?{c:'bok',l:'Nella norma'}:{c:'bb',l:'Basso'}):{c:'',l:''};
+        const freqTag=cm?.freq?(cm.freq<2.5?{c:'bg',l:'Ottimale'}:cm.freq<3.5?{c:'bok',l:'Attenzione'}:{c:'bb',l:'Saturazione'}):{c:'',l:''};
+        const atcTag=cm?.atcConv?(cm.atcConv>=30?{c:'bg',l:'Ottimo'}:cm.atcConv>=15?{c:'bok',l:'Nella norma'}:{c:'bb',l:'Basso'}):{c:'',l:''};
+        rows+=`<tr class="kpi-erow"><td colspan="9"><div class="kpi-ei"><div class="kpi-eg">
+          <div class="kpi-em"><div class="el">AOV</div><div class="ev">${cm?.aov?'€'+kpiFmt(cm.aov):'—'}</div><div class="es">valore medio ordine</div>${aovTag.l?`<span class="kpi-btag ${aovTag.c}">${aovTag.l}</span>`:''}</div>
+          <div class="kpi-em"><div class="el">Costo acquisto</div><div class="ev">${cm?.costPur?'€'+kpiFmt(cm.costPur):'—'}</div><div class="es">spesa / acquisti</div></div>
+          <div class="kpi-em"><div class="el">Add to Cart</div><div class="ev">${cm?.atc||'—'}</div><div class="es">aggiunte al carrello</div></div>
+          <div class="kpi-em"><div class="el">Checkout</div><div class="ev">${cm?.checkout||'—'}</div><div class="es">checkout avviati</div></div>
+          <div class="kpi-em"><div class="el">Costo ATC</div><div class="ev">${cm?.costAtc?'€'+kpiFmt(cm.costAtc):'—'}</div><div class="es">spesa / add-to-cart</div></div>
+          <div class="kpi-em"><div class="el">ATC→Acquisto</div><div class="ev ${cm?.atcConv>=30?'kpi-green':cm?.atcConv<15?'kpi-red':''}">${cm?.atcConv?kpiFmt(cm.atcConv,1)+'%':'—'}</div><div class="es">tasso conversione cart</div>${atcTag.l?`<span class="kpi-btag ${atcTag.c}">${atcTag.l}</span>`:''}</div>
+          <div class="kpi-em"><div class="el">CPM</div><div class="ev ${cm?.cpm>20?'kpi-red':cm?.cpm>12?'kpi-amber':''}">€${kpiFmt(cm?.cpm||0)}</div><div class="es">costo per 1000 impr.</div></div>
+          <div class="kpi-em"><div class="el">Frequenza</div><div class="ev ${cm?.freq>3.5?'kpi-red':cm?.freq>2.5?'kpi-amber':''}">${kpiFmt(cm?.freq||0,2)}</div><div class="es">imp/utente</div>${freqTag.l?`<span class="kpi-btag ${freqTag.c}">${freqTag.l}</span>`:''}</div>
+        </div>
+        <div class="kpi-rowsum">
+          <span>Spesa: <strong>€${kpiFmt(cm?.spend||0)}</strong></span>
+          <span>Revenue: <strong>${cm?.revenue?'€'+kpiFmt(cm.revenue):'—'}</strong></span>
+          <span>Impr: <strong>${kpiFmtI(cm?.impr||0)}</strong></span>
+          <span>Click: <strong>${kpiFmtI(cm?.clicks||0)}</strong></span>
+          ${cm?.lp?`<span>LP view: <strong>${kpiFmtI(cm.lp)}</strong></span>`:''}
+        </div></div></td></tr>`;
+      }
     }
   });
   const headers=dashType==='app_installs'
@@ -2514,11 +2589,27 @@ function kpiRenderOptimize(campData,insData,dashType){
     if(c.status==='ACTIVE'&&m.spend>50&&m.purchases===0&&m.atc===0){ auto.push({icon:'alert',ch:'!',t:`Nessuna interazione — ${c.name}`,b:`€${kpiFmt(m.spend)} spesi senza add-to-cart né acquisti.`,ch2:'Azione: pausa + revisione creativa',risk:'high',fn:()=>kpiExecStatus(c.id,'PAUSED')}); }
   });
   _kpiAllProps=auto;
-  const propsHtml=auto.length?`<div class="kpi-sec" style="margin-top:8px;margin-bottom:10px">Azioni immediate</div>`+auto.map((p,i)=>`<div class="kpi-prop" id="kpi-prop-${i}">
+  // Always-visible smart suggestions (shown when no auto actions or as additional advice)
+  const allM=kpiAggMetrics(insData,dashType);
+  const smart=[];
+  if(allM.freq>2.5&&allM.freq<=3.5) smart.push({ico:'↻',t:'Monitora la frequenza',b:`Frequenza media account: <strong>${kpiFmt(allM.freq,2)}</strong>. Si avvicina alla soglia di saturazione (3.5). Prepara nuove creatività da lanciare nei prossimi giorni.`,tag:{c:'bok',l:'Attenzione'}});
+  if(allM.ctr<1&&allM.spend>20) smart.push({ico:'↓',t:'CTR basso — testa nuovi hook',b:`CTR medio: <strong>${kpiFmt(allM.ctr)}%</strong>. Sotto la media di settore (1%). Considera hook più diretti, UGC o creatività con testo sovrapposto per migliorare il click-through.`,tag:{c:'bb',l:'Da migliorare'}});
+  if(allM.cpm>15) smart.push({ico:'↑',t:'CPM elevato — allarga il pubblico',b:`CPM medio: <strong>€${kpiFmt(allM.cpm)}</strong>. Pubblico potenzialmente saturo o troppo ristretto. Valuta di aggiungere un lookalike broadened o espandere gli interessi.`,tag:{c:'bb',l:'Attenzione'}});
+  if(allM.roas!==null&&allM.roas>4.5&&allM.spend>0) smart.push({ico:'↑',t:'ROAS sopra target — momento per scalare',b:`ROAS medio account: <strong>${kpiFmt(allM.roas)}</strong> (target 4.5). Considera un incremento graduale del budget (+15-20%) mantenendo la struttura creativa attuale.`,tag:{c:'bg',l:'Opportunità'}});
+  if(campData.filter(c=>c.status==='ACTIVE').length===0) smart.push({ico:'!',t:'Nessuna campagna attiva',b:'Tutte le campagne risultano in pausa. Attiva almeno una campagna o controlla lo stato dell\'account Meta.',tag:{c:'bb',l:'Urgente'}});
+  const renderProp=(p,i)=>`<div class="kpi-prop" id="kpi-prop-${i}">
     <div class="kpi-ph"><div class="kpi-pi ${p.icon}">${p.ch}</div><div class="kpi-pt">${p.t}</div><span class="kpi-prisk kpi-${p.risk==='low'?'rlow':p.risk==='med'?'rmed':'rhigh'}">Rischio ${p.risk==='low'?'Basso':p.risk==='med'?'Medio':'Alto'}</span></div>
     <div class="kpi-pb">${p.b}</div><div class="kpi-pc">${p.ch2}</div>
     <div style="display:flex;gap:6px"><button class="btn btn-s" style="color:var(--green);border-color:var(--green)" onclick="kpiConfProp(${i})">Confermo, procedi</button><button class="btn btn-s" onclick="kpiCanProp(${i})">Annulla</button></div>
-  </div>`).join(''):`<div class="kpi-empty">Nessuna ottimizzazione urgente. Campagne nella norma.</div>`;
+  </div>`;
+  const renderSmart=(s,i)=>`<div class="kpi-prop kpi-prop-smart">
+    <div class="kpi-ph"><div class="kpi-pi alert">${s.ico}</div><div class="kpi-pt">${s.t}</div><span class="kpi-prisk kpi-${s.tag?.c==='bg'?'rlow':s.tag?.c==='bok'?'rmed':'rhigh'}">${s.tag?.l||'Info'}</span></div>
+    <div class="kpi-pb">${s.b}</div>
+  </div>`;
+  const propsHtml=`<div class="kpi-sec" style="margin-top:8px;margin-bottom:10px">Azioni immediate</div>`+
+    (auto.length?auto.map(renderProp).join(''):'') +
+    (smart.length?smart.map(renderSmart).join(''):'') +
+    (!auto.length&&!smart.length?`<div class="kpi-empty">Nessuna ottimizzazione urgente. Campagne nella norma. ✅</div>`:'');
   return stratHtml+propsHtml;
 }
 async function kpiConfProp(i){ const p=_kpiAllProps[i]; if(!p) return; const box=document.getElementById('kpi-prop-'+i); box.innerHTML='<div class="kpi-lds"><span class="kpi-spin"></span>Esecuzione su Meta...</div>'; try{ await p.fn(); box.innerHTML='<div class="kpi-card" style="color:var(--green)">Modifica eseguita ✓</div>'; setTimeout(()=>refreshKpiData(),2000); }catch(e){ box.innerHTML=`<div class="kpi-msg-err">Errore: ${e.message}</div>`; } }
@@ -2685,7 +2776,7 @@ async function kpiFetchCreative(){
   try{
     const fields='ad_name,adset_name,campaign_name,ad_id,spend,impressions,clicks,ctr,cpm,frequency,purchase_roas,actions,action_values';
     const res=await metaApiFetch(integ.adAccountId+'/insights?fields='+fields+'&date_preset='+_kpiPreset+'&level=ad&limit=50',integ.accessToken);
-    const dashType=integ.dashboardType||'ecommerce';
+    const dashType=_kpiDashTypeOverride||integ.dashboardType||'ecommerce';
     _kpiCrData=(res.data||[]).map(ad=>{
       const spend=parseFloat(ad.spend||0),roas=kpiGetRoas(ad),ctr=parseFloat(ad.ctr||0),cpm=parseFloat(ad.cpm||0),freq=parseFloat(ad.frequency||0);
       const name=(ad.ad_name||'').toLowerCase();
@@ -2708,7 +2799,6 @@ function kpiThumbHtml(a){
   return `<img class="kpi-cr-thumb" data-ad-thumb="${a.id}" src="${a.thumb||''}" style="${imgStyle}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="kpi-cr-thumb-ph" style="${phStyle}">${a.format==='video'?'▶':'🖼'}</div>`;
 }
 function kpiRenderCrTips(dashType){
-  if(!_kpiCrData.length) return '';
   const tips=[];
   const hf=_kpiCrData.filter(a=>a.freq>3.0&&a.spend>10);
   if(hf.length) tips.push({ico:'↻',t:'Refresh creativa urgente',b:hf.length+' inserzione'+(hf.length>1?'i':'')+' con frequenza sopra 3.0. Il pubblico vede le stesse grafiche troppe volte. Sostituisci entro 7 giorni.',u:'Alta',uc:'bb'});
@@ -2860,27 +2950,34 @@ function renderKpiPage(){
     </div>`; return;
   }
 
+  const effDT=_kpiDashTypeOverride||integ?.dashboardType||'ecommerce';
   const headerHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
     <div class="kpi-hdr-ctrl" style="display:flex;border-radius:var(--r);overflow:hidden">
       <button onclick="switchKpiPlatform('meta')" class="kpi-hdr-btn${_kpiPlatform==='meta'?' active':''}" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Meta Ads</button>
       <button onclick="switchKpiPlatform('gads')" class="kpi-hdr-btn${_kpiPlatform==='gads'?' active':''}" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Google Ads</button>
     </div>
+    <div class="kpi-dsw">
+      <button onclick="kpiSetDashType('ecommerce')" class="kpi-dsw-btn${effDT==='ecommerce'?' active':''}">🛒 Ecommerce</button>
+      <button onclick="kpiSetDashType('app_installs')" class="kpi-dsw-btn${effDT==='app_installs'?' active':''}">📋 Lead Gen</button>
+    </div>
     <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200);${_kpiPlatform==='gads'?'display:none':''}">
       ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn" ${_kpiPlatform==='gads'?'disabled':''}>↻ Aggiorna</button>
-    <button onclick="openIntegModal()" class="btn btn-s" style="margin-left:auto">⚙ Configura Meta</button>
+    <button onclick="openIntegModal()" class="btn btn-s">⚙ Configura Meta</button>
+    <button onclick="kpiToggleTheme()" class="kpi-theme-btn">${_kpiTheme==='dark'?'☀️':'🌙'}</button>
   </div>`;
 
-  if(_kpiPlatform==='gads'){ container.innerHTML=headerHtml+kpiGadsStubHtml(); return; }
+  if(_kpiPlatform==='gads'){ container.innerHTML=headerHtml+kpiGadsStubHtml(); kpiApplyTheme(); return; }
 
   if(!_kpiData){
     container.innerHTML=headerHtml+`<div class="kpi-lds"><span class="kpi-spin"></span>Caricamento Meta Ads...</div>`;
+    kpiApplyTheme();
     const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=true;
     loadMetaCampaigns(integ.adAccountId,integ.accessToken,_kpiPreset).then(data=>{
       _kpiData=data; kpiRenderContent();
     }).catch(e=>{
-      container.innerHTML=headerHtml+`<div class="kpi-msg-err">⚠ ${metaErrMsg(e)}</div>`;
+      container.innerHTML=headerHtml+`<div class="kpi-msg-err">⚠ ${metaErrMsg(e)}</div>`; kpiApplyTheme();
     }).finally(()=>{ const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=false; });
     return;
   }
@@ -2892,16 +2989,22 @@ function kpiRenderContent(){
   const integ=getInteg(activeProject.id,'meta'); if(!integ||!_kpiData) return;
   const {campData,insData,ltData,dashType}=_kpiData;
   const m=kpiAggMetrics(insData,dashType);
+  const effDT=dashType;
   const headerHtml=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
     <div class="kpi-hdr-ctrl" style="display:flex;border-radius:var(--r);overflow:hidden">
       <button onclick="switchKpiPlatform('meta')" class="kpi-hdr-btn active" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Meta Ads</button>
       <button onclick="switchKpiPlatform('gads')" class="kpi-hdr-btn" style="padding:7px 16px;font-size:13px;font-weight:500;cursor:pointer">Google Ads</button>
     </div>
+    <div class="kpi-dsw">
+      <button onclick="kpiSetDashType('ecommerce')" class="kpi-dsw-btn${effDT==='ecommerce'?' active':''}">🛒 Ecommerce</button>
+      <button onclick="kpiSetDashType('app_installs')" class="kpi-dsw-btn${effDT==='app_installs'?' active':''}">📋 Lead Gen</button>
+    </div>
     <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()" class="kpi-hdr-sel" style="padding:6px 10px;border-radius:var(--r);font-size:13px;outline:none;border:1px solid var(--g200)">
       ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn">↻ Aggiorna</button>
-    <button onclick="openIntegModal()" class="btn btn-s" style="margin-left:auto">⚙ Configura Meta</button>
+    <button onclick="openIntegModal()" class="btn btn-s">⚙ Configura Meta</button>
+    <button onclick="kpiToggleTheme()" class="kpi-theme-btn">${_kpiTheme==='dark'?'☀️':'🌙'}</button>
   </div>`;
 
   let tabContent='';
@@ -2914,6 +3017,7 @@ function kpiRenderContent(){
   else if(_kpiTab==='creative'){ tabContent=`<div id="kpi-creative-area"><div class="kpi-lds"><span class="kpi-spin"></span>Caricamento creatività...</div></div>`; }
 
   container.innerHTML=headerHtml+kpiRenderMetricsBar(campData,insData,dashType)+kpiTabsHtml(dashType)+tabContent;
+  kpiApplyTheme();
 
   // Post-render
   if(_kpiTab==='overview') requestAnimationFrame(()=>kpiRenderSpendChart(campData,insData));
