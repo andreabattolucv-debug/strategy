@@ -418,10 +418,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
       <!-- KPI & CAMPAIGNS -->
       <div class="page" id="page-kpi">
-        <div class="ph"><div class="ph-title">KPI &amp; Campaigns</div><div class="ph-sub" id="kpi-sub">Performance per audience / strategy</div></div>
-        <div class="card"><div class="card-hd"><div class="card-title" id="kpi-table-title">KPI Table</div></div>
-          <div class="kw-wrap"><table class="kw-tbl" id="kpi-table"></table></div>
+        <div class="ph">
+          <div class="ph-title">KPI &amp; Campaigns</div>
+          <div class="ph-sub" id="kpi-sub">Live Meta Ads data</div>
         </div>
+        <div id="kpi-body"></div>
       </div>
 
       <!-- RETENTION COHORTS (MC only) -->
@@ -637,6 +638,41 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<!-- T-002: INTEGRATION SETTINGS MODAL -->
+<div class="modal-bg" id="modal-integ">
+  <div class="modal" style="width:520px">
+    <div class="modal-title">⚙ Configura Meta Ads — <span id="integ-proj-label"></span></div>
+    <div class="fgrid">
+      <div class="fg full"><label>Ad Account ID</label><input type="text" id="integ-account-id" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%;font-family:monospace" placeholder="act_XXXXXXXXXXXXXXXXX"></div>
+      <div class="fg full"><label>Access Token</label>
+        <div style="position:relative">
+          <input type="password" id="integ-token" style="padding:8px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;width:100%;font-family:monospace;padding-right:76px" placeholder="EAAxxxxxxxxxxxxxxxx...">
+          <button onclick="toggleTokenVis()" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;font-size:11px;color:var(--g400);cursor:pointer" id="tok-vis-btn">Mostra</button>
+        </div>
+        <div style="font-size:11px;color:var(--g400);margin-top:4px">Meta Business Suite → Impostazioni → Strumenti → Esplora API Graph → token utente a lunga durata</div>
+      </div>
+      <div class="fg full" id="integ-status-row" style="display:none"><div style="font-size:12px;color:var(--g400)">Ultima modifica: <span id="integ-updated"></span></div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-s" onclick="closeModal('modal-integ')">Annulla</button>
+      <button class="btn btn-p" onclick="saveInteg()">Salva credenziali</button>
+    </div>
+  </div>
+</div>
+
+<!-- T-007: CAMPAIGN LINK MODAL -->
+<div class="modal-bg" id="modal-camp-link">
+  <div class="modal" style="width:480px">
+    <div class="modal-title">Collega campagna a <span id="cl-type-label">strategia</span></div>
+    <div style="font-size:12px;color:var(--g400);margin-bottom:14px" id="cl-camp-name"></div>
+    <div id="cl-strategy-list" style="max-height:320px;overflow-y:auto;border:1px solid var(--g200);border-radius:var(--r)"></div>
+    <div class="modal-foot">
+      <button class="btn btn-s" onclick="closeModal('modal-camp-link')">Annulla</button>
+      <button class="btn btn-s" style="color:var(--red)" onclick="removeCampaignLink()" id="cl-remove-btn">Rimuovi collegamento</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -729,7 +765,7 @@ function refreshActivePage(){
   else if(id==='kw') renderKw();
   else if(id==='neg') renderNegs();
   else if(id==='funnel') renderFunnelPage();
-  else if(id==='kpi') renderKpiTable();
+  else if(id==='kpi') renderKpiPage();
   else if(id==='retention') renderRetentionTable();
 }
 
@@ -799,6 +835,11 @@ const kwToDb  = k=>({id:k.id,text:k.text,market:k.market,funnel:k.funnel,cpc:k.c
 const stToDb  = s=>({id:s.id,title:s.title,market:s.market,demand:s.demand,platform:s.platform,start_date:s.startDate,end_date:s.endDate,why:s.why,persona:s.persona,mindset:s.mindset,body:s.body,copy:s.copy,lp:s.lp,funnel:s.funnel,status:s.status,ts:s.ts||Date.now()});
 const audToDb = a=>({id:a.id,name:a.name,segment:a.segment,age_range:a.ageRange,cpm_range:a.cpmRange,geo:a.geo,channels:a.channels,hook:a.hook,status:a.status,kpi:{...((a.kpi||{})),why:a.why,useCases:a.useCases,market:a.market,signals:a.signals,priority:a.priority},notes:a.notes});
 const todoToDb= (t,pid)=>({id:t.id,project_id:pid||t.project||'pn',title:t.title,description:t.desc||'',status:t.status,category:t.cat||'other',start_date:t.startDate||null,due_date:t.dueDate||null,assignee:t.assignee||'team',ts:t.ts||Date.now()});
+// T-001: project_integrations + campaign_links mappers
+const dbToInteg=r=>({id:r.id,projectId:r.project_id,platform:r.platform,adAccountId:r.ad_account_id,accessToken:r.access_token,dashboardType:r.dashboard_type,updatedAt:r.updated_at});
+const integToDb=i=>({project_id:i.projectId,platform:i.platform,ad_account_id:i.adAccountId,access_token:i.accessToken,dashboard_type:i.dashboardType||'ecommerce',updated_at:new Date().toISOString()});
+const dbToLink=r=>({id:r.id,projectId:r.project_id,platform:r.platform,campaignId:r.campaign_id,campaignName:r.campaign_name,strategyId:r.strategy_id});
+const linkToDb=l=>({project_id:l.projectId,platform:l.platform||'meta',campaign_id:l.campaignId,campaign_name:l.campaignName,strategy_id:l.strategyId});
 
 // ── AUTH ──────────────────────────────────────────────────────────────────────
 async function doLogin(){
@@ -833,6 +874,7 @@ let _lastTodoWrite=0; // race-condition guard
 
 async function init(){
   const sv=localStorage.getItem(SK); S=sv?JSON.parse(sv):JSON.parse(JSON.stringify(DD));
+  loadIntegrations(); // T-002: load Meta credentials from localStorage
   const savedProj=localStorage.getItem('mp_active_project')||'pn';
   setActiveProject(savedProj);
   renderAll(); // Render from local cache first (instant)
@@ -865,7 +907,7 @@ function sbRun(fn){
 // ── LOAD ALL FROM SUPABASE ────────────────────────────────────────────────────
 async function loadAllFromSupabase(){
   try {
-    const [kwRes,stRes,negRes,audRes,todoPnRes,todoMcRes,kpiRes,retRes,fnRes]=await Promise.all([
+    const [kwRes,stRes,negRes,audRes,todoPnRes,todoMcRes,kpiRes,retRes,fnRes,integRes,linksRes]=await Promise.all([
       sb.from('keywords').select('*'),
       sb.from('strategies').select('*'),
       sb.from('negatives').select('*'),
@@ -875,6 +917,8 @@ async function loadAllFromSupabase(){
       sb.from('kpi_data').select('*'),
       sb.from('retention_data').select('*'),
       sb.from('focus_notes').select('*'),
+      sb.from('project_integrations').select('*'),
+      sb.from('campaign_links').select('*'),
     ]);
     const isEmpty=!kwRes.data?.length&&!stRes.data?.length&&!audRes.data?.length;
     if(isEmpty){ await seedToSupabase(); return; }
@@ -897,6 +941,18 @@ async function loadAllFromSupabase(){
     }
     const fn=fnRes.data?.find(r=>r.project_id==='all');
     if(fn?.content) localStorage.setItem('mp_focus_note',fn.content);
+    // T-001: integrations + campaign_links
+    if(integRes.data?.length){
+      const map={};
+      integRes.data.forEach(r=>{ const i=dbToInteg(r); map[integKey(i.projectId,i.platform)]=i; });
+      _integrations={..._integrations,...map};
+      localStorage.setItem('mp_integrations',JSON.stringify(_integrations));
+    }
+    if(linksRes.data?.length){
+      const byProj={};
+      linksRes.data.forEach(r=>{ const l=dbToLink(r); if(!byProj[l.projectId]) byProj[l.projectId]=[]; byProj[l.projectId].push(l); });
+      Object.entries(byProj).forEach(([pid,links])=>saveCampaignLinksLocal(pid,links));
+    }
     localStorage.setItem(SK,JSON.stringify(S));
   } catch(e){ console.error('Supabase load:',e); }
 }
@@ -942,8 +998,11 @@ function setupRealtime(){
         renderAll();
       });
     })
-    .on('postgres_changes',{event:'*',schema:'public',table:'kpi_data'},()=>{
-      sb.from('kpi_data').select('*').then(({data})=>{ if(!data) return; const kp={pn:{},mc:{}}; data.forEach(r=>{ if(!kp[r.project_id]) kp[r.project_id]={}; if(!kp[r.project_id][r.row_key]) kp[r.project_id][r.row_key]={}; kp[r.project_id][r.row_key][r.col_key]=r.value; }); localStorage.setItem('mp_kpi_pn',JSON.stringify(kp.pn)); localStorage.setItem('mp_kpi_mc',JSON.stringify(kp.mc)); renderKpiTable(); });
+    .on('postgres_changes',{event:'*',schema:'public',table:'project_integrations'},()=>{
+      sb.from('project_integrations').select('*').then(({data})=>{ if(!data) return; const map={}; data.forEach(r=>{ const i=dbToInteg(r); map[integKey(i.projectId,i.platform)]=i; }); _integrations={..._integrations,...map}; localStorage.setItem('mp_integrations',JSON.stringify(_integrations)); renderKpiPage(); });
+    })
+    .on('postgres_changes',{event:'*',schema:'public',table:'campaign_links'},()=>{
+      sb.from('campaign_links').select('*').then(({data})=>{ if(!data) return; const byProj={}; data.forEach(r=>{ const l=dbToLink(r); if(!byProj[l.projectId]) byProj[l.projectId]=[]; byProj[l.projectId].push(l); }); Object.entries(byProj).forEach(([pid,links])=>saveCampaignLinksLocal(pid,links)); renderKpiPage(); });
     })
     .on('postgres_changes',{event:'*',schema:'public',table:'retention_data'},()=>{
       sb.from('retention_data').select('*').then(({data})=>{ if(!data) return; const ret={}; data.forEach(r=>{ if(!ret[r.audience_id]) ret[r.audience_id]={}; ret[r.audience_id][r.week]=r.value; }); localStorage.setItem('mp_retention_mc',JSON.stringify(ret)); renderRetentionTable(); });
@@ -964,7 +1023,7 @@ function showPage(id,el){
   if(el) el.classList.add('active');
   // Trigger render on navigation
   if(id==='strat') renderStrats(sFilter);
-  else if(id==='kpi') renderKpiTable();
+  else if(id==='kpi') renderKpiPage();
   else if(id==='retention') renderRetentionTable();
   else if(id==='funnel') renderFunnelPage();
   else if(id==='overview') renderOverview();
@@ -1842,39 +1901,250 @@ function restoreStratBoard(){
   if(audCtrl) audCtrl.remove();
 }
 
-// ─── T-04: KPI TABLE ──────────────────────────────────────────────────────────
-function renderKpiTable(){
-  const schema=activeProject.kpiSchema;
-  const rows=activeProject.boardType==='audience'?loadAudiences():S.strategies;
-  const key='mp_kpi_'+activeProject.id;
-  const saved=JSON.parse(localStorage.getItem(key)||'{}');
-  document.getElementById('kpi-sub').textContent=activeProject.name+' · '+schema.join(', ');
-  document.getElementById('kpi-table-title').textContent='Performance '+(activeProject.boardType==='audience'?'per audience':'per strategy');
-  let html='<thead><tr><th>Nome</th>';
-  schema.forEach(k=>{ html+=`<th>${k}</th>`; });
-  html+='</tr></thead><tbody>';
-  rows.forEach(row=>{
-    const rid=row.id; const rname=row.name||row.title;
-    html+=`<tr><td class="kwt">${rname}</td>`;
-    schema.forEach(k=>{
-      const val=(saved[rid]&&saved[rid][k]!=null)?saved[rid][k]:'';
-      html+=`<td><span class="kpi-cell" contenteditable="true" data-row="${rid}" data-col="${k}" data-proj="${activeProject.id}" onblur="saveKpiCell(this)">${val}</span></td>`;
-    });
-    html+='</tr>';
-  });
-  html+='</tbody>';
-  document.getElementById('kpi-table').innerHTML=html;
+// ─── T-04/KPI: LIVE KPI & CAMPAIGNS ──────────────────────────────────────────
+
+// ── T-001: Integration state ──────────────────────────────────────────────────
+let _integrations={};
+function integKey(projId,platform){ return projId+'_'+platform; }
+function loadIntegrations(){ const s=localStorage.getItem('mp_integrations'); _integrations=s?JSON.parse(s):{}; }
+function saveIntegLocal(projId,platform,data){ _integrations[integKey(projId,platform)]=data; localStorage.setItem('mp_integrations',JSON.stringify(_integrations)); }
+function getInteg(projId,platform){ return _integrations[integKey(projId,platform)]||null; }
+
+// ── T-001: Campaign links state ───────────────────────────────────────────────
+function loadCampaignLinks(projectId){ return JSON.parse(localStorage.getItem('mp_campaign_links_'+projectId)||'[]'); }
+function saveCampaignLinksLocal(projectId,links){ localStorage.setItem('mp_campaign_links_'+projectId,JSON.stringify(links)); }
+
+// ── T-003: Meta API fetch layer ───────────────────────────────────────────────
+const META_API='https://graph.facebook.com/v25.0/';
+const META_PRESETS=[{value:'last_7_d',label:'Ultimi 7gg'},{value:'last_14_d',label:'Ultimi 14gg'},{value:'last_30_d',label:'Ultimi 30gg'},{value:'last_90_d',label:'Ultimi 90gg'}];
+let _kpiPreset='last_30_d';
+let _kpiPlatform='meta';
+let _kpiData=null;
+let _campPage=0;
+const CAMP_PER_PAGE=10;
+
+async function metaApiFetch(path,token){
+  const url=META_API+path+(path.includes('?')?'&':'?')+'access_token='+encodeURIComponent(token);
+  const res=await fetch(url); const data=await res.json();
+  if(data.error){ const c=data.error.code; if(c===190) throw new Error('TOKEN_EXPIRED'); if(c===100) throw new Error('INVALID_ACCOUNT'); throw new Error(data.error.message); }
+  return data;
+}
+function metaErrMsg(e){ if(e.message==='TOKEN_EXPIRED') return 'Il token Meta è scaduto. Aggiorna le credenziali in ⚙ Configura Meta.'; if(e.message==='INVALID_ACCOUNT') return 'Ad Account ID non valido. Verifica in ⚙ Configura Meta.'; return 'Errore Meta API: '+e.message; }
+function aggregateMetrics(insData,dashType){
+  let spend=0,roas=null,purchases=0,downloads=0,clicks=0,impressions=0;
+  insData.forEach(c=>{ spend+=parseFloat(c.spend||0); if(c.purchase_roas?.[0]?.value) roas=(roas||0)+parseFloat(c.purchase_roas[0].value)*parseFloat(c.spend||0); const acts=c.actions||[]; if(dashType==='app_installs'){ const inst=acts.find(a=>a.action_type==='mobile_app_install'); downloads+=parseInt(inst?.value||0); } else { const pur=acts.find(a=>a.action_type==='purchase'); purchases+=parseInt(pur?.value||0); } clicks+=parseInt(c.clicks||0); impressions+=parseInt(c.impressions||0); });
+  return {spend,roas:spend>0&&roas!==null?roas/spend:null,purchases,downloads,cpd:downloads>0?spend/downloads:null,clicks,ctr:impressions>0?(clicks/impressions)*100:null};
+}
+const fmtM=(v,c='€')=>v!=null?c+parseFloat(v).toFixed(2):'—';
+const fmtP=v=>v!=null?parseFloat(v).toFixed(2)+'%':'—';
+const fmtN=v=>v!=null?Math.round(v).toLocaleString('it-IT'):'—';
+
+async function loadMetaCampaigns(adAccountId,token,preset='last_30_d'){
+  const integ=getInteg(activeProject.id,'meta');
+  const dashType=integ?.dashboardType||'ecommerce';
+  const fields=dashType==='app_installs'?'campaign_name,campaign_id,spend,impressions,clicks,ctr,cpm,frequency,actions':'campaign_name,campaign_id,spend,purchase_roas,impressions,clicks,ctr,cpm,frequency,actions';
+  const [r1,r2]=await Promise.all([
+    metaApiFetch(adAccountId+'/campaigns?fields=id,name,status,daily_budget,lifetime_budget',token),
+    metaApiFetch(adAccountId+'/insights?fields='+fields+'&date_preset='+preset+'&level=campaign',token)
+  ]);
+  const campData=r1.data||[]; const insData=r2.data||[]; const ltData={};
+  const paused=campData.filter(c=>c.status!=='ACTIVE').map(c=>c.id);
+  await Promise.all(paused.map(async id=>{ try { const r=await metaApiFetch(id+'/insights?fields='+fields+'&date_preset=maximum&level=campaign',token); if(r.data?.length) ltData[id]=r.data[0]; } catch(e){} }));
+  return {campData,insData,ltData,metrics:aggregateMetrics(insData,dashType),dashType};
 }
 
-function saveKpiCell(el){
-  const key='mp_kpi_'+el.dataset.proj;
-  const data=JSON.parse(localStorage.getItem(key)||'{}');
-  if(!data[el.dataset.row]) data[el.dataset.row]={};
-  const val=el.textContent.trim();
-  data[el.dataset.row][el.dataset.col]=val;
-  localStorage.setItem(key,JSON.stringify(data));
-  sbRun(()=>sb.from('kpi_data').upsert({project_id:el.dataset.proj,row_key:el.dataset.row,col_key:el.dataset.col,value:val},{onConflict:'project_id,row_key,col_key'}));
+// ── T-004: KPI cards ──────────────────────────────────────────────────────────
+function renderKpiCards(metrics,dashType,campData){
+  const active=(campData||[]).filter(c=>c.status==='ACTIVE').length;
+  const total=(campData||[]).length;
+  const cur=dashType==='app_installs'?'$':'€';
+  let card2,card3;
+  if(dashType==='app_installs'){
+    const ok=metrics.cpd!=null;
+    const cls=ok?(metrics.cpd<=2.50?'color:var(--green)':metrics.cpd<=4.00?'color:var(--amber)':'color:var(--red)'):'';
+    card2=`<div class="mc"><div class="mc-lbl">CPD</div><div class="mc-val" style="${cls}">${ok?cur+metrics.cpd.toFixed(2):'—'}</div><div class="mc-lbl" style="margin-top:2px">target &lt; $2.50</div></div>`;
+    card3=`<div class="mc"><div class="mc-lbl">Download</div><div class="mc-val" style="color:var(--blue)">${fmtN(metrics.downloads)}</div><div class="mc-lbl" style="margin-top:2px">installs periodo</div></div>`;
+  } else {
+    const ok=metrics.roas!=null;
+    const cls=ok?(metrics.roas>=4.0?'color:var(--green)':metrics.roas>=2.5?'color:var(--amber)':'color:var(--red)'):'';
+    card2=`<div class="mc"><div class="mc-lbl">ROAS medio</div><div class="mc-val" style="${cls}">${ok?metrics.roas.toFixed(2)+'x':'—'}</div><div class="mc-lbl" style="margin-top:2px">target ≥ 4.0x</div></div>`;
+    card3=`<div class="mc"><div class="mc-lbl">Acquisti</div><div class="mc-val" style="color:var(--blue)">${fmtN(metrics.purchases)}</div><div class="mc-lbl" style="margin-top:2px">CTR ${fmtP(metrics.ctr)}</div></div>`;
+  }
+  return `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+    <div class="mc"><div class="mc-lbl">Spend</div><div class="mc-val">${cur}${metrics.spend.toFixed(2)}</div><div class="mc-lbl" style="margin-top:2px">periodo selezionato</div></div>
+    ${card2}${card3}
+    <div class="mc"><div class="mc-lbl">Campagne attive</div><div class="mc-val">${active}<span style="font-size:14px;color:var(--g400)"> / ${total}</span></div><div class="mc-lbl" style="margin-top:2px">totali in account</div></div>
+  </div>`;
 }
+
+// ── T-005: Campaigns table ────────────────────────────────────────────────────
+function renderCampaignsTable(campData,insData,ltData,dashType){
+  if(!campData?.length) return `<div style="text-align:center;padding:32px;color:var(--g400)">Nessuna campagna trovata. Verifica le credenziali Meta.</div>`;
+  const links=loadCampaignLinks(activeProject.id);
+  const items=activeProject.boardType==='audience'?loadAudiences():(S.strategies||[]);
+  const linkMap={},stratMap={};
+  links.forEach(l=>{ linkMap[l.campaignId]=l.strategyId; });
+  items.forEach(s=>{ stratMap[s.id]=s.title||s.name; });
+  const isApp=dashType==='app_installs'; const cur=isApp?'$':'€';
+  const head=isApp
+    ?`<tr><th></th><th>Campagna</th><th>Status</th><th>Budget/g</th><th>Spend</th><th>CPD</th><th>Download</th><th>CTR</th><th>Audience</th></tr>`
+    :`<tr><th></th><th>Campagna</th><th>Status</th><th>Budget/g</th><th>Spend</th><th>ROAS</th><th>Acquisti</th><th>CTR</th><th>Strategia</th></tr>`;
+  const start=_campPage*CAMP_PER_PAGE;
+  const rows=campData.slice(start,start+CAMP_PER_PAGE).map(c=>{
+    const ins=insData.find(i=>i.campaign_id===c.id)||ltData[c.id]||null;
+    const isLt=!insData.find(i=>i.campaign_id===c.id)&&!!ltData[c.id];
+    const active=c.status==='ACTIVE'; const dim=isLt?'opacity:.55':'';
+    const spend=ins?parseFloat(ins.spend||0):null;
+    const ctr=ins?parseFloat(ins.ctr||0):null;
+    const budget=c.daily_budget?cur+(parseFloat(c.daily_budget)/100).toFixed(0)+'/g':(c.lifetime_budget?cur+(parseFloat(c.lifetime_budget)/100).toFixed(0)+' tot':'—');
+    let mA,mB;
+    if(isApp){ const inst=ins?.actions?.find(a=>a.action_type==='mobile_app_install'); const dl=inst?parseInt(inst.value):null; const cpd=dl&&spend?spend/dl:null; mA=cpd!=null?cur+cpd.toFixed(2):'—'; mB=dl!=null?fmtN(dl):'—'; }
+    else { const roas=ins?.purchase_roas?.[0]?.value; const pur=ins?.actions?.find(a=>a.action_type==='purchase'); mA=roas?parseFloat(roas).toFixed(2)+'x':'—'; mB=pur?pur.value:'—'; }
+    const linkedId=linkMap[c.id]; const linkedName=linkedId?stratMap[linkedId]:null;
+    const linkBtn=linkedName
+      ?`<span class="badge b-plan" style="cursor:pointer;font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block" onclick="openLinkModal('${c.id}','${c.name.replace(/'/g,"\\'")}',event)" title="${linkedName}">${linkedName.substring(0,16)}${linkedName.length>16?'…':''} ×</span>`
+      :`<button class="sc-btn" style="font-size:10px;padding:2px 6px" onclick="openLinkModal('${c.id}','${c.name.replace(/'/g,"\\'")}',event)">Link →</button>`;
+    return `<tr style="${dim}">
+      <td><div style="width:8px;height:8px;border-radius:50%;background:${active?'var(--green)':'var(--g300)'}"></div></td>
+      <td style="font-weight:500;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${c.name}">${c.name}${isLt?' <span style="font-size:10px;color:var(--g400)">(LT)</span>':''}</td>
+      <td><span class="badge ${active?'b-test':'b-neg'}" style="font-size:10px">${active?'ACTIVE':'PAUSED'}</span></td>
+      <td style="font-size:12px">${budget}</td>
+      <td style="font-size:12px">${spend!=null?cur+spend.toFixed(2):'—'}</td>
+      <td style="font-size:12px;font-weight:600">${mA}</td>
+      <td style="font-size:12px">${mB}</td>
+      <td style="font-size:12px">${ctr!=null?ctr.toFixed(2)+'%':'—'}</td>
+      <td>${linkBtn}</td>
+    </tr>`;
+  }).join('');
+  const totalPages=Math.ceil(campData.length/CAMP_PER_PAGE);
+  const pag=totalPages>1?`<div style="display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-top:10px"><button class="btn btn-s btn-sm" ${_campPage===0?'disabled':''} onclick="_campPage--;renderKpiPage()">← Prec</button><span style="font-size:12px;color:var(--g400)">Pag. ${_campPage+1} / ${totalPages}</span><button class="btn btn-s btn-sm" ${_campPage>=totalPages-1?'disabled':''} onclick="_campPage++;renderKpiPage()">Succ →</button></div>`:'';
+  return `<div class="card" style="padding:0;overflow:hidden"><table style="width:100%;border-collapse:collapse;font-size:13px"><thead style="background:var(--g50)">${head}</thead><tbody>${rows}</tbody></table></div>${pag}`;
+}
+
+// ── T-006: Platform tabs + Google Ads stub ────────────────────────────────────
+function kpiHeaderHtml(){
+  return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+    <div style="display:flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden">
+      <button id="tab-meta" onclick="switchKpiPlatform('meta')"
+        style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='meta'?'var(--accent)':'white'};color:${_kpiPlatform==='meta'?'white':'var(--g400)'}">Meta Ads</button>
+      <button id="tab-gads" onclick="switchKpiPlatform('gads')"
+        style="padding:7px 16px;font-size:13px;font-weight:500;border:none;cursor:pointer;background:${_kpiPlatform==='gads'?'var(--accent)':'white'};color:${_kpiPlatform==='gads'?'white':'var(--g400)'}">Google Ads</button>
+    </div>
+    <select id="kpi-preset-sel" onchange="_kpiPreset=this.value;refreshKpiData()"
+      style="padding:7px 10px;border:1px solid var(--g200);border-radius:var(--r);font-size:13px;outline:none;background:white;color:var(--g700);${_kpiPlatform==='gads'?'display:none':''}">
+      ${META_PRESETS.map(p=>`<option value="${p.value}" ${_kpiPreset===p.value?'selected':''}>${p.label}</option>`).join('')}
+    </select>
+    <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn" ${_kpiPlatform==='gads'?'disabled':''}>↻ Aggiorna</button>
+    <div style="margin-left:auto"><button onclick="openIntegModal()" class="btn btn-s">⚙ Configura Meta</button></div>
+  </div>`;
+}
+function kpiGadsStubHtml(){
+  return `<div style="text-align:center;padding:60px 24px;background:var(--g50);border-radius:var(--r);border:1px dashed var(--g200)">
+    <div style="font-size:32px;margin-bottom:12px">🔧</div>
+    <div style="font-size:16px;font-weight:700;color:var(--g700);margin-bottom:8px">Google Ads — Coming soon</div>
+    <div style="font-size:13px;color:var(--g400);max-width:360px;margin:0 auto">L'integrazione con Google Ads è pianificata per Q3 2026. Per ora usa Meta Ads per monitorare le performance.</div>
+    <div style="margin-top:20px"><span class="badge b-neg" style="font-size:12px">Previsto Q3 2026</span></div>
+  </div>`;
+}
+function switchKpiPlatform(platform){ _kpiPlatform=platform; _campPage=0; renderKpiPage(); }
+
+// ── T-007: Campaign ↔ Strategy linking ────────────────────────────────────────
+let _pendingLinkCampId=null, _pendingLinkCampName=null;
+function openLinkModal(campaignId,campaignName,event){
+  if(event) event.stopPropagation();
+  _pendingLinkCampId=campaignId; _pendingLinkCampName=campaignName;
+  const isAud=activeProject.boardType==='audience';
+  document.getElementById('cl-type-label').textContent=isAud?'audience':'strategia';
+  document.getElementById('cl-camp-name').textContent='📢 '+campaignName;
+  const items=isAud?loadAudiences():(S.strategies||[]);
+  const links=loadCampaignLinks(activeProject.id);
+  const current=links.find(l=>l.campaignId===campaignId)?.strategyId;
+  document.getElementById('cl-remove-btn').style.display=current?'':'none';
+  document.getElementById('cl-strategy-list').innerHTML=items.length
+    ?items.map(item=>{
+        const iid=item.id; const iname=item.title||item.name; const isel=iid===current;
+        return `<div onclick="selectCampaignLink('${iid}')" style="padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g100);background:${isel?'var(--accent-l)':'white'};transition:background .1s" onmouseover="this.style.background='var(--g50)'" onmouseout="this.style.background='${isel?'var(--accent-l)':'white'}'">
+          <div><div style="font-size:13px;font-weight:500">${iname}</div><div style="font-size:11px;color:var(--g400)">${item.segment||item.market||''}</div></div>
+          ${isel?'<span style="color:var(--accent);font-size:16px">✓</span>':''}
+        </div>`;
+      }).join('')
+    :`<div style="padding:16px;text-align:center;color:var(--g400);font-size:13px">Nessuna ${isAud?'audience':'strategia'} presente.</div>`;
+  openModal('modal-camp-link');
+}
+function selectCampaignLink(strategyId){
+  const projId=activeProject.id;
+  const links=loadCampaignLinks(projId);
+  const idx=links.findIndex(l=>l.campaignId===_pendingLinkCampId);
+  const newLink={projectId:projId,platform:'meta',campaignId:_pendingLinkCampId,campaignName:_pendingLinkCampName,strategyId};
+  if(idx>=0) links[idx]=newLink; else links.push(newLink);
+  saveCampaignLinksLocal(projId,links);
+  sbRun(()=>sb.from('campaign_links').upsert(linkToDb(newLink),{onConflict:'project_id,platform,campaign_id'}));
+  closeModal('modal-camp-link'); renderKpiPage(); toast('Collegamento salvato ✓');
+}
+function removeCampaignLink(){
+  const projId=activeProject.id;
+  saveCampaignLinksLocal(projId,loadCampaignLinks(projId).filter(l=>l.campaignId!==_pendingLinkCampId));
+  sbRun(()=>sb.from('campaign_links').delete().eq('project_id',projId).eq('campaign_id',_pendingLinkCampId));
+  closeModal('modal-camp-link'); renderKpiPage(); toast('Collegamento rimosso');
+}
+
+// ── T-002: Integration settings modal ────────────────────────────────────────
+function openIntegModal(){
+  const proj=activeProject;
+  document.getElementById('integ-proj-label').textContent=proj.name;
+  const ex=getInteg(proj.id,'meta');
+  document.getElementById('integ-account-id').value=ex?.adAccountId||'';
+  document.getElementById('integ-token').value=ex?.accessToken||'';
+  const row=document.getElementById('integ-status-row');
+  if(ex?.updatedAt){ row.style.display=''; document.getElementById('integ-updated').textContent=new Date(ex.updatedAt).toLocaleDateString('it-IT'); }
+  else row.style.display='none';
+  openModal('modal-integ');
+}
+function toggleTokenVis(){ const i=document.getElementById('integ-token'); const b=document.getElementById('tok-vis-btn'); if(i.type==='password'){i.type='text';b.textContent='Nascondi';}else{i.type='password';b.textContent='Mostra';} }
+function saveInteg(){
+  const accountId=document.getElementById('integ-account-id').value.trim();
+  const token=document.getElementById('integ-token').value.trim();
+  if(!accountId||!token){ toast('Inserisci entrambi i campi'); return; }
+  if(!accountId.startsWith('act_')){ toast('Account ID deve iniziare con act_'); return; }
+  const projId=activeProject.id;
+  const dashType=activeProject.boardType==='audience'?'app_installs':'ecommerce';
+  const data={projectId:projId,platform:'meta',adAccountId:accountId,accessToken:token,dashboardType:dashType,updatedAt:new Date().toISOString()};
+  saveIntegLocal(projId,'meta',data);
+  sbRun(()=>sb.from('project_integrations').upsert(integToDb(data),{onConflict:'project_id,platform'}));
+  closeModal('modal-integ'); toast('Credenziali salvate ✓'); _kpiData=null; renderKpiPage();
+}
+
+// ── T-008: renderKpiPage — orchestrator ───────────────────────────────────────
+async function renderKpiPage(){
+  const container=document.getElementById('kpi-body');
+  if(!container) return;
+  const integ=getInteg(activeProject.id,'meta');
+  document.getElementById('kpi-sub').textContent=activeProject.name+' · Meta Ads';
+  if(!integ?.adAccountId||!integ?.accessToken){
+    container.innerHTML=kpiHeaderHtml()+`<div style="text-align:center;padding:60px 24px;background:var(--g50);border-radius:var(--r);border:1px dashed var(--g200)">
+      <div style="font-size:32px;margin-bottom:12px">🔑</div>
+      <div style="font-size:16px;font-weight:700;color:var(--g700);margin-bottom:8px">Configura le credenziali Meta Ads</div>
+      <div style="font-size:13px;color:var(--g400);max-width:380px;margin:0 auto 20px">Inserisci Ad Account ID e Access Token per vedere i dati live delle campagne.</div>
+      <button class="btn btn-p" onclick="openIntegModal()">⚙ Configura Meta Ads</button>
+    </div>`; return;
+  }
+  container.innerHTML=kpiHeaderHtml()+`<div id="kpi-content"><div style="text-align:center;padding:40px;color:var(--g400)"><span class="spin" style="display:inline-block;width:20px;height:20px;border:2px solid var(--g200);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:8px"></span><div style="font-size:13px">Caricamento Meta Ads...</div></div></div>`;
+  if(_kpiPlatform==='gads'){ document.getElementById('kpi-content').innerHTML=kpiGadsStubHtml(); return; }
+  try {
+    const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=true;
+    _kpiData=await loadMetaCampaigns(integ.adAccountId,integ.accessToken,_kpiPreset);
+    const {campData,insData,ltData,metrics,dashType}=_kpiData;
+    document.getElementById('kpi-content').innerHTML=
+      renderKpiCards(metrics,dashType,campData)+
+      `<div style="font-size:13px;font-weight:600;color:var(--g700);margin-bottom:10px">Campagne (${campData.length})</div>`+
+      renderCampaignsTable(campData,insData,ltData,dashType);
+  } catch(e){
+    document.getElementById('kpi-content').innerHTML=`<div style="background:#fff0f0;border:1px solid var(--red);border-radius:var(--r);padding:14px 16px;font-size:13px;color:var(--red)">⚠ ${metaErrMsg(e)}</div>`;
+  } finally {
+    const rb=document.getElementById('kpi-refresh-btn'); if(rb) rb.disabled=false;
+  }
+}
+async function refreshKpiData(){ _kpiData=null; _campPage=0; await renderKpiPage(); }
 
 // ─── T-05: RETENTION COHORTS ─────────────────────────────────────────────────
 const RET_BENCHMARKS={W1:{good:40,bad:25},W2:{good:25,bad:15},W3:{good:20,bad:10},W4:{good:15,bad:8},W8:{good:10,bad:5},W12:{good:8,bad:3}};
