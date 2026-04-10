@@ -908,7 +908,7 @@ function sbRun(fn){
 // ── LOAD ALL FROM SUPABASE ────────────────────────────────────────────────────
 async function loadAllFromSupabase(){
   try {
-    const [kwRes,stRes,negRes,audRes,todoPnRes,todoMcRes,kpiRes,retRes,fnRes,integRes,linksRes]=await Promise.all([
+    const [kwRes,stRes,negRes,audRes,todoPnRes,todoMcRes,kpiRes,retRes,fnRes]=await Promise.all([
       sb.from('keywords').select('*'),
       sb.from('strategies').select('*'),
       sb.from('negatives').select('*'),
@@ -918,8 +918,6 @@ async function loadAllFromSupabase(){
       sb.from('kpi_data').select('*'),
       sb.from('retention_data').select('*'),
       sb.from('focus_notes').select('*'),
-      sb.from('project_integrations').select('*'),
-      sb.from('campaign_links').select('*'),
     ]);
     const isEmpty=!kwRes.data?.length&&!stRes.data?.length&&!audRes.data?.length;
     if(isEmpty){ await seedToSupabase(); return; }
@@ -942,7 +940,15 @@ async function loadAllFromSupabase(){
     }
     const fn=fnRes.data?.find(r=>r.project_id==='all');
     if(fn?.content) localStorage.setItem('mp_focus_note',fn.content);
-    // T-001: integrations + campaign_links
+    localStorage.setItem(SK,JSON.stringify(S));
+  } catch(e){ console.error('Supabase load:',e); }
+  // T-001: load integrations + campaign_links separately so a missing table
+  // doesn't crash the main data load (tables may not exist until SQL is run)
+  try {
+    const [integRes,linksRes]=await Promise.all([
+      sb.from('project_integrations').select('*'),
+      sb.from('campaign_links').select('*'),
+    ]);
     if(integRes.data?.length){
       const map={};
       integRes.data.forEach(r=>{ const i=dbToInteg(r); map[integKey(i.projectId,i.platform)]=i; });
@@ -954,8 +960,7 @@ async function loadAllFromSupabase(){
       linksRes.data.forEach(r=>{ const l=dbToLink(r); if(!byProj[l.projectId]) byProj[l.projectId]=[]; byProj[l.projectId].push(l); });
       Object.entries(byProj).forEach(([pid,links])=>saveCampaignLinksLocal(pid,links));
     }
-    localStorage.setItem(SK,JSON.stringify(S));
-  } catch(e){ console.error('Supabase load:',e); }
+  } catch(e){ console.warn('T-001 tables not yet created on Supabase — run supabase-setup.sql to enable KPI integration sync.',e.message); }
 }
 
 // ── FIRST RUN SEED ────────────────────────────────────────────────────────────
@@ -1927,10 +1932,20 @@ const CAMP_PER_PAGE=10;
 async function metaApiFetch(path,token){
   const url=META_API+path+(path.includes('?')?'&':'?')+'access_token='+encodeURIComponent(token);
   const res=await fetch(url); const data=await res.json();
-  if(data.error){ const c=data.error.code; if(c===190) throw new Error('TOKEN_EXPIRED'); if(c===100) throw new Error('INVALID_ACCOUNT'); throw new Error(data.error.message); }
+  if(data.error){
+    const c=data.error.code; const msg=data.error.message||'';
+    if(c===190) throw Object.assign(new Error('TOKEN_EXPIRED'),{metaMsg:msg});
+    if(c===100) throw Object.assign(new Error('INVALID_ACCOUNT'),{metaMsg:msg});
+    throw new Error(msg||'Errore sconosciuto Meta API');
+  }
   return data;
 }
-function metaErrMsg(e){ if(e.message==='TOKEN_EXPIRED') return 'Il token Meta è scaduto. Aggiorna le credenziali in ⚙ Configura Meta.'; if(e.message==='INVALID_ACCOUNT') return 'Ad Account ID non valido. Verifica in ⚙ Configura Meta.'; return 'Errore Meta API: '+e.message; }
+function metaErrMsg(e){
+  const detail=e.metaMsg?' — '+e.metaMsg:'';
+  if(e.message==='TOKEN_EXPIRED') return 'Il token Meta è scaduto. Aggiorna le credenziali in ⚙ Configura Meta.'+detail;
+  if(e.message==='INVALID_ACCOUNT') return 'Account ID o token non valido. Verifica in ⚙ Configura Meta.'+detail;
+  return 'Errore Meta API: '+e.message;
+}
 function aggregateMetrics(insData,dashType){
   let spend=0,roas=null,purchases=0,downloads=0,clicks=0,impressions=0;
   insData.forEach(c=>{ spend+=parseFloat(c.spend||0); if(c.purchase_roas?.[0]?.value) roas=(roas||0)+parseFloat(c.purchase_roas[0].value)*parseFloat(c.spend||0); const acts=c.actions||[]; if(dashType==='app_installs'){ const inst=acts.find(a=>a.action_type==='mobile_app_install'); downloads+=parseInt(inst?.value||0); } else { const pur=acts.find(a=>a.action_type==='purchase'); purchases+=parseInt(pur?.value||0); } clicks+=parseInt(c.clicks||0); impressions+=parseInt(c.impressions||0); });
