@@ -1922,8 +1922,8 @@ function saveCampaignLinksLocal(projectId,links){ localStorage.setItem('mp_campa
 
 // ── T-003: Meta API fetch layer ───────────────────────────────────────────────
 const META_API='https://graph.facebook.com/v25.0/';
-const META_PRESETS=[{value:'last_7_d',label:'Ultimi 7gg'},{value:'last_14_d',label:'Ultimi 14gg'},{value:'last_30_d',label:'Ultimi 30gg'},{value:'last_90_d',label:'Ultimi 90gg'}];
-let _kpiPreset='last_30_d';
+const META_PRESETS=[{value:'last_7d',label:'Ultimi 7gg'},{value:'last_14d',label:'Ultimi 14gg'},{value:'last_30d',label:'Ultimi 30gg'},{value:'last_90d',label:'Ultimi 90gg'}];
+let _kpiPreset='last_30d';
 let _kpiPlatform='meta';
 let _kpiData=null;
 let _campPage=0;
@@ -1955,7 +1955,7 @@ const fmtM=(v,c='€')=>v!=null?c+parseFloat(v).toFixed(2):'—';
 const fmtP=v=>v!=null?parseFloat(v).toFixed(2)+'%':'—';
 const fmtN=v=>v!=null?Math.round(v).toLocaleString('it-IT'):'—';
 
-async function loadMetaCampaigns(adAccountId,token,preset='last_30_d'){
+async function loadMetaCampaigns(adAccountId,token,preset='last_30d'){
   const integ=getInteg(activeProject.id,'meta');
   const dashType=integ?.dashboardType||'ecommerce';
   const fields=dashType==='app_installs'?'campaign_name,campaign_id,spend,impressions,clicks,ctr,cpm,frequency,actions':'campaign_name,campaign_id,spend,purchase_roas,impressions,clicks,ctr,cpm,frequency,actions';
