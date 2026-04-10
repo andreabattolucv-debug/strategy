@@ -393,6 +393,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .kpi-nr-v{font-size:22px;font-weight:600;color:var(--red)}
 .kpi-nr-l{font-size:10px;color:var(--red-d);margin-top:2px}
 .kpi-empty{text-align:center;padding:2rem;color:var(--g400);font-size:13px;border:1px dashed var(--g200);border-radius:var(--r)}
+.kpi-cr-thumb{width:40px;height:40px;border-radius:6px;object-fit:cover;border:1px solid var(--g200);background:var(--g100);flex-shrink:0}
+.kpi-cr-thumb-ph{width:40px;height:40px;border-radius:6px;background:var(--g100);border:1px solid var(--g200);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:var(--g400)}
+.kpi-cr-name-cell{display:flex;align-items:center;gap:8px}
 .kpi-spin{display:inline-block;width:14px;height:14px;border:2px solid var(--g200);border-top-color:var(--g900);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:5px}
 .kpi-lds{text-align:center;padding:2.5rem;color:var(--g400);font-size:13px}
 .kpi-msg-err{background:var(--red-l);border:1px solid var(--red);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:12px}
@@ -2122,7 +2125,7 @@ const fmtN=v=>v!=null?Math.round(v).toLocaleString('it-IT'):'—';
 async function loadMetaCampaigns(adAccountId,token,preset='last_30d'){
   const integ=getInteg(activeProject.id,'meta');
   const dashType=integ?.dashboardType||'ecommerce';
-  const fields=dashType==='app_installs'?'campaign_name,campaign_id,spend,impressions,clicks,ctr,cpm,frequency,actions':'campaign_name,campaign_id,spend,purchase_roas,impressions,clicks,ctr,cpm,frequency,actions';
+  const fields=dashType==='app_installs'?'campaign_name,campaign_id,spend,impressions,clicks,ctr,cpm,frequency,actions':'campaign_name,campaign_id,spend,purchase_roas,impressions,clicks,ctr,cpm,frequency,actions,action_values';
   const [r1,r2]=await Promise.all([
     metaApiFetch(adAccountId+'/campaigns?fields=id,name,status,daily_budget,lifetime_budget',token),
     metaApiFetch(adAccountId+'/insights?fields='+fields+'&date_preset='+preset+'&level=campaign',token)
@@ -2589,22 +2592,49 @@ async function kpiFetchCreative(){
       const leads=kpiGetLeads(ad),pur=kpiGetAct(ad,'omni_purchase');
       const metric=dashType==='app_installs'?leads:pur;
       const cpl=dashType==='app_installs'&&leads>0?spend/leads:null;
-      return {id:ad.ad_id,name:ad.ad_name||'N/D',adset:ad.adset_name||'',spend,roas,ctr,cpm,freq,purchases:pur,leads,metric,cpl,format};
+      return {id:ad.ad_id,name:ad.ad_name||'N/D',adset:ad.adset_name||'',spend,roas,ctr,cpm,freq,purchases:pur,leads,metric,cpl,format,thumb:null};
     });
     el.innerHTML=kpiRenderCreativeHtml(dashType);
-    // Fetch demographics in background
+    // Fetch thumbnails + demographics in background
+    kpiFetchAdThumbs(integ.accessToken);
     kpiFetchDemo(integ,el);
   }catch(e){ el.innerHTML=`<div class="kpi-msg-err">Errore: ${e.message}</div>`; }
+}
+function kpiThumbHtml(a){
+  if(a.thumb) return `<img class="kpi-cr-thumb" data-ad-thumb="${a.id}" src="${a.thumb}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><div class="kpi-cr-thumb-ph" style="display:none">${a.format==='video'?'▶':'🖼'}</div>`;
+  return `<div class="kpi-cr-thumb-ph" data-ad-thumb="${a.id}">${a.format==='video'?'▶':'🖼'}</div>`;
 }
 function kpiRenderCreativeHtml(dashType){
   const sorted=[..._kpiCrData].sort((a,b)=>dashType==='app_installs'?(b.metric||0)-(a.metric||0):(b.roas||0)-(a.roas||0));
   const top3=sorted.slice(0,3), bot3=sorted.slice(-3).reverse();
-  const topHtml=top3.map(a=>`<div class="kpi-tbr"><div class="tbn">${a.name}</div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
-  const botHtml=bot3.map(a=>`<div class="kpi-tbr"><div class="tbn">${a.name}</div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
-  const tableRows=_kpiCrData.map(a=>`<tr><td class="kpi-tn" title="${a.name}">${a.name}</td><td><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span></td><td>€${kpiFmt(a.spend)}</td><td class="${dashType==='app_installs'?kpiCplClass(a.cpl):kpiRc(a.roas)}">${dashType==='app_installs'?a.metric+' lead':(a.roas?kpiFmt(a.roas):'—')}</td><td>${kpiFmt(a.ctr)}%</td><td>€${kpiFmt(a.cpm)}</td><td class="${a.freq>3.5?'kpi-red':a.freq>2.5?'kpi-amber':''}">${kpiFmt(a.freq,2)}</td><td>${a.adset}</td></tr>`).join('');
+  const topHtml=top3.map(a=>`<div class="kpi-tbr"><div class="kpi-cr-name-cell">${kpiThumbHtml(a)}<div class="tbn">${a.name}</div></div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
+  const botHtml=bot3.map(a=>`<div class="kpi-tbr"><div class="kpi-cr-name-cell">${kpiThumbHtml(a)}<div class="tbn">${a.name}</div></div><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span><div class="tbv">${dashType==='app_installs'?a.metric+' lead':a.roas?'ROAS '+kpiFmt(a.roas):'—'}</div></div>`).join('')||'<div style="color:var(--g400);font-size:12px">—</div>';
+  const tableRows=_kpiCrData.map(a=>`<tr><td><div class="kpi-cr-name-cell">${kpiThumbHtml(a)}<span class="kpi-tn" title="${a.name}">${a.name}</span></div></td><td><span class="kpi-fbadge kpi-f${a.format}">${a.format}</span></td><td>€${kpiFmt(a.spend)}</td><td class="${dashType==='app_installs'?kpiCplClass(a.cpl):kpiRc(a.roas)}">${dashType==='app_installs'?a.metric+' lead':(a.roas?kpiFmt(a.roas):'—')}</td><td>${kpiFmt(a.ctr)}%</td><td>€${kpiFmt(a.cpm)}</td><td class="${a.freq>3.5?'kpi-red':a.freq>2.5?'kpi-amber':''}">${kpiFmt(a.freq,2)}</td><td class="kpi-tn">${a.adset}</td></tr>`).join('');
   return `<div class="kpi-tbg"><div class="kpi-tbc top"><div class="tbt">Top 3 inserzioni</div>${topHtml}</div><div class="kpi-tbc bot"><div class="tbt">Bottom 3 inserzioni</div>${botHtml}</div></div>
   <div class="kpi-crtw"><table class="kpi-crt"><thead><tr><th>Inserzione</th><th>Formato</th><th>Spesa</th><th>${dashType==='app_installs'?'Lead':'ROAS'}</th><th>CTR</th><th>CPM</th><th>Freq.</th><th>Adset</th></tr></thead><tbody>${tableRows}</tbody></table></div>
   <div class="kpi-demog"><div class="kpi-demc"><div class="dt">Breakdown per età</div><div id="kpi-demo-age"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div><div class="kpi-demc"><div class="dt">Breakdown per genere</div><div id="kpi-demo-gen"><div style="font-size:12px;color:var(--g400)">Caricamento...</div></div></div></div>`;
+}
+async function kpiFetchAdThumbs(token){
+  const ids=_kpiCrData.filter(a=>a.id).map(a=>a.id);
+  if(!ids.length) return;
+  const BATCH=10;
+  for(let i=0;i<ids.length;i+=BATCH){
+    const batch=ids.slice(i,i+BATCH);
+    await Promise.all(batch.map(async adId=>{
+      try{
+        const r=await metaApiFetch(adId+'?fields=creative{thumbnail_url}',token);
+        const url=r?.creative?.thumbnail_url;
+        if(url){ const ad=_kpiCrData.find(a=>a.id===adId); if(ad){ ad.thumb=url; kpiUpdateThumb(adId,url); } }
+      }catch(e){}
+    }));
+  }
+}
+function kpiUpdateThumb(adId,url){
+  // Update thumb images in DOM without full re-render
+  document.querySelectorAll(`[data-ad-thumb="${adId}"]`).forEach(el=>{
+    el.src=url; el.style.display='';
+    const ph=el.nextSibling; if(ph) ph.style.display='none';
+  });
 }
 async function kpiFetchDemo(integ,container){
   try{
