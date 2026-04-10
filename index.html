@@ -2489,13 +2489,20 @@ function kpiRenderOptimize(campData,insData,dashType){
   insData.forEach(ins=>{ const sp=parseFloat(ins.spend||0); if(sp>maxSpend){maxSpend=sp;fi=ins;} });
   if(fi){
     const m=kpiCompMetrics(fi);
+    const allM=kpiAggMetrics(insData,dashType);
+    const activeCnt=campData.filter(c=>c.status==='ACTIVE').length;
+    const atcR=m.lp>0?m.atc/m.lp*100:(m.clicks>0?m.atc/m.clicks*100:0);
     const pts=[
       `<strong>Campagna principale: ${fi.campaign_name||'—'}.</strong> Spesa €${kpiFmt(m.spend)} · ${kpiFmtI(m.impr)} impressioni · ROAS ${m.roas!==null?kpiFmt(m.roas):'—'}. ${m.roas!==null&&m.roas>=roasTgt?'Performance sopra target, valuta di scalare il budget.':m.roas!==null&&m.roas>=3?'Performance nella norma, monitora quotidianamente.':'Performance sotto target, valuta ottimizzazioni creative e di pubblico.'}`,
-      `<strong>CTR ${kpiFmt(m.ctr)}%</strong> — ${m.ctr>=2?'ottimo segnale, il creativo funziona.':m.ctr>=1?'nella norma. Testa nuovi hook visivi.':'sotto la media. Refresh creativo urgente.'}`,
-      `<strong>CPM €${kpiFmt(m.cpm)}</strong> — ${m.cpm<10?'molto competitivo.':m.cpm<18?'nella norma.':'elevato, considera di allargare il pubblico.'} Frequenza ${kpiFmt(m.freq,2)}: ${m.freq<2?'pubblico non saturo.':m.freq<3?'nella norma.':'saturazione in corso, refresh creativo urgente.'}`,
-      `<strong>Prossimi 7 giorni.</strong> ${m.freq>3?'Priorità al refresh creativo (frequenza alta).':m.ctr<1?'Testa 2-3 nuove creatività con hook diversi.':m.roas!==null&&m.roas>=roasTgt?'Scala gradualmente (+20% budget) e monitora CPM.':'Mantieni e ottimizza prima di fare modifiche al budget.'}`
+      `<strong>CTR ${kpiFmt(m.ctr)}%</strong> — ${m.ctr>=2?'ottimo segnale, il creativo funziona. Mantieni le inserzioni attuali.':m.ctr>=1?'nella norma. Testa nuovi hook visivi per migliorare il coinvolgimento.':'sotto la media. Priorità al refresh creativo, considera nuovi formati o angoli di comunicazione.'}`,
+      `<strong>CPM €${kpiFmt(m.cpm)}</strong> — ${m.cpm<10?'molto competitivo, pubblico non saturo.':m.cpm<18?'nella norma per questo settore.':'elevato, considera di allargare il pubblico o aggiornare le creatività.'} Frequenza ${kpiFmt(m.freq,2)}: ${m.freq<2?'pubblico non saturo, ottimo.':m.freq<3?'nella norma, monitora.':'saturazione in corso, refresh creativo urgente.'}`,
+      `<strong>Analisi funnel.</strong> ATC rate: ${kpiFmt(atcR,1)}%. ${m.atc>0&&m.purchases===0?'<strong>ATC senza acquisti: controlla il processo di pagamento e la pagina checkout.</strong>':m.purchases>0?'Funnel funzionante con '+m.purchases+' acquisti completati.':'Nessuna conversione nel periodo, analizza il funnel dalla landing page.'}`,
+      `<strong>Panoramica account.</strong> ${activeCnt} campagna${activeCnt!==1?'e':''} attiva${activeCnt!==1?'e':''} su ${campData.length} totali. Spesa totale: €${kpiFmt(allM.spend)}. ROAS medio account: ${allM.roas!==null?kpiFmt(allM.roas):'—'}${allM.roas!==null&&allM.roas>=roasTgt?' — sopra target ✅':allM.roas!==null&&allM.roas>=3?' — nella norma':' — sotto target, revisione strategica consigliata'}.`,
+      `<strong>Raccomandazione budget.</strong> ${m.roas!==null&&m.roas>6?'ROAS eccellente: scala il budget del 20-25% e monitora la frequenza.':m.roas!==null&&m.roas>=roasTgt?'Performance solida: mantieni il budget attuale e testa nuovi adset.':m.roas!==null&&m.roas>=3?'Margine accettabile: ottimizza le creatività prima di scalare.':'Non scalare fino a ROAS sopra 3.0. Lavora su creatività e targeting.'}`,
+      `<strong>Prossimi 7 giorni.</strong> ${m.freq>3?'Priorità al refresh creativo (frequenza alta).':m.ctr<1?'Testa 2-3 nuove creatività con hook diversi.':m.roas!==null&&m.roas>=roasTgt?'Scala gradualmente (+20% budget) e monitora CPM.':'Mantieni e ottimizza prima di fare modifiche al budget.'} Controlla i dati ogni 2-3 giorni prima di intervenire.`
     ];
-    stratHtml=`<div class="kpi-strat"><div class="stt">◆ Analisi strategica — ${fi.campaign_name}</div><div class="sts">Spesa €${kpiFmt(m.spend)} · ${kpiFmtI(m.impr)} impressioni · ${m.purchases} acquisti · CTR ${kpiFmt(m.ctr)}%</div><ul class="kpi-spts">${pts.map(p=>`<li><span style="flex-shrink:0;color:var(--blue)">◆</span><span>${p}</span></li>`).join('')}</ul></div>`;
+    const lastPt=pts.pop();
+    stratHtml=`<div class="kpi-strat"><div class="stt"><span style="color:var(--blue)">◆</span> Analisi strategica — ${fi.campaign_name}</div><div class="sts">Spesa €${kpiFmt(m.spend)} · ${kpiFmtI(m.impr)} impressioni · ${m.purchases} acquisti · CTR ${kpiFmt(m.ctr)}%</div><ul class="kpi-spts">${pts.map(p=>`<li><span style="flex-shrink:0;color:var(--blue)">◆</span><span>${p}</span></li>`).join('')}</ul><div style="border-left:2px solid var(--blue);padding:8px 12px;margin-top:10px;font-size:12px;color:var(--g400);line-height:1.7"><span style="color:var(--blue)">◆</span> ${lastPt}</div></div>`;
   }
   // Auto proposals
   const auto=[];
