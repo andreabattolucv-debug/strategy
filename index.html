@@ -459,8 +459,10 @@ input[type=range]{accent-color:var(--accent)}
 .kpi-dsw{display:inline-flex;border:1px solid var(--g200);border-radius:var(--r);overflow:hidden}
 .kpi-dsw-btn{font-size:12px;font-weight:500;padding:5px 12px;border:none;cursor:pointer;background:var(--g100);color:var(--g400)}
 .kpi-dsw-btn.active{background:var(--accent);color:white}
-/* theme toggle */
-.kpi-theme-btn{padding:5px 10px;border:1px solid var(--g200);border-radius:var(--r);background:var(--g100);color:var(--g400);font-size:13px;cursor:pointer;margin-left:auto}
+/* theme toggle pill — shows ☀️ and 🌙, active one full opacity */
+.kpi-theme-sw{display:inline-flex;align-items:center;gap:1px;border:1px solid var(--g200);border-radius:20px;padding:3px 6px;cursor:pointer;background:var(--g100);margin-left:auto;user-select:none}
+.kpi-theme-sw .tsw-ico{font-size:14px;padding:2px 5px;border-radius:16px;opacity:.28;transition:opacity .15s,background .15s}
+.kpi-theme-sw .tsw-ico.tsw-on{opacity:1;background:var(--g200)}
 /* ── KPI light skin override ─────────────────────────────────────────────── */
 #kpi-body.kpi-light{
   background:#f5f5f3;
@@ -481,6 +483,7 @@ input[type=range]{accent-color:var(--accent)}
 #kpi-body.kpi-light .kpi-strat{border-color:#0C447C}
 #kpi-body.kpi-light .kpi-hdr-ctrl{background:white;border-color:rgba(0,0,0,.10)}
 #kpi-body.kpi-light .kpi-hdr-btn{background:white;color:#6b6b67}
+#kpi-body.kpi-light .kpi-hdr-btn.active{background:var(--accent);color:white}
 #kpi-body.kpi-light .kpi-hdr-sel,#kpi-body.kpi-light .kpi-cr-sort{background:white;border-color:rgba(0,0,0,.10);color:#1a1a18}
 #kpi-body.kpi-light .kpi-miw{background:white;border-color:rgba(0,0,0,.10)}
 #kpi-body.kpi-light .kpi-miw input{color:#1a1a18}
@@ -490,7 +493,10 @@ input[type=range]{accent-color:var(--accent)}
 #kpi-body.kpi-light .kpi-crow:hover td,#kpi-body.kpi-light .kpi-crt tr:hover td,
 #kpi-body.kpi-light .kpi-mct tr:hover td{background:#efefec}
 #kpi-body.kpi-light .kpi-spin{border-color:rgba(0,0,0,.15);border-top-color:#1a1a18}
-#kpi-body.kpi-light .kpi-theme-btn,#kpi-body.kpi-light .kpi-dsw-btn{background:white;border-color:rgba(0,0,0,.10);color:#6b6b67}
+#kpi-body.kpi-light .kpi-theme-sw{background:white;border-color:rgba(0,0,0,.10)}
+#kpi-body.kpi-light .kpi-theme-sw .tsw-ico.tsw-on{background:rgba(0,0,0,.08)}
+#kpi-body.kpi-light .kpi-dsw-btn{background:white;border-color:rgba(0,0,0,.10);color:#6b6b67}
+#kpi-body.kpi-light .kpi-dsw-btn.active{background:var(--accent);color:white}
 #kpi-body.kpi-light .kpi-metric .mv{color:#1a1a18}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -2343,7 +2349,12 @@ function _kpiLoadState(){
   _kpiDashTypeOverride=s?.dtOvr||null;
 }
 function kpiApplyTheme(){ const el=document.getElementById('kpi-body'); if(el) el.classList.toggle('kpi-light',_kpiTheme==='light'); }
-function kpiToggleTheme(){ _kpiTheme=_kpiTheme==='dark'?'light':'dark'; localStorage.setItem('kpi_theme',_kpiTheme); kpiApplyTheme(); }
+function kpiToggleTheme(){
+  _kpiTheme=_kpiTheme==='dark'?'light':'dark';
+  localStorage.setItem('kpi_theme',_kpiTheme);
+  // Re-render the full content so the pill icons (.tsw-on) update in the header
+  if(_kpiData) kpiRenderContent(); else renderKpiPage();
+}
 function kpiSetDashType(t){ _kpiDashTypeOverride=t; _kpiSaveState(); refreshKpiData(); }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -2990,7 +3001,7 @@ function renderKpiPage(){
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn" ${_kpiPlatform==='gads'?'disabled':''}>↻ Aggiorna</button>
     <button onclick="openIntegModal()" class="btn btn-s">⚙ Configura Meta</button>
-    <button onclick="kpiToggleTheme()" class="kpi-theme-btn">${_kpiTheme==='dark'?'☀️':'🌙'}</button>
+    <div onclick="kpiToggleTheme()" class="kpi-theme-sw" title="${_kpiTheme==='dark'?'Passa a tema chiaro':'Passa a tema scuro'}"><span class="tsw-ico${_kpiTheme==='dark'?' tsw-on':''}">☀️</span><span class="tsw-ico${_kpiTheme==='light'?' tsw-on':''}">🌙</span></div>
   </div>`;
 
   if(_kpiPlatform==='gads'){ container.innerHTML=headerHtml+kpiGadsStubHtml(); kpiApplyTheme(); return; }
@@ -3035,7 +3046,7 @@ function kpiRenderContent(){
     </select>
     <button onclick="refreshKpiData()" class="btn btn-s" id="kpi-refresh-btn">↻ Aggiorna</button>
     <button onclick="openIntegModal()" class="btn btn-s">⚙ Configura Meta</button>
-    <button onclick="kpiToggleTheme()" class="kpi-theme-btn">${_kpiTheme==='dark'?'☀️':'🌙'}</button>
+    <div onclick="kpiToggleTheme()" class="kpi-theme-sw" title="${_kpiTheme==='dark'?'Passa a tema chiaro':'Passa a tema scuro'}"><span class="tsw-ico${_kpiTheme==='dark'?' tsw-on':''}">☀️</span><span class="tsw-ico${_kpiTheme==='light'?' tsw-on':''}">🌙</span></div>
   </div>`;
 
   let tabContent='';
