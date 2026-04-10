@@ -2554,6 +2554,8 @@ function kpiUpdateMargin(){
   const rows=campData.map(c=>{ const ins=insData.find(i=>i.campaign_id===c.id)||(_kpiData?.ltData||{})[c.id]; if(!ins) return null; const pur=kpiGetAct(ins,'omni_purchase'),spend=parseFloat(ins.spend||0),rev=kpiGetActVal(ins,'omni_purchase'),cac=pur>0?spend/pur:0,cm=kpiCompMargin(cfg,cac),roas=kpiGetRoas(ins); return {name:c.name,status:c.status,pur,spend,rev,cac,mOrd:cm.mEur,mPct:cm.mPct,mTot:cm.mEur*pur,roas,beRoas:cm.beRoas}; }).filter(r=>r&&(r.pur>0||r.spend>0));
   const pc=v=>v>0?'kpi-pp':v<0?'kpi-pn':'kpi-pz';
   document.getElementById('km-camps').innerHTML=rows.length?`<div style="overflow-x:auto"><table class="kpi-mct"><thead><tr><th>Campagna</th><th>Acquisti</th><th>Spesa</th><th>CAC</th><th>Margine/ord</th><th>Margine%</th><th>BE ROAS</th><th>ROAS</th></tr></thead><tbody>${rows.map(r=>`<tr><td class="kpi-tn" title="${r.name}">${r.name}${r.status!=='ACTIVE'?'<span class="kpi-tag-lt">pausa</span>':''}</td><td>${r.pur}</td><td>€${kpiFmt(r.spend)}</td><td>€${kpiFmt(r.cac)}</td><td class="${pc(r.mOrd)}">€${kpiFmt(r.mOrd)}</td><td class="${pc(r.mPct)}">${kpiFmt(r.mPct,1)}%</td><td>${r.beRoas!==null?kpiFmt(r.beRoas):'—'}</td><td class="kpi-rv ${kpiRc(r.roas)}">${r.roas!==null?kpiFmt(r.roas):'—'}</td></tr>`).join('')}</tbody></table></div>`:'<div class="kpi-empty">Nessun dato acquisti disponibile.</div>';
+  // Also refresh simulator
+  kpiUpdateSim();
 }
 function kpiRenderMargine(){
   const cfg=kpiGetMarginCfg();
@@ -2572,7 +2574,58 @@ function kpiRenderMargine(){
     <div class="kpi-msec"><div class="kpi-msec-t">Margine per ordine</div><div id="km-breakdown"><div style="font-size:13px;color:var(--g400)">Inserisci il prezzo per calcolare.</div></div></div>
     <div class="kpi-msec"><div class="kpi-msec-t">Break-even ROAS</div><div id="km-breakeven"><div style="font-size:13px;color:var(--g400)">Inserisci i costi per calcolare.</div></div></div>
   </div>
-  <div class="kpi-msec"><div class="kpi-msec-t">Margine per campagna <span style="font-weight:400;font-size:12px;color:var(--g400)">Live da Meta</span></div><div id="km-camps"><div class="kpi-empty">Carica i dati Meta per vedere il margine.</div></div></div>`;
+  <div class="kpi-msec"><div class="kpi-msec-t">Margine per campagna <span style="font-weight:400;font-size:12px;color:var(--g400)">Live da Meta</span></div><div id="km-camps"><div class="kpi-empty">Carica i dati Meta per vedere il margine.</div></div></div>
+  <div class="kpi-msec"><div class="kpi-msec-t">Simulatore scenari</div>
+    <div class="kpi-simgrid">
+      <div class="kpi-simc">
+        <div class="kpi-siml">Se aumento il budget del</div>
+        <input type="range" id="kpi-sim-bud" min="-50" max="100" value="0" oninput="kpiUpdateSim()" style="width:100%;margin:4px 0">
+        <div class="kpi-simv" id="kpi-sv-bud">+0%</div>
+        <div class="kpi-simr" id="kpi-sr-bud">—</div>
+      </div>
+      <div class="kpi-simc">
+        <div class="kpi-siml">Se modifico il prezzo del</div>
+        <input type="range" id="kpi-sim-pri" min="-30" max="50" value="0" oninput="kpiUpdateSim()" style="width:100%;margin:4px 0">
+        <div class="kpi-simv" id="kpi-sv-pri">+0%</div>
+        <div class="kpi-simr" id="kpi-sr-pri">—</div>
+      </div>
+      <div class="kpi-simc">
+        <div class="kpi-siml">Se riduco i costi fissi del</div>
+        <input type="range" id="kpi-sim-fix" min="0" max="80" value="0" oninput="kpiUpdateSim()" style="width:100%;margin:4px 0">
+        <div class="kpi-simv" id="kpi-sv-fix">-0%</div>
+        <div class="kpi-simr" id="kpi-sr-fix">—</div>
+      </div>
+    </div>
+  </div>`;
+}
+function kpiUpdateSim(){
+  const cfg=kpiGetMarginCfg();
+  const noData='<span style="color:var(--amber);font-size:11px">Vai in configurazione, inserisci i dati e salva.</span>';
+  if(!cfg.price){['kpi-sr-bud','kpi-sr-pri','kpi-sr-fix'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=noData;}); return;}
+  const base=kpiCompMargin(cfg);
+  const cacBase=base.cac>0?base.cac:cfg.price*0.15;
+  // Budget slider
+  const budEl=document.getElementById('kpi-sim-bud'); if(!budEl) return;
+  const budPct=parseFloat(budEl.value);
+  const svBud=document.getElementById('kpi-sv-bud'); if(svBud) svBud.textContent=(budPct>=0?'+':'')+budPct+'%';
+  const newCac=cacBase*(1+budPct/100), simB=kpiCompMargin(cfg,newCac), baseB=kpiCompMargin(cfg,cacBase);
+  const dB=simB.mEur-baseB.mEur;
+  const srBud=document.getElementById('kpi-sr-bud');
+  if(srBud) srBud.innerHTML=`Margine/ordine: <strong>€${kpiFmt(simB.mEur)}</strong><br>Variazione: <span class="${dB>=0?'kpi-green':'kpi-red'}">${dB>=0?'+':''}€${kpiFmt(dB)}</span><br><span style="font-size:11px">CAC stimato: €${kpiFmt(newCac)}</span>`;
+  // Price slider
+  const priEl=document.getElementById('kpi-sim-pri'); if(!priEl) return;
+  const priPct=parseFloat(priEl.value);
+  const svPri=document.getElementById('kpi-sv-pri'); if(svPri) svPri.textContent=(priPct>=0?'+':'')+priPct+'%';
+  const cfgP={...cfg,price:cfg.price*(1+priPct/100)}, simP=kpiCompMargin(cfgP,base.cac), dP=simP.mEur-base.mEur;
+  const srPri=document.getElementById('kpi-sr-pri');
+  if(srPri) srPri.innerHTML=`Prezzo: <strong>€${kpiFmt(cfgP.price)}</strong><br>Margine: <strong>€${kpiFmt(simP.mEur)}</strong> (${kpiFmt(simP.mPct,1)}%)<br>Variazione: <span class="${dP>=0?'kpi-green':'kpi-red'}">${dP>=0?'+':''}€${kpiFmt(dP)}</span><br><span style="font-size:11px">Nuovo BE ROAS: ${simP.beRoas?kpiFmt(simP.beRoas):'—'}</span>`;
+  // Fix costs slider
+  const fixEl=document.getElementById('kpi-sim-fix'); if(!fixEl) return;
+  const fixPct=parseFloat(fixEl.value);
+  const svFix=document.getElementById('kpi-sv-fix'); if(svFix) svFix.textContent='-'+fixPct+'%';
+  const cfgF={...cfg,fix:cfg.fix*(1-fixPct/100)}, simF=kpiCompMargin(cfgF,base.cac), dF=simF.mEur-base.mEur;
+  const srFix=document.getElementById('kpi-sr-fix');
+  if(srFix) srFix.innerHTML=`Fissi/ord: <strong>€${kpiFmt(simF.fixOrd)}</strong><br>Margine: <strong>€${kpiFmt(simF.mEur)}</strong> (${kpiFmt(simF.mPct,1)}%)<br>Risparmio: <span class="kpi-green">+€${kpiFmt(dF)}</span>`;
 }
 
 // ── ROAS Reale (leadgen) ──────────────────────────────────────────────────────
@@ -2857,7 +2910,7 @@ function kpiRenderContent(){
 
   // Post-render
   if(_kpiTab==='overview') requestAnimationFrame(()=>kpiRenderSpendChart(campData,insData));
-  if(_kpiTab==='margin') requestAnimationFrame(()=>kpiUpdateMargin());
+  if(_kpiTab==='margin') requestAnimationFrame(()=>{ kpiUpdateMargin(); kpiUpdateSim(); });
   if(_kpiTab==='creative') kpiFetchCreative();
 }
 
